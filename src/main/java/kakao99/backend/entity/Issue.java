@@ -1,8 +1,5 @@
 package kakao99.backend.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,43 +8,36 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "Members")
-public class Member {
+@Table(name = "Issues")
+public class Issue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "issue_id")
     private Long id;
 
-    @Column
-    private String username;    // 이름
+    private Integer issueNum;  // 프로젝트별 이슈 변호
 
-    @Column
-    private String nickname; // 닉네임
+    private String title;   // 제목
 
-    @Column
-    private String email; // 이메일
+    private String issueType;  // 이슈 타입
 
-    private String password; // 이메일
+    private String description; // 설명
 
-    @Column
-    private String position; // 직무 ex. backend. frontend ...
+    private String status;  // 상태: 백로그, 진행중, 완료 ...
 
-    @Column
-    private String provider; // 소셜 로그인
+    private Integer listPosition;  // 칸반 내의 순서
 
-    @Column
-    private String authority; // 권한
+    private String file; // 첨부 파일
+
+    private Integer importance; // 중요도
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,13 +55,23 @@ public class Member {
     private Date deletedAt; // 삭제일
 
     @Column(name = "is_active")
-    private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원도
+    private Boolean isActive;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @JoinColumn(name = "member_id_in_charge")
+    private Member memberInCharge;  // 담당자
+
+    @ManyToOne
+    @JoinColumn(name = "member_id_report")
+    private Member memberReport;    // 이슈 보고자
+
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
+
+    @ManyToOne
+    @JoinColumn(name = "release_note_id")
+    private ReleaseNote releaseNote;
 
 
 }
-
-

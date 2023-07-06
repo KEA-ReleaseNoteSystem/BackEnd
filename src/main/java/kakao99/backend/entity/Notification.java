@@ -43,4 +43,9 @@ public class Notification {
 
     @Column(name = "is_active")
     private Boolean isActive; // 삭제 여부
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
 }

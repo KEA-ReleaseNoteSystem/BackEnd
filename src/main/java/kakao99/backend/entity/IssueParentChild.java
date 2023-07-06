@@ -1,8 +1,5 @@
 package kakao99.backend.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,43 +8,27 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "Members")
-public class Member {
-
+@Table(name = "Issues_parent_child")
+public class IssueParentChild {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "issues_parent_child_id")
     private Long id;
 
-    @Column
-    private String username;    // 이름
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_issue_id")
+    private Issue parentIssue;
 
-    @Column
-    private String nickname; // 닉네임
-
-    @Column
-    private String email; // 이메일
-
-    private String password; // 이메일
-
-    @Column
-    private String position; // 직무 ex. backend. frontend ...
-
-    @Column
-    private String provider; // 소셜 로그인
-
-    @Column
-    private String authority; // 권한
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "child_issue_id")
+    private Issue childIssue;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -66,12 +47,4 @@ public class Member {
 
     @Column(name = "is_active")
     private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원도
-
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
-
-
 }
-
-
