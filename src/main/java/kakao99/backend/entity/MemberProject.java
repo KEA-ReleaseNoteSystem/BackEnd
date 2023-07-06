@@ -1,8 +1,5 @@
 package kakao99.backend.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,43 +8,19 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "Members")
-public class Member {
-
+@Table(name = "Member_Projects")
+public class MemberProject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "member_project_id")
     private Long id;
-
-    @Column
-    private String username;    // 이름
-
-    @Column
-    private String nickname; // 닉네임
-
-    @Column
-    private String email; // 이메일
-
-    private String password; // 이메일
-
-    @Column
-    private String position; // 직무 ex. backend. frontend ...
-
-    @Column
-    private String provider; // 소셜 로그인
-
-    @Column
-    private String authority; // 권한
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,13 +38,15 @@ public class Member {
     private Date deletedAt; // 삭제일
 
     @Column(name = "is_active")
-    private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원도
+    private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원
 
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
 
 }
-
-

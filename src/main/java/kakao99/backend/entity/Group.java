@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "Groups")
+@Table(name = "All_Groups")
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

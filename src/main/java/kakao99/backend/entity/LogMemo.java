@@ -1,8 +1,5 @@
 package kakao99.backend.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,43 +8,27 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "Members")
-public class Member {
-
+@Table(name = "Logs_Memos")
+public class LogMemo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "log_memo_id")
     private Long id;
 
-    @Column
-    private String username;    // 이름
+    private String log_before_status;   // 이슈 생성, 상태 변경, 완료 ...
 
-    @Column
-    private String nickname; // 닉네임
+    private String log_after_status;   // 이슈 생성, 상태 변경, 완료 ...
 
-    @Column
-    private String email; // 이메일
+    private String memo_content;    // 메모 내용
 
-    private String password; // 이메일
-
-    @Column
-    private String position; // 직무 ex. backend. frontend ...
-
-    @Column
-    private String provider; // 소셜 로그인
-
-    @Column
-    private String authority; // 권한
+    private String type;    // 메모 or 변경 기록
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,13 +46,14 @@ public class Member {
     private Date deletedAt; // 삭제일
 
     @Column(name = "is_active")
-    private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원도
+    private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원
 
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "issue_id")
+    private Issue issue;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
+    private Member member;
 
 }
-
-
