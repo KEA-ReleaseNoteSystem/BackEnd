@@ -36,5 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
-# application.properties
+### application.properties
 /src/main/resources/application.properties
+
+### DS_Store
+*.DS_Stroe
