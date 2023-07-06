@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long> {
     ReleaseNote save(ReleaseNote releaseNote);
 
-    //Optional<ReleaseNote> findReleaseNoteByProject(Long id); 프로젝트 아이디로 탐색해야 하는데 어떻게?
+    //Optional<ReleaseNote> findReleaseNoteByProject(Long id); 프로젝트 아이디로 탐색하고 싶은데 어떻게?
 }
