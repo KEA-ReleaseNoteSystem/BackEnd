@@ -1,4 +1,4 @@
-package kakao99.backend.repository;
+package kakao99.backend.member.repository;
 
 import kakao99.backend.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
