@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/member")
+@RestController
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> register(@RequestBody @Validated RegisterDTO registerDTO) {
+    @PostMapping("/member/signup")
+    public ResponseEntity<?> register(@Validated @RequestBody RegisterDTO registerDTO) {
 
         return memberService.join(registerDTO);
 
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Validated LoginDTO loginDTO) {
+    @PostMapping("/member/login")
+    public ResponseEntity<?> login(@Validated @RequestBody LoginDTO loginDTO) {
 
         return memberService.login(loginDTO);
     }

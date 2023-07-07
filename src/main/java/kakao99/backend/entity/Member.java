@@ -55,7 +55,7 @@ public class Member {
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.DATE)
     @CreationTimestamp
-    private LocalDate createdAt; // 생성일
+    private Date createdAt; // 생성일
 
     @Column(name = "updated_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
