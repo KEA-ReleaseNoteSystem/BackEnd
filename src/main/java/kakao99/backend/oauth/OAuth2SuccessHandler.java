@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Slf4j
@@ -68,19 +69,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
 
-//        Optional<Member> findMemberByEmail = memberRepository.findByEmail(oAuthEmail);
-//
-//        if (findMemberByEmail.isEmpty()) {
-//            Member member = saveOrUpdate(oAuthEmail,oAuthUserName, provider);
-//            String token = tokenProvider.createAccessToken(member);
-//            response.sendRedirect("http://localhost:3000/signup?token=" + token);
-//        } else {
-//            String accessToken = tokenProvider.createAccessToken(findMemberByEmail.get());
-//            String refreshToken = tokenProvider.createRefreshToken(findMemberByEmail.get());
-//
-//            TokenDTO token = new TokenDTO(accessToken, refreshToken);
-//            response.sendRedirect("http://localhost:3000/social-login?token=" + token.getAccessToken());
-//        }
+        Optional<Member> findMemberByEmail = memberRepository.findByEmail(oAuthEmail);
+
+        if (findMemberByEmail.isEmpty()) {
+            Member member = saveOrUpdate(oAuthEmail,oAuthUserName, provider);
+            String token = tokenProvider.createAccessToken(member);
+            response.sendRedirect("http://localhost:3000/signup?token=" + token);
+        } else {
+            log.info("바로 로그인");
+        }
 
 
     }
