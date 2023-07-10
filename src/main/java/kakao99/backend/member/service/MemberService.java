@@ -1,6 +1,8 @@
 package kakao99.backend.member.service;
 
+import kakao99.backend.entity.Group;
 import kakao99.backend.entity.Member;
+import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.jwt.TokenProvider;
 import kakao99.backend.member.dto.LoginDTO;
 import kakao99.backend.member.dto.RegisterDTO;
@@ -24,6 +26,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final ResponseMessage responseMessage;
+    private final GroupRepository groupRepository;
 
     @Transactional
     public ResponseEntity<?> join(RegisterDTO registerDTO) {
@@ -35,6 +38,12 @@ public class MemberService {
             return new ResponseEntity<>(message, HttpStatus.OK);
         }
 
+        Group group = Group.builder()
+                .name(registerDTO.getGroupName())
+                .createdAt(new Date())
+                .isActive("true")
+                .build();
+
         Member member = Member.builder()
                 .username(registerDTO.getName())
                 .nickname(registerDTO.getNickname())
@@ -42,11 +51,41 @@ public class MemberService {
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
                 .createdAt(new Date())
                 .position(registerDTO.getPosition())
+                .group(group)
                 .isActive(false)
                 .build();
 
         memberRepository.save(member);
-        ResponseMessage message = responseMessage.createMessage(200,"로그인이 완료 되었습니다.");
+        ResponseMessage message = responseMessage.createMessage(200,"회원가입이 완료 되었습니다.");
+        return new ResponseEntity<>(message,HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> create(RegisterDTO registerDTO) {
+        Optional<Group> byCode = groupRepository.findByCode(registerDTO.getGroupName());
+
+        if (byCode.isEmpty()) {
+            ResponseMessage message = responseMessage.createMessage(404, "그룹이 존재하지 않습니다.");
+            return new ResponseEntity<>(message,HttpStatus.OK);
+        }
+
+        Group group = byCode.get();
+
+        Member member = Member.builder()
+                .username(registerDTO.getName())
+                .nickname(registerDTO.getNickname())
+                .email(registerDTO.getEmail())
+                .password(passwordEncoder.encode(registerDTO.getPassword()))
+                .createdAt(new Date())
+                .position(registerDTO.getPosition())
+                .group(group)
+                .isActive(true)
+                .build();
+
+        memberRepository.save(member);
+
+        ResponseMessage message = responseMessage.createMessage(200,"회원가입이 완료 되었습니다.");
+
         return new ResponseEntity<>(message,HttpStatus.OK);
     }
 
