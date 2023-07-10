@@ -39,6 +39,8 @@ public class MemberController {
     @PostMapping("/api/member/login")
     public ResponseEntity<?> login(@Validated @RequestBody LoginDTO loginDTO) {
 
+        log.info("email={}", loginDTO.getEmail());
+        log.info("password={}", loginDTO.getPassword());
         return memberService.login(loginDTO);
     }
 }
