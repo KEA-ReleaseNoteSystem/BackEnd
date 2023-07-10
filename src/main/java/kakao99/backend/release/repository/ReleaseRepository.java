@@ -1,10 +1,10 @@
 package kakao99.backend.release.repository;
 
-import kakao99.backend.entity.Project;
 import kakao99.backend.entity.ReleaseNote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +26,6 @@ public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE ReleaseNote e SET e.isActive = false, e.deletedAt = :deletedAt WHERE e.id = :id")
-    void updateIsActiveById(Long id, Date deletedAt);
+    void updateIsActiveById(@Param("id") Long id, @Param("deletedAt") Date deletedAt);
     // 릴리즈노트 삭제: isActive 상태를 변경하고 삭제한 시간을 입력
 }

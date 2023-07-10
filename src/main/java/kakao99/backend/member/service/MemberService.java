@@ -1,6 +1,7 @@
 package kakao99.backend.member.service;
 
 import kakao99.backend.entity.Member;
+import kakao99.backend.entity.Project;
 import kakao99.backend.jwt.TokenProvider;
 import kakao99.backend.member.dto.LoginDTO;
 import kakao99.backend.member.dto.RegisterDTO;
