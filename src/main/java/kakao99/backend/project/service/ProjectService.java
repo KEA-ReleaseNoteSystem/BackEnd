@@ -22,9 +22,8 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final GroupRepository groupRepository;
+
     public ResponseEntity<?> saveProject(@RequestBody ProjectDTO projectDTO){
-
-
         Optional<Group> optionalGroup = groupRepository.findByCode(projectDTO.getGroup_id());
         Group group = optionalGroup.get();
         Project project = projectDTO.toEntity(group);

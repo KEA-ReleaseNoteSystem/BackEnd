@@ -41,7 +41,7 @@ public class ProjectController {
     @GetMapping("/project")
     public ResponseEntity<?> getProject(Authentication authentication){
         Member member = (Member) authentication.getPrincipal();
-        member.getGroup();
+        System.out.println(member.getGroup());
         return new ResponseEntity<>("내 그룹의 프로젝트 목록 완료", HttpStatus.OK);
     }
 
