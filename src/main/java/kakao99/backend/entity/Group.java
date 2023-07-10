@@ -38,9 +38,8 @@ public class Group {
     @UpdateTimestamp
     private Date updatedAt; // 수정일
 
-    @Column(name = "deleted_at", nullable = false)
+    @Column(name = "deleted_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
     private Date deletedAt; // 삭제일
 
     @ColumnDefault("true")
@@ -53,6 +52,7 @@ public class Group {
     }
     public Group deleteGroup(){
         this.isActive = "false";
+        this.deletedAt = new Date();
         return this;
     }
 }

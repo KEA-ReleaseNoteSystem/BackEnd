@@ -1,11 +1,13 @@
 package kakao99.backend.group.dto;
 
+import jakarta.validation.constraints.Null;
 import kakao99.backend.entity.Group;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Getter
@@ -14,11 +16,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GroupDTO {
     private String name;
-    private String isActive;
     public Group toEntity() {
         return Group.builder()
                 .name(this.name)
-                .isActive(this.isActive)
+                .isActive("true")
+                .deletedAt(null)
                 .build();
     }
 

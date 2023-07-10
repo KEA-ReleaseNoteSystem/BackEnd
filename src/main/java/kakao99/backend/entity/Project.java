@@ -1,7 +1,8 @@
 package kakao99.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import kakao99.backend.group.dto.GroupNameDTO;
+import kakao99.backend.project.dto.ProjectModifyDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Getter
@@ -40,19 +40,27 @@ public class Project {
     @UpdateTimestamp
     private Date updatedAt; // 수정일
 
-    @Column(name = "deleted_at", nullable = false)
+    @Column(name = "deleted_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
     private Date deletedAt; // 삭제일
 
     @Column(name = "is_active")
-    private Boolean isActive;
+    private String isActive;
 
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
 
-    @OneToMany(mappedBy = "project")
-    @JsonBackReference
-    private List<ReleaseNote> releaseNoteList;
+    public Project updateProject(ProjectModifyDTO projectModifyDTO){
+        this.name = projectModifyDTO.getName();
+        this.description = projectModifyDTO.getDescription();
+        this.status = projectModifyDTO.getStatus();
+        return this;
+    }
+
+    public Project deleteProject(){
+        this.isActive = "false";
+        this.deletedAt = new Date();
+        return this;
+    }
 }
