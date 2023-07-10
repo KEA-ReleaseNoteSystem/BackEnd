@@ -70,7 +70,7 @@ public class Member {
     @Column(name = "is_active")
     private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원도
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "group_id")
     private Group group;
 
