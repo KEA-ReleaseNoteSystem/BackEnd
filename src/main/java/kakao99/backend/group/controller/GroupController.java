@@ -29,4 +29,9 @@ public class GroupController {
         return new ResponseEntity<>("그룹 수정 완료", HttpStatus.OK);
     }
 
+    @DeleteMapping ("/group")
+    public ResponseEntity<?> deleteGroup(@RequestBody GroupNameDTO groupNameDTO) {
+        groupService.removeGroup(groupNameDTO);
+        return new ResponseEntity<>("그룹 삭제 완료", HttpStatus.OK);
+    }
 }

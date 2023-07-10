@@ -51,4 +51,8 @@ public class Group {
         this.name = name;
         return this;
     }
+    public Group deleteGroup(){
+        this.isActive = "false";
+        return this;
+    }
 }
