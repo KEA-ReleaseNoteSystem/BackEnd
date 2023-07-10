@@ -81,11 +81,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.setStatus(200);
             log.info("로그인 이름={}", oAuthUserName);
             log.info("로그인 이메일={}", oAuthEmail);
-<<<<<<< HEAD
+
             Auth2UserInfoDTO userInfoDTO = new Auth2UserInfoDTO(oAuthUserName, oAuthEmail);
-=======
-            Auth2UserInfoDTO userInfoDTO = new Auth2UserInfoDTO(oAuthUserName, oAuthUserName);
->>>>>>> a5ce90830c610d162830c3ecfc1bd6c1e2633a5e
+
             writer.write(objectMapper.writeValueAsString(userInfoDTO));
             writer.flush();
         } else {

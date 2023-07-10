@@ -1,4 +1,5 @@
 package kakao99.backend.release.DTO;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,13 +12,14 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateReleaseDTO {
-    private Long id;
+    @NotBlank
     private String version; // 버전
+    @NotBlank
     private String status;  // 상태
+    @NotBlank
     private Float percent;  // 진행률
+    @NotBlank
     private Date releaseDate;   // 배포일
     private String brief;   //  요약
     private String description; //세부 설명
-    private Date createdAt; // 생성일
-    private Boolean isActive; // False이면 삭제된 Release note: 읽을땐 True인 것만 목록에 표시
 }
