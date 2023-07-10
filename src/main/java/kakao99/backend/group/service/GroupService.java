@@ -43,4 +43,17 @@ public class GroupService {
         return new ResponseEntity<> ("그룹 이름 수정", HttpStatus.OK);
     }
 
+    @Transactional
+    public ResponseEntity<?> removeGroup(GroupNameDTO groupNameDTO) {
+        try {
+            Optional<Group> optionalGroup = groupRepository.findByCode(groupNameDTO.getCode());
+            Group group = optionalGroup.get();
+            group.deleteGroup();
+        }
+        catch(Exception e){
+            System.out.println("코드에 맞는 그룹이 존재하지 않습니다.");
+        }
+        return new ResponseEntity<>("그룹 삭제", HttpStatus.OK);
+    }
+
 }
