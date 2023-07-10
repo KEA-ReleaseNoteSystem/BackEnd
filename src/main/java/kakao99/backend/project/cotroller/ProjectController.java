@@ -1,8 +1,10 @@
 package kakao99.backend.project.cotroller;
 
 import kakao99.backend.entity.Member;
+import kakao99.backend.entity.Project;
 import kakao99.backend.project.dto.ProjectDTO;
 import kakao99.backend.project.dto.ProjectModifyDTO;
+import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,6 +22,7 @@ import java.util.UUID;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectRepository projectRepository;
     @PostMapping("/project")
     public ResponseEntity<?> createProject(@RequestBody ProjectDTO projectDTO){
         projectService.saveProject(projectDTO);
@@ -39,12 +43,11 @@ public class ProjectController {
     }
 
     @GetMapping("/project")
-    public ResponseEntity<?> getProject(Authentication authentication){
+    public List<?> getProject(Authentication authentication){
         Member member = (Member) authentication.getPrincipal();
-        System.out.println(member.getGroup());
-        return new ResponseEntity<>("내 그룹의 프로젝트 목록 완료", HttpStatus.OK);
+        System.out.println(member.getGroup().getCode());
+        List<Project> project = projectRepository.findAllByGroupCode(member.getGroup().getCode());
+        return project;
     }
-
-
 
 }
