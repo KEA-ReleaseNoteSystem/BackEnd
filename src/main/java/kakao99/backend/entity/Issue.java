@@ -57,15 +57,15 @@ public class Issue {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id_in_charge")
     private Member memberInCharge;  // 담당자
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id_report")
     private Member memberReport;    // 이슈 보고자
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
