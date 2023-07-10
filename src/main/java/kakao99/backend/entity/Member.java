@@ -74,7 +74,9 @@ public class Member {
     @JoinColumn(name = "group_id")
     private Group group;
 
-
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<ReleaseNote> releaseNoteList;
     public Member updateOAuth(String email, String username) {
         this.email = email;
         this.username = username;
