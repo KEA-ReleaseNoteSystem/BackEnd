@@ -44,7 +44,7 @@ public class ReleaseService {
 
     public List<ReleaseNote> findRelease(Long id) {
         // 해당 프로젝트 id에 맞는 릴리즈 노트 목록 가져오기
-        return releaseRepository.findByProjectId(id);
+        return releaseRepository.findByProjectIdAndIsActiveTrue(id);
     }
 
     public Optional<ReleaseNote> getReleaseInfo(Long id) {

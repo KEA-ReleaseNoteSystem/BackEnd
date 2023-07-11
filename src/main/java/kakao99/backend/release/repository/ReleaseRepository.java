@@ -18,11 +18,12 @@ public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long> {
     ReleaseNote save(ReleaseNote releaseNote);
     // 생성, 수정
 
-    List<ReleaseNote> findByProjectId(Long id);
+    List<ReleaseNote> findByProjectIdAndIsActiveTrue(Long id);
     // 각 프로젝트 대시보드에서 해당 프로젝트에 해당하는 릴리즈 노트 목록 가져오기
 
     Optional<ReleaseNote> findById(Long id);
     // 릴리즈 노트 목록에서 선택하면 내용 가져오기
+
     @Transactional
     @Modifying
     @Query("UPDATE ReleaseNote e SET e.isActive = false, e.deletedAt = :deletedAt WHERE e.id = :id")
