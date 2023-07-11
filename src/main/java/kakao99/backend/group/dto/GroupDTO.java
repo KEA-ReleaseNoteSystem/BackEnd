@@ -16,13 +16,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GroupDTO {
     private String name;
+    private String code;
     public Group toEntity() {
         return Group.builder()
                 .name(this.name)
                 .isActive("true")
                 .deletedAt(null)
+                .code(UUID.randomUUID().toString())
                 .build();
     }
-
-
 }

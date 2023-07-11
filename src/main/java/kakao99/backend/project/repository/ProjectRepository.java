@@ -26,6 +26,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findAll();
 
+
     List<Project> findAllByGroupCode(String code);
 
 
@@ -33,5 +34,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 //    @Query("select m from Project m join fetch m.group")
 //    List<Project> findAllMemberInGroup();
+
+
+    List<Project> findAllByGroupCodeAndIsActive(String code, String isActive);
 
 }

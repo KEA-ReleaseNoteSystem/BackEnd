@@ -46,7 +46,8 @@ public class ProjectController {
     public List<?> getProject(Authentication authentication){
         Member member = (Member) authentication.getPrincipal();
         System.out.println(member.getGroup().getCode());
-        List<Project> project = projectRepository.findAllByGroupCode(member.getGroup().getCode());
+        List<Project> project = projectRepository.findAllByGroupCodeAndIsActive(member.getGroup().getCode(), "true");
+
         return project;
     }
 

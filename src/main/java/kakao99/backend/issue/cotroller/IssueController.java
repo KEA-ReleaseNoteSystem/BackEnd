@@ -2,10 +2,12 @@ package kakao99.backend.issue.cotroller;
 
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
+
 import kakao99.backend.entity.Project;
 
 import kakao99.backend.issue.dto.IssueDTO;
-import kakao99.backend.issue.dto.MemberInfoDTO;
+
+
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.member.repository.MemberRepository;
@@ -14,6 +16,7 @@ import kakao99.backend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping( "/issue")
 @RequiredArgsConstructor
 public class IssueController {
 
@@ -31,7 +33,7 @@ public class IssueController {
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
 
-    @PostMapping("/new")
+    @PostMapping("/api/{projectId}/issue/new")
     public ResponseEntity<?> createIssue(IssueForm issue, Long userId) {
         System.out.println("userId = " + userId);
         Optional<Member> memberById = memberRepository.findById(userId);
@@ -65,8 +67,7 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
-
-    @GetMapping("/{projectId}")
+    @GetMapping("api/{projectId}/issues")
     public ResponseEntity<?> getAllIssues(@PathVariable("projectId") Long projectId) {
 
         ArrayList<IssueDTO> allIssues = issueService.getAllIssues(projectId);
@@ -77,3 +78,4 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 }
+

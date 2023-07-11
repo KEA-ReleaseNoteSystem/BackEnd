@@ -2,10 +2,17 @@ package kakao99.backend.issue.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import kakao99.backend.entity.Member;
+import kakao99.backend.entity.Memo;
+
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.Date;
+
 
 @Getter
 @Setter
@@ -22,6 +29,7 @@ public class IssueDTO {
     private Integer listPosition;
     private String file;
     private Date createdAt;
+
 
 ////    @JsonIgnore
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
