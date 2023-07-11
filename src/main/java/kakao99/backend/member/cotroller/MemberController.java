@@ -22,7 +22,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/api/member/signup/group")
-    public ResponseEntity<?> groupCtreate(@Validated @RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> groupCreate(@Validated @RequestBody RegisterDTO registerDTO) {
         log.info("회원 가입 컨트롤러 시작");
         return memberService.join(registerDTO);
 
@@ -32,7 +32,6 @@ public class MemberController {
     public ResponseEntity<?> groupJoin(@Validated @RequestBody RegisterDTO registerDTO) {
         log.info("회원 가입 컨트롤러 시작");
         return memberService.create(registerDTO);
-
     }
 
     @PostMapping("/api/member/login")

@@ -33,14 +33,15 @@ public class MemberProject {
     @UpdateTimestamp
     private Date updatedAt; // 수정일
 
-    @Column(name = "deleted_at", nullable = false)
+    @Column(name = "deleted_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
     private Date deletedAt; // 삭제일
 
-    @Column(name = "is_active")
-    private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원
+    @Column(name = "role")
+    private String role; // 프로젝트 내에서 PM인지 일반 Member인지
 
+    @Column(name = "is_active")
+    private String isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -50,4 +51,9 @@ public class MemberProject {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    public MemberProject deleteMember(){
+        this.isActive = "false";
+        this.deletedAt = new Date();
+        return this;
+    }
 }
