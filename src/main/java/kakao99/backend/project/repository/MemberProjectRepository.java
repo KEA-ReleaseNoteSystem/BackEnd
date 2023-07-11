@@ -6,6 +6,7 @@ import kakao99.backend.entity.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class MemberProjectRepository{
@@ -18,11 +19,26 @@ public class MemberProjectRepository{
     private QMemberProject memberProject = QMemberProject.memberProject;
 
     private QProject project = QProject.project;
+    private QGroup group = QGroup.group;
 
     public MemberProjectRepository(EntityManager em) {
         this.em = em;
         this.query = new JPAQueryFactory(em);
     }
+
+    public MemberProject save(MemberProject memberProject) {
+        em.persist(memberProject);
+        return memberProject;
+    }
+
+    public Optional<MemberProject> findAllByProjectIdAndMemberId(Long projectId, Long memberId) {
+        return Optional.ofNullable(query
+                .select(memberProject)
+                .from(memberProject)
+                .where(memberProject.project.id.eq(projectId).and(memberProject.member.id.eq(memberId)))
+                .fetchOne());
+    }
+
 
     public List<Member> findMemberByProjectId(Long projectId) {
         return query
