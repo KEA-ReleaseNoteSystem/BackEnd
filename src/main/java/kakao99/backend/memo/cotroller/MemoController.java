@@ -1,8 +1,8 @@
 package kakao99.backend.memo.cotroller;
 
-import kakao99.backend.dto.CreateMemoDTO;
-import kakao99.backend.dto.UpdateMemoDTO;
-import kakao99.backend.dto.memoDTO;
+import kakao99.backend.memo.dto.CreateMemoDTO;
+import kakao99.backend.memo.dto.UpdateMemoDTO;
+import kakao99.backend.memo.dto.memoDTO;
 import kakao99.backend.memo.repository.MemoRepository;
 import kakao99.backend.memo.service.MemoService;
 import lombok.RequiredArgsConstructor;
