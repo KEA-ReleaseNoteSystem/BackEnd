@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class MemberService {
                 .name(registerDTO.getGroupName())
                 .createdAt(new Date())
                 .isActive("true")
+                .code(UUID.randomUUID().toString())
                 .build();
 
         Member member = Member.builder()
