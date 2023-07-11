@@ -5,6 +5,7 @@ import kakao99.backend.entity.Member;
 import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.repository.IssueRepository;
+import kakao99.backend.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class IssueService {
     private final IssueRepository issueRepository;
+
     public List<Issue> getIssuesWithMemo(Long projectId) {
         return issueRepository.findAllByProjectId(projectId);
     }
@@ -67,5 +69,7 @@ public class IssueService {
         }
         return "OK";
     }
+
+
 
 }
