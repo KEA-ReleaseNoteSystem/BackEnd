@@ -1,11 +1,12 @@
 package kakao99.backend.memo.dto;
 
+import java.util.Date;
+
+
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Date;
-
 
 @Getter
 @Setter
@@ -13,7 +14,7 @@ import java.util.Date;
 public class memoDTO {
 
 
-    private Long memoId;
+    private Long id;
 
     private Long memberId;
 
@@ -36,7 +37,7 @@ public class memoDTO {
 
 
         return memoDTO.builder()
-                .memoId(memoId)
+                .id(memoId)
                 .memberId(memberId)
                 .issueId(issueId)
                 .memberNickname(memberNickname)
