@@ -1,10 +1,12 @@
 package kakao99.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -59,19 +61,20 @@ public class Issue {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id_in_charge")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
     private Member memberInCharge;  // 담당자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id_report")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Member memberReport;    // 이슈 보고자
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "release_note_id")
     private ReleaseNote releaseNote;
-
-
 }

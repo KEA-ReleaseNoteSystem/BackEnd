@@ -71,6 +71,8 @@ public class IssueController {
         List<Issue> allIssueByProjectId = issueRepository.findAllByProjectId(projectId);
         ArrayList<IssueDTO> issueDTOList = new ArrayList<>();
         for (Issue issue : allIssueByProjectId) {
+//            Member memberInCharge = issue.getMemberInCharge();
+//            System.out.println("memberInCharge = " + memberInCharge.getNickname());
 
             IssueDTO issueDTO = new IssueDTO().builder()
                     .id(issue.getId())
@@ -81,8 +83,8 @@ public class IssueController {
                     .status(issue.getStatus())
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
-                    .memberIdInCharge(issue.getMemberInCharge().getId())
-                    .memberIdReport(issue.getMemberReport().getId())
+                    .memberIdInCharge(issue.getMemberInCharge())
+//                    .memberIdReport(issue.getMemberReport().getId())
                     .build();
 
             issueDTOList.add(issueDTO);
