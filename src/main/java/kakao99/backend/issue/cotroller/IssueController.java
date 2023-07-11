@@ -33,7 +33,7 @@ public class IssueController {
     private final ProjectRepository projectRepository;
 
     @PostMapping("/api/{projectId}/issue/new")
-    public ResponseEntity<?> createIssue(IssueForm issue, Long userId) {
+    public ResponseEntity<?> createIssue(@RequestBody IssueForm issue, Long userId) {
         System.out.println("userId = " + userId);
         Optional<Member> memberById = memberRepository.findById(userId);
 
