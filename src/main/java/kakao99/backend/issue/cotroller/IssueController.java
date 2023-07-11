@@ -81,8 +81,6 @@ public class IssueController {
     @PutMapping("/api/{projectId}/issues/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, String title, String description) {
 
-        System.out.println("projectId = " + projectId + ", issueId = " + issueId + ", title = " + title + ", description = " + description);
-
         String result = issueService.updateIssue(title, description, issueId);
         ResponseMessage message = null;
         if (result == "OK") {
