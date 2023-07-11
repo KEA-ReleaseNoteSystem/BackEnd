@@ -94,9 +94,25 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
+    @GetMapping("/api/releaseNote/{releaseNoteId}/issues")
+    public ResponseEntity<?> getIssuesByReleaseNote(@PathVariable("releaseNoteId") Long releaseNoteId) {
+
+        ArrayList<IssueDTO> allIssuesByReleaseNoteId = issueService.getAllIssuesByReleaseNoteId(releaseNoteId);
+        ResponseMessage message = responseMessage.createMessage(200, "릴리즈 노트의 관련된 이슈 조회 성공", allIssuesByReleaseNoteId);
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
 
 
+    @GetMapping("/test/test/{releaseNoteId}")
+    public List<Issue> test2(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
+//        System.out.println("userId = " + testForm.getUserId());
+
+        List<Issue> allIssuesByReleaseNoteId = issueRepository.getAllIssuesByReleaseNoteId(releaseNoteId);
+
+
+        return allIssuesByReleaseNoteId;
+    }
 
     //  내가 속한 그룹에서 내가 포함되지 않은 프로젝트 조회해오기
     // 파라미터 groupId, userId

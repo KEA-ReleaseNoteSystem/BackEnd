@@ -71,5 +71,34 @@ public class IssueService {
     }
 
 
+    public ArrayList<IssueDTO> getAllIssuesByReleaseNoteId(Long releaseNoteId) {
+        List<Issue> allIssuesByReleaseNoteId = issueRepository.findAllByReleaseNoteId(releaseNoteId);
+        ArrayList<IssueDTO> issueDTOList = new ArrayList<>();
 
+        for (Issue issue : allIssuesByReleaseNoteId) {
+
+            Member memberInCharge = issue.getMemberInCharge();
+            MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+                    .name(memberInCharge.getUsername())
+                    .nickname(memberInCharge.getNickname())
+                    .email(memberInCharge.getEmail())
+                    .position(memberInCharge.getPosition())
+                    .build();
+
+            IssueDTO issueDTO = IssueDTO.builder()
+                    .id(issue.getId())
+                    .issueNum(issue.getIssueNum())
+                    .title(issue.getTitle())
+                    .issueType(issue.getIssueType())
+                    .description(issue.getDescription())
+                    .status(issue.getStatus())
+                    .file(issue.getFile())
+                    .createdAt(issue.getCreatedAt())
+                    .memberIdInCharge(memberInfoDTO)
+                    .build();
+
+            issueDTOList.add(issueDTO);
+        }
+        return issueDTOList;
+    }
 }
