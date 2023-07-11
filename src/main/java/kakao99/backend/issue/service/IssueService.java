@@ -53,13 +53,14 @@ public class IssueService {
     }
 
     public String updateIssue(String title, String description, Long issueId) {
+
         System.out.println("title = " + title);
-        if (title.isEmpty() && !description.isEmpty()) {
+        if (title==null && description != null) {
             issueRepository.updateIssueDescription(description, issueId);
         }
-        else if (!title.isEmpty() && description.isEmpty()) {
+        else if (title != null && description==null) {
             issueRepository.updateIssueTitle(title, issueId);
-        }else if (!title.isEmpty() && !description.isEmpty()){
+        }else if (title!= null && description != null){
             issueRepository.updateIssue(title, description, issueId);
         }else{
             return "파라미터 전달되지 않음.";
