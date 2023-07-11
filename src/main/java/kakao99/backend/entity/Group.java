@@ -22,8 +22,10 @@ import java.util.UUID;
 public class Group {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "group_id")
+    private Long id;
+
     private String code;
 
     private String name;   //   그룹명

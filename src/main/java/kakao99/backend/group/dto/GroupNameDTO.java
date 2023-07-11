@@ -16,7 +16,6 @@ public class GroupNameDTO {
     public Group toEntity() {
         return Group.builder()
                 .name(this.name)
-                .code(this.name)
                 .build();
     }
 
