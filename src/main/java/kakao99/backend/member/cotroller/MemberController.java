@@ -1,15 +1,15 @@
 package kakao99.backend.member.cotroller;
 
-import kakao99.backend.entity.Group;
-import kakao99.backend.group.controller.GroupController;
+import kakao99.backend.entity.Member;
 import kakao99.backend.member.dto.LoginDTO;
 import kakao99.backend.member.dto.RegisterDTO;
 import kakao99.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,12 +35,18 @@ public class MemberController {
 
     }
 
-
     @PostMapping("/api/member/login")
     public ResponseEntity<?> login(@Validated @RequestBody LoginDTO loginDTO) {
 
         log.info("email={}", loginDTO.getEmail());
         log.info("password={}", loginDTO.getPassword());
         return memberService.login(loginDTO);
+    }
+
+    @GetMapping("/api/member")
+    public ResponseEntity<?> memberInfo(Authentication authentication) {
+        Member member = (Member) authentication.getPrincipal();
+
+        return memberService.getMemberInfo(member.getId());
     }
 }
