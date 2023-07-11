@@ -2,11 +2,14 @@ package kakao99.backend.member.service;
 
 import kakao99.backend.entity.Group;
 import kakao99.backend.entity.Member;
+import kakao99.backend.entity.Project;
 import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.jwt.TokenProvider;
 import kakao99.backend.member.dto.LoginDTO;
+import kakao99.backend.member.dto.MemberInfoDTO;
 import kakao99.backend.member.dto.RegisterDTO;
 import kakao99.backend.member.repository.MemberRepository;
+import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +32,7 @@ public class MemberService {
     private final TokenProvider tokenProvider;
     private final ResponseMessage responseMessage;
     private final GroupRepository groupRepository;
+    private final MemberProjectRepository memberProjectRepository;
 
     @Transactional
     public ResponseEntity<?> join(RegisterDTO registerDTO) {
@@ -110,6 +115,31 @@ public class MemberService {
 
         String accessToken = tokenProvider.createAccessToken(member);
         ResponseMessage message = responseMessage.createMessage(200, "로그인이 완료 되었습니다.", accessToken);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> getMemberInfo(Long memberId) {
+        Optional<Member> byId = memberRepository.findById(memberId);
+
+        if (byId.isEmpty()) {
+            ResponseMessage message = responseMessage.createMessage(404, "회원 정보가 존재하지 않습니다.");
+            return new ResponseEntity<>(message,HttpStatus.OK);
+        }
+
+        Member member = byId.get();
+
+        List<Project> projectList = memberProjectRepository.findProjectByMemberId(memberId);
+        MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+                .name(member.getUsername())
+                .nickname(member.getNickname())
+                .email(member.getEmail())
+                .groupName(member.getGroup().getName())
+                .position(member.getPosition())
+                .projectList(projectList)
+                .build();
+
+        ResponseMessage message = responseMessage.createMessage(200, "회원 정보 조회 완료", memberInfoDTO);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
