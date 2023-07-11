@@ -17,7 +17,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findAll();
 
-    List<Project> findAllByGroupCodeAndIsActive(String code, String isActive);
-
+    List<Project> findAllByGroupIdAndIsActive(Long Id, String isActive);
 
 }

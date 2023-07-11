@@ -12,15 +12,6 @@ public class ProjectDTO {
 
     private String description; // 설명
 
-    private String group_id;
-    public Project toEntity(Group group){
-        return Project.builder()
-                .name(this.name)
-                .description(this.description)
-                .status("running")
-                .isActive("true")
-                .deletedAt(null)
-                .group(group)
-                .build();
-    }
+    private Long group_id;
+
 }

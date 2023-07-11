@@ -18,19 +18,19 @@ public class GroupController {
 
     @PostMapping("/group")
     public ResponseEntity<?> createGroup(@RequestBody GroupDTO groupDTO) {
-        groupService.createGroup(groupDTO);
-        return new ResponseEntity<>("그룹 생성 완료", HttpStatus.OK);
+
+        return groupService.createGroup(groupDTO);
     }
 
     @PatchMapping("/newGroupName")
     public ResponseEntity<?> updateGroup(@RequestBody GroupNameDTO groupNameDTO) {
-        groupService.updateGroupName(groupNameDTO);
-        return new ResponseEntity<>("그룹 수정 완료", HttpStatus.OK);
+
+        return groupService.updateGroupName(groupNameDTO);
     }
 
     @DeleteMapping ("/group")
     public ResponseEntity<?> deleteGroup(@RequestBody GroupNameDTO groupNameDTO) {
-        groupService.removeGroup(groupNameDTO);
-        return new ResponseEntity<>("그룹 삭제 완료", HttpStatus.OK);
+
+        return groupService.removeGroup(groupNameDTO);
     }
 }
