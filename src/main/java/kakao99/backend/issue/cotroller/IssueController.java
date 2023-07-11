@@ -19,8 +19,8 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.OutputKeys;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -72,10 +72,26 @@ public class IssueController {
 
         ArrayList<IssueDTO> allIssues = issueService.getAllIssues(projectId);
 
-        ResponseMessage message = responseMessage.createMessage(200, projectId+"번 프로젝트의 모든 이슈 조회 성공");
+        ResponseMessage message = responseMessage.createMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
         message.setData(allIssues);
 
         return new ResponseEntity(message, HttpStatus.OK);
     }
+
+    @PutMapping("/api/{projectId}/issues/{issueId}")
+    public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, String title, String description) {
+
+        System.out.println("projectId = " + projectId + ", issueId = " + issueId + ", title = " + title + ", description = " + description);
+
+        String result = issueService.updateIssue(title, description, issueId);
+        ResponseMessage message = null;
+        if (result == "OK") {
+            message = responseMessage.createMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");
+        }else{
+            message = responseMessage.createMessage(500, projectId + "번 프로젝트의 모든 이슈 수정 실패: "+result);
+        }
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
+
 }
 

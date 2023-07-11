@@ -7,6 +7,7 @@ import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.repository.IssueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,4 +51,19 @@ public class IssueService {
         }
     return issueDTOList;
     }
+
+    public String updateIssue(String title, String description, Long issueId) {
+        if (title.isEmpty() && !description.isEmpty()) {
+            issueRepository.updateIssueDescription(description, issueId);
+        }
+        else if (!title.isEmpty() && description.isEmpty()) {
+            issueRepository.updateIssueTitle(title, issueId);
+        }else if (!title.isEmpty() && !description.isEmpty()){
+            issueRepository.updateIssue(title, description, issueId);
+        }else{
+            return "파라미터 전달되지 않음.";
+        }
+        return "OK";
+    }
+
 }
