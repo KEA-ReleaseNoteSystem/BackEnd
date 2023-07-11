@@ -78,9 +78,9 @@ public class IssueController {
     }
 
     @PutMapping("/api/{projectId}/issues/{issueId}")
-    public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, String title, String description) {
-
-        String result = issueService.updateIssue(title, description, issueId);
+    public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
+//        System.out.println("projectId = " + projectId + ", issueId = " + issueId + ", title = " + title + ", description = " + description);
+        String result = issueService.updateIssue(updateIssueForm.getTitle(), updateIssueForm.getDescription(), issueId);
         ResponseMessage message = null;
         if (result == "OK") {
             message = responseMessage.createMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");

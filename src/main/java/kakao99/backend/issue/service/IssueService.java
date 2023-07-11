@@ -53,6 +53,7 @@ public class IssueService {
     }
 
     public String updateIssue(String title, String description, Long issueId) {
+        System.out.println("title = " + title);
         if (title.isEmpty() && !description.isEmpty()) {
             issueRepository.updateIssueDescription(description, issueId);
         }
