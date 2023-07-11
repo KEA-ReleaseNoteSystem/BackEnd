@@ -25,7 +25,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
 //    @Query("select m from Issue m join fetch m.project")
 //    List<Issue> findAllByProjectId(Long projectId);
 
-    @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId")
+    @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId and m.isActive = true")
     List<Issue> findAllByProjectId(@Param("projectId") Long projectId);
 
 
@@ -49,7 +49,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
 
 
 
-    @Query("select m from Issue m join fetch m.releaseNote join fetch m.memberInCharge where m.releaseNote.id =:releaseNoteId ")
+    @Query("select m from Issue m join fetch m.releaseNote join fetch m.memberInCharge where m.releaseNote.id =:releaseNoteId and m.isActive = true")
     List<Issue> findAllByReleaseNoteId(@Param("releaseNoteId") Long releaseNoteId);
 
 //    @Query("select new kakao99.backend.issue.dto.IssueDTO(m.id, m.issueNum, m.title, m.issueType, m.description, m.description," +
