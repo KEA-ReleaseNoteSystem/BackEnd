@@ -30,16 +30,13 @@ public class ReleaseController {
     private final ProjectRepository projectRepository;
     private final ResponseMessage responseMessage;
 
-    @PostMapping("/release/create")
+    @PostMapping("/api/release/create")
     @ResponseBody
     public ResponseEntity<ResponseMessage> createRelease(
-            @RequestBody CreateReleaseDTO createReleaseDTO,
-            @RequestParam(required = true, value = "memberId") Long memberId,
-            @RequestParam(required = true, value = "projectId") Long projectId
-    ) {
+            @RequestBody CreateReleaseDTO createReleaseDTO) {
         // member와 project를 조회
-        Optional<Member> member = memberRepository.findById(memberId);
-        Optional<Project> project = projectRepository.findById(projectId);
+        Optional<Member> member = memberRepository.findById(createReleaseDTO.getMemberId());
+        Optional<Project> project = projectRepository.findById(createReleaseDTO.getProjectId());
 
         if (member == null || project == null) {
             ResponseMessage message = responseMessage.createMessage(404, "멤버 또는 프로젝트를 찾을 수 없습니다.", null);
@@ -58,7 +55,7 @@ public class ReleaseController {
     }
 
 
-    @GetMapping("/release")
+    @GetMapping("/api/release")
     @ResponseBody
     public ResponseEntity<ResponseMessage> getReleaseNoteList (
             @RequestParam(required = true, value = "projectId") Long projectId
@@ -77,24 +74,24 @@ public class ReleaseController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    @GetMapping("/release/{releaseId}")
+    @GetMapping("/api/release/{releaseId}")
     @ResponseBody
     public ResponseEntity<ResponseMessage> getReleaseNoteInfo(@PathVariable Long releaseId) {
 
         Optional<ReleaseNote> releaseNoteInfo = releaseService.getReleaseInfo(releaseId);
         ResponseMessage message;
 
-        if (releaseNoteInfo == null) {
+        if (!releaseNoteInfo.isPresent()) {
             message = responseMessage.createMessage(204, "해당 릴리즈노트가 존재하지 않습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
         }
 
-        message = responseMessage.createMessage(200, "해당 릴리즈노트 조회 완료", releaseNoteInfo);
+        message = responseMessage.createMessage(200, "해당 릴리즈노트 조회 완료", releaseNoteInfo.get());
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    @DeleteMapping("/release/{releaseId}")
+    @DeleteMapping("/api/release/{releaseId}")
     @ResponseBody
     public ResponseEntity<ResponseMessage> deleteRelease(@PathVariable("releaseId") Long releaseId) {
         log.info("삭제 컨트롤러 시작");
