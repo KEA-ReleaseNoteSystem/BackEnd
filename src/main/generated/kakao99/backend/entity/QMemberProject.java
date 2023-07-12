@@ -28,11 +28,13 @@ public class QMemberProject extends EntityPathBase<MemberProject> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final BooleanPath isActive = createBoolean("isActive");
+    public final StringPath isActive = createString("isActive");
 
     public final QMember member;
 
     public final QProject project;
+
+    public final StringPath role = createString("role");
 
     public final DateTimePath<java.util.Date> updatedAt = createDateTime("updatedAt", java.util.Date.class);
 

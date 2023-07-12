@@ -32,11 +32,9 @@ public class QProject extends EntityPathBase<Project> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final BooleanPath isActive = createBoolean("isActive");
+    public final StringPath isActive = createString("isActive");
 
     public final StringPath name = createString("name");
-
-    public final ListPath<ReleaseNote, QReleaseNote> releaseNoteList = this.<ReleaseNote, QReleaseNote>createList("releaseNoteList", ReleaseNote.class, QReleaseNote.class, PathInits.DIRECT2);
 
     public final StringPath status = createString("status");
 

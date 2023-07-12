@@ -10,6 +10,7 @@ import kakao99.backend.issue.dto.IssueDTO;
 
 
 import kakao99.backend.issue.repository.IssueRepository;
+import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
@@ -32,6 +33,7 @@ public class IssueController {
 
     private final ResponseMessage responseMessage;
     private final IssueRepository issueRepository;
+    private final IssueRepositoryImpl issueRepositoryImpl;
     private final IssueService issueService;
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
@@ -102,8 +104,18 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
+    @GetMapping("/api/project/{projectId}/releaseNote/{releaseNoteId}/issues")
+    public ResponseEntity<?> findAllByNotReleaseNoteId(@PathVariable("releaseNoteId") Long releaseNoteId, @PathVariable("projectId") Long projectId) {
+
+        ArrayList<IssueDTO> allByNotReleaseNoteId = issueService.findAllByNotReleaseNoteId(releaseNoteId, projectId);
+
+        ResponseMessage message = responseMessage.createMessage(200, "릴리즈 노트에 포함되지 않은 이슈 조회 성공", allByNotReleaseNoteId);
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
+
 
     @GetMapping("/test/test/{releaseNoteId}")
+
     public List<Issue> test2(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
 //        System.out.println("userId = " + testForm.getUserId());
@@ -113,4 +125,20 @@ public class IssueController {
 
         return allIssuesByReleaseNoteId;
     }
+
+//    @GetMapping("/test/test/project/{projectId}")
+//    public List<?> test3(@PathVariable("projectId") Long projectId) {
+//
+////        System.out.println("userId = " + testForm.getUserId());
+//
+////        List<?> allByProjectIdImpl = issueRepositoryImpl.findAllByProjectIdImpl(projectId);
+//
+//
+//        return allByProjectIdImpl;
+//    }
+
+
+
 }
+
+
