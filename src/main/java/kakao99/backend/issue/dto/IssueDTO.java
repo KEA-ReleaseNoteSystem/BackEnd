@@ -38,6 +38,7 @@ public class IssueDTO {
     @JsonIgnore
 //    @ManyToOne(fetch = FetchType.LAZY)
     private MemberInfoDTO memberIdInCharge;
+    private MemberInfoDTO memberReport;
 //    private Long memberIdReport;
 //    private List<Memo> comments;
 

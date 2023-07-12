@@ -34,11 +34,19 @@ public class IssueService {
         for (Issue issue : allIssueByProjectId) {
 
             Member memberInCharge = issue.getMemberInCharge();
+            Member memberReport = issue.getMemberReport();
             MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
                     .name(memberInCharge.getUsername())
                     .nickname(memberInCharge.getNickname())
                     .email(memberInCharge.getEmail())
                     .position(memberInCharge.getPosition())
+                    .build();
+
+            MemberInfoDTO memberInfoDTO2 = MemberInfoDTO.builder()
+                    .name(memberReport.getUsername())
+                    .nickname(memberReport.getNickname())
+                    .email(memberReport.getEmail())
+                    .position(memberReport.getPosition())
                     .build();
 
             IssueDTO issueDTO = IssueDTO.builder()
@@ -51,7 +59,9 @@ public class IssueService {
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
                     .memberIdInCharge(memberInfoDTO)
+                    .memberReport(memberInfoDTO2)
                     .importance(issue.getImportance())
+
                     .build();
 
             issueDTOList.add(issueDTO);
