@@ -38,7 +38,7 @@ public class ReleaseController {
         Optional<Member> member = memberRepository.findById(createReleaseDTO.getMemberId());
         Optional<Project> project = projectRepository.findById(createReleaseDTO.getProjectId());
 
-        if (member == null || project == null) {
+        if (member.isEmpty() || project.isEmpty()) {
             ResponseMessage message = responseMessage.createMessage(404, "멤버 또는 프로젝트를 찾을 수 없습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
@@ -81,7 +81,7 @@ public class ReleaseController {
         Optional<ReleaseNote> releaseNoteInfo = releaseService.getReleaseInfo(releaseId);
         ResponseMessage message;
 
-        if (!releaseNoteInfo.isPresent()) {
+        if (releaseNoteInfo.isEmpty()) {
             message = responseMessage.createMessage(204, "해당 릴리즈노트가 존재하지 않습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
         }
