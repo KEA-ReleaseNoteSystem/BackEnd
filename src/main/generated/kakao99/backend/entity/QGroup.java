@@ -25,6 +25,8 @@ public class QGroup extends EntityPathBase<Group> {
 
     public final DateTimePath<java.util.Date> deletedAt = createDateTime("deletedAt", java.util.Date.class);
 
+    public final NumberPath<Long> id = createNumber("id", Long.class);
+
     public final StringPath isActive = createString("isActive");
 
     public final StringPath name = createString("name");
