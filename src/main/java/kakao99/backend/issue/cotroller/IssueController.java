@@ -38,6 +38,8 @@ public class IssueController {
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
 
+
+    // 이슈 생성
     @PostMapping("/api/{projectId}/issue/new")
     public ResponseEntity<?> createIssue(@RequestBody IssueForm issue, @PathVariable("projectId") Long projectId) {
         System.out.println("userId = " + issue.getUserId());
@@ -72,6 +74,8 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
+
+    // 프로젝트 id로 모든 이슈 조회
     @GetMapping("api/{projectId}/issues")
     public ResponseEntity<?> getAllIssues(@PathVariable("projectId") Long projectId) {
 
@@ -83,6 +87,8 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
+
+    // 이슈 정보 업데이트
     @PutMapping("/api/{projectId}/issues/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
 //        System.out.println("projectId = " + projectId + ", issueId = " + issueId + ", title = " + title + ", description = " + description);
@@ -96,6 +102,8 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
+
+    // releaseNote id로 모든 이슈 조회
     @GetMapping("/api/releaseNote/{releaseNoteId}/issues")
     public ResponseEntity<?> getIssuesByReleaseNote(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
