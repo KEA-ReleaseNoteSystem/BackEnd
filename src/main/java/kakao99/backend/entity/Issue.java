@@ -77,6 +77,7 @@ public class Issue {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "release_note_id")
+    @JsonIgnore
     private ReleaseNote releaseNote;
 
 
