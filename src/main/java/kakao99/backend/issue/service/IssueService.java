@@ -51,6 +51,7 @@ public class IssueService {
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
                     .memberIdInCharge(memberInfoDTO)
+                    .importance(issue.getImportance())
                     .build();
 
             issueDTOList.add(issueDTO);
@@ -99,6 +100,7 @@ public class IssueService {
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
                     .memberIdInCharge(memberInfoDTO)
+                    .importance(issue.getImportance())
                     .build();
 
             issueDTOList.add(issueDTO);
@@ -133,6 +135,7 @@ public class IssueService {
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
                     .memberIdInCharge(memberInfoDTO)
+                    .importance(issue.getImportance())
                     .build();
 
             issueDTOList.add(issueDTO);
