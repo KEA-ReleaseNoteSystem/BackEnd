@@ -10,6 +10,7 @@ import kakao99.backend.issue.dto.IssueDTO;
 
 
 import kakao99.backend.issue.repository.IssueRepository;
+import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
@@ -32,6 +33,7 @@ public class IssueController {
 
     private final ResponseMessage responseMessage;
     private final IssueRepository issueRepository;
+    private final IssueRepositoryImpl issueRepositoryImpl;
     private final IssueService issueService;
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
@@ -123,6 +125,16 @@ public class IssueController {
 
         return allIssuesByReleaseNoteId;
     }
+//    @GetMapping("/test/test/project/{projectId}")
+//    public List<?> test3(@PathVariable("projectId") Long projectId) {
+//
+////        System.out.println("userId = " + testForm.getUserId());
+//
+////        List<?> allByProjectIdImpl = issueRepositoryImpl.findAllByProjectIdImpl(projectId);
+//
+//
+//        return allByProjectIdImpl;
+//    }
 
     //  내가 속한 그룹에서 내가 포함되지 않은 프로젝트 조회해오기
     // 파라미터 groupId, userId
