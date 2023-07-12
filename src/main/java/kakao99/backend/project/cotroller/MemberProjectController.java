@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MemberProjectController {
     private final MemberProjectService memberProjectService;
-    @PostMapping("/project/member")
+    @PostMapping("/api/project/member")
     public ResponseEntity<?> joinProject(@RequestBody MemberProjectDTO memberProjectDTO){
 
         return memberProjectService.join(memberProjectDTO);
     }
 
-    @DeleteMapping("/project/member")
+    @DeleteMapping("/api/project/member")
     public ResponseEntity<?> removeProject(@RequestBody MemberProjectDTO memberProjectDTO){
 
         return memberProjectService.remove(memberProjectDTO);

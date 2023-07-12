@@ -130,6 +130,7 @@ public class MemberService {
         Member member = byId.get();
 
         List<Project> projectList = memberProjectRepository.findProjectByMemberId(memberId);
+
         MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
                 .name(member.getUsername())
                 .nickname(member.getNickname())
