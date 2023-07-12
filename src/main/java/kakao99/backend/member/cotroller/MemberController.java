@@ -48,6 +48,7 @@ public class MemberController {
         return memberService.getMemberInfo(member.getId());
     }
 
+    // 프로젝트 내의 멤버 조회 API
     @GetMapping("/api/project/{projectId}/members")
     public ResponseEntity<?> getMemberOfProject(@PathVariable("projectId") Long projectId) {
 
