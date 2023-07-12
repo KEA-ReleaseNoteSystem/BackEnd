@@ -30,30 +30,41 @@ public class ProjectController {
     private final ProjectRepository projectRepository;
     private final ResponseMessage responseMessage;
 
-    @PostMapping("/project")
+    @PostMapping("/api/project")
     public ResponseEntity<?> createProject(@RequestBody ProjectDTO projectDTO, Authentication authentication){
         Member member = (Member) authentication.getPrincipal();
         return projectService.saveProject(projectDTO, member);
     }
 
 
-    @PatchMapping("/project")
+    @PatchMapping("/api/project")
     public ResponseEntity<?> patchProject(@RequestBody ProjectModifyDTO projectModifyDTO){
         return projectService.updateProject(projectModifyDTO);
     }
 
-    @DeleteMapping("/project")
+    @DeleteMapping("/api/project")
     public ResponseEntity<?> removeProject(@RequestBody ProjectModifyDTO projectModifyDTO){
         return projectService.removeProject(projectModifyDTO);
     }
 
-    @GetMapping("/project")
+    @GetMapping("/api/myProject")
     public ResponseEntity<?> getProject(Authentication authentication){
         Member member = (Member) authentication.getPrincipal();
         System.out.println(member.getGroup().getCode());
         List<Project> project = projectRepository.findAllByGroupIdAndIsActive(member.getGroup().getId(), "true");
 
         ResponseMessage message = responseMessage.createMessage(200, "내 프로젝트 목록 조회 완료", project);
+
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/project")
+    public ResponseEntity<?> getMyProject(Authentication authentication){
+        Member member = (Member) authentication.getPrincipal();
+
+        List<Project> project = projectRepository.findAllByGroupIdAndIsActive(member.getGroup().getId(), "true");
+
+        ResponseMessage message = responseMessage.createMessage(200, "내 그룹의 프로젝트 목록 조회 완료", project);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

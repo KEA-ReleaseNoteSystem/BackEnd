@@ -31,14 +31,16 @@ public class ProjectService {
     private final GroupRepository groupRepository;
     private final MemberProjectRepository memberProjectRepository;
     private final ResponseMessage responseMessage;
+
+    @Transactional
     public ResponseEntity<?> saveProject(ProjectDTO projectDTO, Member member){
-        Optional<Group> optionalGroup = groupRepository.findById(projectDTO.getGroup_id());
+        Optional<Group> optionalGroup = groupRepository.findById(member.getGroup().getId());
         Group group = optionalGroup.get();
 
         Project project =Project.builder()
                 .name(projectDTO.getName())
                 .description(projectDTO.getDescription())
-                .status("running")
+                .status(projectDTO.getStatus())
                 .isActive("true")
                 .deletedAt(null)
                 .group(group)
