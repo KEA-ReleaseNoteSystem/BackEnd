@@ -2,6 +2,7 @@ package kakao99.backend.project.cotroller;
 
 import com.nimbusds.oauth2.sdk.Response;
 import kakao99.backend.entity.Member;
+import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
 import kakao99.backend.project.dto.ProjectDTO;
 import kakao99.backend.project.dto.ProjectModifyDTO;
@@ -9,7 +10,9 @@ import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
 import kakao99.backend.utils.ResponseMessage;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final ProjectRepository projectRepository;
+    private final MemberProjectRepository memberProjectRepository;
     private final ResponseMessage responseMessage;
 
     @PostMapping("/api/project")
@@ -47,26 +51,32 @@ public class ProjectController {
         return projectService.removeProject(projectModifyDTO);
     }
 
-    @GetMapping("/api/myProject")
-    public ResponseEntity<?> getProject(Authentication authentication){
-        Member member = (Member) authentication.getPrincipal();
-        System.out.println(member.getGroup().getCode());
-        List<Project> project = projectRepository.findAllByGroupIdAndIsActive(member.getGroup().getId(), "true");
 
-        ResponseMessage message = responseMessage.createMessage(200, "내 프로젝트 목록 조회 완료", project);
+    @GetMapping("/api/myProject")
+    public ResponseEntity<?> getMyProject(Authentication authentication){
+        Member member = (Member) authentication.getPrincipal();
+
+        List<Project> project = memberProjectRepository.findProjectByMemberId(member.getId(), "true");
+
+        ResponseMessage message = responseMessage.createMessage(200, "내가 속한 프로젝트 목록 조회 완료", project);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    @GetMapping("/api/project")
-    public ResponseEntity<?> getMyProject(Authentication authentication){
+
+    //  내가 속한 그룹에서 내가 포함되지 않은 프로젝트 조회해오기
+    @GetMapping("api/otherProject")
+    public ResponseEntity<?> getProjectFromGroup(Authentication authentication) {
         Member member = (Member) authentication.getPrincipal();
+        System.out.println("userId = " + member.getId());
 
-        List<Project> project = projectRepository.findAllByGroupIdAndIsActive(member.getGroup().getId(), "true");
+        List<Project> othersProject = memberProjectRepository.findOtherProject(member.getId(), member.getGroup().getId(), "true");
 
-        ResponseMessage message = responseMessage.createMessage(200, "내 그룹의 프로젝트 목록 조회 완료", project);
+        ResponseMessage message = responseMessage.createMessage(200, "내가 속하지 않은 프로젝트 목록 조회 완료", othersProject);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
 }
+
+

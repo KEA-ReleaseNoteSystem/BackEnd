@@ -88,8 +88,8 @@ public class IssueController {
         ResponseMessage message = null;
         if (result == "OK") {
             message = responseMessage.createMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");
-        }else{
-            message = responseMessage.createMessage(500, projectId + "번 프로젝트의 모든 이슈 수정 실패: "+result);
+        } else {
+            message = responseMessage.createMessage(500, projectId + "번 프로젝트의 모든 이슈 수정 실패: " + result);
         }
         return new ResponseEntity(message, HttpStatus.OK);
     }
@@ -113,25 +113,4 @@ public class IssueController {
 
         return allIssuesByReleaseNoteId;
     }
-
-    //  내가 속한 그룹에서 내가 포함되지 않은 프로젝트 조회해오기
-    // 파라미터 groupId, userId
-    @PostMapping("/test/test")
-    public List<MemberProject> test(@RequestBody TestForm testForm) {
-
-        System.out.println("userId = " + testForm.getUserId());
-
-        List<MemberProject> othersProject = projectRepository.getOthersProject(testForm.getGroupId(), testForm.getUserId());
-
-        System.out.println("othersProject = " + othersProject.get(0).getProject().getName());
-        return othersProject;
-    }
-
-}
-
-@Getter
-@Setter
-class TestForm{
-    Long groupId;
-    Long userId;
 }
