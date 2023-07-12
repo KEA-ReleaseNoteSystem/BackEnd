@@ -35,14 +35,15 @@ public class IssueService {
 
             Member memberInCharge = issue.getMemberInCharge();
             Member memberReport = issue.getMemberReport();
-            MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+
+            MemberInfoDTO memberInChargeInfoDTO = MemberInfoDTO.builder()
                     .name(memberInCharge.getUsername())
                     .nickname(memberInCharge.getNickname())
                     .email(memberInCharge.getEmail())
                     .position(memberInCharge.getPosition())
                     .build();
 
-            MemberInfoDTO memberInfoDTO2 = MemberInfoDTO.builder()
+            MemberInfoDTO memberReportInfoDTO = MemberInfoDTO.builder()
                     .name(memberReport.getUsername())
                     .nickname(memberReport.getNickname())
                     .email(memberReport.getEmail())
@@ -58,8 +59,8 @@ public class IssueService {
                     .status(issue.getStatus())
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
-                    .memberIdInCharge(memberInfoDTO)
-                    .memberReport(memberInfoDTO2)
+                    .memberIdInCharge(memberInChargeInfoDTO)
+                    .memberReport(memberReportInfoDTO)
                     .importance(issue.getImportance())
 
                     .build();
@@ -89,15 +90,23 @@ public class IssueService {
     public ArrayList<IssueDTO> getAllIssuesByReleaseNoteId(Long releaseNoteId) {
         List<Issue> allIssuesByReleaseNoteId = issueRepository.findAllByReleaseNoteId(releaseNoteId);
         ArrayList<IssueDTO> issueDTOList = new ArrayList<>();
-
         for (Issue issue : allIssuesByReleaseNoteId) {
 
             Member memberInCharge = issue.getMemberInCharge();
-            MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+            Member memberReport = issue.getMemberReport();
+
+            MemberInfoDTO memberInChargeInfoDTO = MemberInfoDTO.builder()
                     .name(memberInCharge.getUsername())
                     .nickname(memberInCharge.getNickname())
                     .email(memberInCharge.getEmail())
                     .position(memberInCharge.getPosition())
+                    .build();
+
+            MemberInfoDTO memberReportInfoDTO = MemberInfoDTO.builder()
+                    .name(memberReport.getUsername())
+                    .nickname(memberReport.getNickname())
+                    .email(memberReport.getEmail())
+                    .position(memberReport.getPosition())
                     .build();
 
             IssueDTO issueDTO = IssueDTO.builder()
@@ -109,8 +118,10 @@ public class IssueService {
                     .status(issue.getStatus())
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
-                    .memberIdInCharge(memberInfoDTO)
+                    .memberIdInCharge(memberInChargeInfoDTO)
+                    .memberReport(memberReportInfoDTO)
                     .importance(issue.getImportance())
+
                     .build();
 
             issueDTOList.add(issueDTO);
@@ -125,14 +136,21 @@ public class IssueService {
 
         for (Issue issue : allByNotReleaseNoteId) {
 
-            Long memberInChargeId = issue.getMemberInCharge().getId();
-            Optional<Member> byId = memberRepository.findById(memberInChargeId);
-            Member member = byId.get();
-            MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
-                    .name(member.getUsername())
-                    .nickname(member.getNickname())
-                    .email(member.getEmail())
-                    .position(member.getPosition())
+            Member memberInCharge = issue.getMemberInCharge();
+            Member memberReport = issue.getMemberReport();
+
+            MemberInfoDTO memberInChargeInfoDTO = MemberInfoDTO.builder()
+                    .name(memberInCharge.getUsername())
+                    .nickname(memberInCharge.getNickname())
+                    .email(memberInCharge.getEmail())
+                    .position(memberInCharge.getPosition())
+                    .build();
+
+            MemberInfoDTO memberReportInfoDTO = MemberInfoDTO.builder()
+                    .name(memberReport.getUsername())
+                    .nickname(memberReport.getNickname())
+                    .email(memberReport.getEmail())
+                    .position(memberReport.getPosition())
                     .build();
 
             IssueDTO issueDTO = IssueDTO.builder()
@@ -144,13 +162,14 @@ public class IssueService {
                     .status(issue.getStatus())
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
-                    .memberIdInCharge(memberInfoDTO)
+                    .memberIdInCharge(memberInChargeInfoDTO)
+                    .memberReport(memberReportInfoDTO)
                     .importance(issue.getImportance())
+
                     .build();
 
             issueDTOList.add(issueDTO);
         }
-
         return issueDTOList;
     }
 }
