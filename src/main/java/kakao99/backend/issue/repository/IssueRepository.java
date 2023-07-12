@@ -48,7 +48,6 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     List<Issue> getAllIssuesByReleaseNoteId(@Param("releaseNoteId") Long releaseNoteId);    // 문제 있음.
 
 
-
     @Query("select m from Issue m join fetch m.releaseNote join fetch m.memberInCharge where m.releaseNote.id =:releaseNoteId and m.isActive = true")
     List<Issue> findAllByReleaseNoteId(@Param("releaseNoteId") Long releaseNoteId);
 
@@ -59,5 +58,10 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
 
 //    @Query("select new kakao99.backend.issue.dto.MemberInfoDTO(m.username, m.nickname, m.email, m.position ) from Member m where m.id = :memberId")
 //    MemberInfoDTO getMemberInfoDTO(@Param("memberId") Long memberId);
+
+
+    // 프로젝트 내의 releaseNote에 포함되지 않은 이슈들 조회
+@Query("select m from Issue m join fetch m.releaseNote t join fetch m.memberInCharge where m.releaseNote.id <> :releaseNoteId and m.isActive = true and m.project.id =:projectId")
+List<Issue> findAllByNotReleaseNoteId(@Param("releaseNoteId") Long releaseNoteId, @Param("projectId") Long projectId);
 
 }

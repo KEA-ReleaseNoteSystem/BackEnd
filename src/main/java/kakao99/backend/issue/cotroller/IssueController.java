@@ -88,8 +88,8 @@ public class IssueController {
         ResponseMessage message = null;
         if (result == "OK") {
             message = responseMessage.createMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");
-        }else{
-            message = responseMessage.createMessage(500, projectId + "번 프로젝트의 모든 이슈 수정 실패: "+result);
+        } else {
+            message = responseMessage.createMessage(500, projectId + "번 프로젝트의 모든 이슈 수정 실패: " + result);
         }
         return new ResponseEntity(message, HttpStatus.OK);
     }
@@ -102,8 +102,18 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
+    @GetMapping("/api/project/{projectId}/releaseNote/{releaseNoteId}/issues")
+    public ResponseEntity<?> findAllByNotReleaseNoteId(@PathVariable("releaseNoteId") Long releaseNoteId, @PathVariable("projectId") Long projectId) {
+
+        ArrayList<IssueDTO> allByNotReleaseNoteId = issueService.findAllByNotReleaseNoteId(releaseNoteId, projectId);
+
+        ResponseMessage message = responseMessage.createMessage(200, "릴리즈 노트에 포함되지 않은 이슈 조회 성공", allByNotReleaseNoteId);
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
+
 
     @GetMapping("/test/test/{releaseNoteId}")
+
     public List<Issue> test2(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
 //        System.out.println("userId = " + testForm.getUserId());
