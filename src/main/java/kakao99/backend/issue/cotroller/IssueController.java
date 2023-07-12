@@ -125,6 +125,7 @@ public class IssueController {
 
         return allIssuesByReleaseNoteId;
     }
+
 //    @GetMapping("/test/test/project/{projectId}")
 //    public List<?> test3(@PathVariable("projectId") Long projectId) {
 //
@@ -136,24 +137,8 @@ public class IssueController {
 //        return allByProjectIdImpl;
 //    }
 
-    //  내가 속한 그룹에서 내가 포함되지 않은 프로젝트 조회해오기
-    // 파라미터 groupId, userId
-    @PostMapping("/test/test")
-    public List<MemberProject> test(@RequestBody TestForm testForm) {
 
-        System.out.println("userId = " + testForm.getUserId());
-
-        List<MemberProject> othersProject = projectRepository.getOthersProject(testForm.getGroupId(), testForm.getUserId());
-
-        System.out.println("othersProject = " + othersProject.get(0).getProject().getName());
-        return othersProject;
-    }
 
 }
 
-@Getter
-@Setter
-class TestForm{
-    Long groupId;
-    Long userId;
-}
+

@@ -127,7 +127,7 @@ public class MemberService {
 
         Member member = byId.get();
 
-        List<Project> projectList = memberProjectRepository.findProjectByMemberId(memberId);
+        List<Project> projectList = memberProjectRepository.findProjectByMemberId(memberId, "true");
 
         MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
                 .name(member.getUsername())

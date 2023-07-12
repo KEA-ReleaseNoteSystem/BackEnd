@@ -84,6 +84,7 @@ public class ProjectService {
         try {
             Optional<Project> optionalProject = projectRepository.findById(projectModifyDTO.getId());
             Project project = optionalProject.get();
+            memberProjectRepository.deleteMemberProjectByProjectId(projectModifyDTO.getId());
             project.deleteProject();
         }
         catch(Exception e){
