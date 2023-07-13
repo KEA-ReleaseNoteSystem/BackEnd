@@ -28,7 +28,6 @@ public class ReleaseController {
     private final ReleaseService releaseService;
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
-    private final ResponseMessage responseMessage;
 
     @PostMapping("/api/release/create")
     @ResponseBody
@@ -39,18 +38,18 @@ public class ReleaseController {
         Optional<Project> project = projectRepository.findById(createReleaseDTO.getProjectId());
 
         if (member.isEmpty() || project.isEmpty()) {
-            ResponseMessage message = responseMessage.createMessage(404, "멤버 또는 프로젝트를 찾을 수 없습니다.", null);
+            ResponseMessage message = new ResponseMessage(404, "멤버 또는 프로젝트를 찾을 수 없습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
 
         ReleaseNote releaseNote = releaseService.createRelease(createReleaseDTO, member.get(), project.get());
 
         if (releaseNote == null) {
-            ResponseMessage message = responseMessage.createMessage(500, "릴리즈 생성에 실패했습니다.", null);
+            ResponseMessage message = new ResponseMessage(500, "릴리즈 생성에 실패했습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        ResponseMessage message = responseMessage.createMessage(200, "릴리즈 생성 완료", releaseNote);
+        ResponseMessage message = new ResponseMessage(200, "릴리즈 생성 완료", releaseNote);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
@@ -65,11 +64,11 @@ public class ReleaseController {
         ResponseMessage message;
 
         if (releaseNotesInProject.isEmpty()) {
-            message = responseMessage.createMessage(204, "본 프로젝트에 속한 릴리즈노트가 없습니다.", null);
+            message = new ResponseMessage(204, "본 프로젝트에 속한 릴리즈노트가 없습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
         }
 
-        message = responseMessage.createMessage(200, "릴리즈노트 목록 조회 완료", releaseNotesInProject);
+        message = new ResponseMessage(200, "릴리즈노트 목록 조회 완료", releaseNotesInProject);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
@@ -82,11 +81,11 @@ public class ReleaseController {
         ResponseMessage message;
 
         if (releaseNoteInfo.isEmpty()) {
-            message = responseMessage.createMessage(204, "해당 릴리즈노트가 존재하지 않습니다.", null);
+            message = new ResponseMessage(204, "해당 릴리즈노트가 존재하지 않습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
         }
 
-        message = responseMessage.createMessage(200, "해당 릴리즈노트 조회 완료", releaseNoteInfo.get());
+        message = new ResponseMessage(200, "해당 릴리즈노트 조회 완료", releaseNoteInfo.get());
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
@@ -98,7 +97,7 @@ public class ReleaseController {
 
         releaseService.deleteRelease(releaseId);
 
-        ResponseMessage message = responseMessage.createMessage(200, "삭제 완료");
+        ResponseMessage message = new ResponseMessage(200, "삭제 완료");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 

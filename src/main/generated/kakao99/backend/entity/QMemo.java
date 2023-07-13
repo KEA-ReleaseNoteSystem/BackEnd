@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,8 +16,6 @@ import com.querydsl.core.types.dsl.PathInits;
 public class QMemo extends EntityPathBase<Memo> {
 
     private static final long serialVersionUID = -114404128L;
-
-    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QMemo memo = new QMemo("memo");
 
@@ -30,34 +27,24 @@ public class QMemo extends EntityPathBase<Memo> {
 
     public final BooleanPath isActive = createBoolean("isActive");
 
-    public final QIssue issue;
+    public final NumberPath<Issue> issue = createNumber("issue", Issue.class);
 
-    public final QMember member;
+    public final NumberPath<Member> member = createNumber("member", Member.class);
 
     public final StringPath memo_content = createString("memo_content");
 
     public final DateTimePath<java.util.Date> updatedAt = createDateTime("updatedAt", java.util.Date.class);
 
     public QMemo(String variable) {
-        this(Memo.class, forVariable(variable), INITS);
+        super(Memo.class, forVariable(variable));
     }
 
     public QMemo(Path<? extends Memo> path) {
-        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+        super(path.getType(), path.getMetadata());
     }
 
     public QMemo(PathMetadata metadata) {
-        this(metadata, PathInits.getFor(metadata, INITS));
-    }
-
-    public QMemo(PathMetadata metadata, PathInits inits) {
-        this(Memo.class, metadata, inits);
-    }
-
-    public QMemo(Class<? extends Memo> type, PathMetadata metadata, PathInits inits) {
-        super(type, metadata, inits);
-        this.issue = inits.isInitialized("issue") ? new QIssue(forProperty("issue"), inits.get("issue")) : null;
-        this.member = inits.isInitialized("member") ? new QMember(forProperty("member"), inits.get("member")) : null;
+        super(Memo.class, metadata);
     }
 
 }
