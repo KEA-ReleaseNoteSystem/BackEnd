@@ -1,21 +1,17 @@
-package kakao99.backend.release.cotroller;
+package kakao99.backend.release.controller;
 
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
 import kakao99.backend.entity.ReleaseNote;
 import kakao99.backend.member.repository.MemberRepository;
-import kakao99.backend.member.service.MemberService;
 import kakao99.backend.project.repository.ProjectRepository;
-import kakao99.backend.project.service.ProjectService;
-import kakao99.backend.release.DTO.CreateReleaseDTO;
+import kakao99.backend.release.dto.CreateReleaseDTO;
 import kakao99.backend.release.service.ReleaseService;
 import kakao99.backend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

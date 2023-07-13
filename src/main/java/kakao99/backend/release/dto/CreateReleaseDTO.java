@@ -1,4 +1,4 @@
-package kakao99.backend.release.DTO;
+package kakao99.backend.release.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
