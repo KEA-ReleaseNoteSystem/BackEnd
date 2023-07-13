@@ -92,8 +92,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             response.sendRedirect(redirectUrl);
         } else {
-            Member member = saveOrUpdate(oAuthEmail,oAuthUserName, provider);
-            String token = tokenProvider.createAccessToken(member);
+            String token = tokenProvider.createAccessToken(findMemberByEmail.get());
             response.sendRedirect("http://localhost:3000/social-login?token=" + token);
         }
 
