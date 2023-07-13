@@ -1,12 +1,9 @@
-package kakao99.backend.memo.cotroller;
+package kakao99.backend.memo.controller;
 
-import kakao99.backend.entity.Memo;
-import kakao99.backend.entity.ReleaseNote;
 import kakao99.backend.memo.dto.CreateMemoDTO;
 import kakao99.backend.memo.dto.MemoCreationResponseDTO;
 import kakao99.backend.memo.dto.UpdateMemoDTO;
 import kakao99.backend.memo.dto.memoDTO;
-import kakao99.backend.memo.repository.MemoRepository;
 import kakao99.backend.memo.service.MemoService;
 import kakao99.backend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;

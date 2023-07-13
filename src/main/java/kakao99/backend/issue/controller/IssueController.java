@@ -1,9 +1,8 @@
-package kakao99.backend.issue.cotroller;
+package kakao99.backend.issue.controller;
 
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 
-import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
 
 import kakao99.backend.issue.dto.IssueDTO;
@@ -15,14 +14,11 @@ import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.utils.ResponseMessage;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.transform.OutputKeys;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

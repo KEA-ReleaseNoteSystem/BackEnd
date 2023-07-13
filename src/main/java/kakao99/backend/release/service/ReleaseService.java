@@ -4,7 +4,7 @@ import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
 import kakao99.backend.entity.ReleaseNote;
 import kakao99.backend.member.repository.MemberRepository;
-import kakao99.backend.release.DTO.CreateReleaseDTO;
+import kakao99.backend.release.dto.CreateReleaseDTO;
 import kakao99.backend.release.repository.ReleaseRepository;
 import org.springframework.stereotype.Service;
 

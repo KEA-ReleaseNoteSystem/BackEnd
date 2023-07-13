@@ -1,4 +1,4 @@
-package kakao99.backend.project.cotroller;
+package kakao99.backend.project.controller;
 
 import com.nimbusds.oauth2.sdk.Response;
 import kakao99.backend.entity.Member;
@@ -11,14 +11,10 @@ import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
 import kakao99.backend.utils.ResponseMessage;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
