@@ -51,12 +51,14 @@ public class MemberService {
         Member member = Member.builder()
                 .username(registerDTO.getName())
                 .nickname(registerDTO.getNickname())
+                .authority("salve")
                 .email(registerDTO.getEmail())
+                .provider(registerDTO.getProvider())
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
                 .createdAt(new Date())
                 .position(registerDTO.getPosition())
                 .group(group)
-                .isActive(false)
+                .isActive(true)
                 .build();
 
         memberRepository.save(member);
@@ -78,6 +80,8 @@ public class MemberService {
         Member member = Member.builder()
                 .username(registerDTO.getName())
                 .nickname(registerDTO.getNickname())
+                .authority("GM")
+                .provider(registerDTO.getProvider())
                 .email(registerDTO.getEmail())
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
                 .createdAt(new Date())
