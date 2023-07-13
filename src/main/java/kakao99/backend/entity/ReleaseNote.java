@@ -59,7 +59,7 @@ public class ReleaseNote {
     @JsonIgnore
     private Project project;
 
-    @ManyToOne(cascade =  CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
     @JsonManagedReference
     @JsonIgnore

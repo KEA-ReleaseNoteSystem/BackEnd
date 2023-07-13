@@ -20,18 +20,17 @@ public class ReleaseService {
     private final MemberRepository memberRepository;
     private final IssueRepository issueRepository;
 
-    public ReleaseNote createRelease(CreateReleaseDTO CreateReleaseDTO, Member member, Project project) {
+    public ReleaseNote createRelease(CreateReleaseDTO createReleaseDTO, Member member, Project project) {
 
-        Member member1 = memberRepository.findById(member.getId()).get();
         ReleaseNote releaseNote = ReleaseNote.builder()
-                .version(CreateReleaseDTO.getVersion())
-                .status(CreateReleaseDTO.getStatus())
-                .percent(CreateReleaseDTO.getPercent())
-                .releaseDate(CreateReleaseDTO.getReleaseDate())
-                .brief(CreateReleaseDTO.getBrief())
-                .description(CreateReleaseDTO.getDescription())
+                .version(createReleaseDTO.getVersion())
+                .status(createReleaseDTO.getStatus())
+                .percent(createReleaseDTO.getPercent())
+                .releaseDate(createReleaseDTO.getReleaseDate())
+                .brief(createReleaseDTO.getBrief())
+                .description(createReleaseDTO.getDescription())
                 .isActive(true)
-                .member(member1)
+                .member(member)
                 .project(project)
                 .deletedAt(null)
                 .build();
@@ -53,12 +52,12 @@ public class ReleaseService {
         releaseRepository.updateReleaseNoteById(id, version, status, percent, releaseDate, brief, description);
     }
 
-    public void updateIssues(Long projectId, Long releaseId, List<Issue> newIssueList) {   // issueList : 결과물
+    public void updateIssues(Long releaseId, List<Issue> newIssueList) {   // issueList : 결과물
         List<Issue> oldIssueListOfReleaseNote = issueRepository.findAllByReleaseNoteId(releaseId);
 
         // 추가
-        for (int idx = 0; idx < newIssueList.size(); idx++) {
-            Long issueId = newIssueList.get(idx).getId();
+        for (Issue issue : newIssueList) {
+            Long issueId = issue.getId();
             boolean foundInOldList = false;
 
             for (Issue oldIssue : oldIssueListOfReleaseNote) {
@@ -75,8 +74,8 @@ public class ReleaseService {
         }
 
         // 삭제
-        for (int idx = 0; idx < oldIssueListOfReleaseNote.size(); idx++) {
-            Long issueId = oldIssueListOfReleaseNote.get(idx).getId();
+        for (Issue issue : oldIssueListOfReleaseNote) {
+            Long issueId = issue.getId();
             boolean foundInNewList = false;
 
             for (Issue newIssue : newIssueList) {
