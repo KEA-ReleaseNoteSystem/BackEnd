@@ -5,6 +5,7 @@ import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.release.dto.CreateReleaseDTO;
 import kakao99.backend.release.repository.ReleaseRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -12,19 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ReleaseService {
 
-    private ReleaseRepository releaseRepository;
-    private MemberRepository memberRepository;
-    private IssueRepository issueRepository;
-    private final ReleaseNoteRepository releaseNoteRepository;
-
-    public ReleaseService(ReleaseRepository releaseRepository, MemberRepository memberRepository,
-                          ReleaseNoteRepository releaseNoteRepository) {
-        this.memberRepository = memberRepository;
-        this.releaseRepository = releaseRepository;
-        this.releaseNoteRepository = releaseNoteRepository;
-    }
+    private final ReleaseRepository releaseRepository;
+    private final MemberRepository memberRepository;
+    private final IssueRepository issueRepository;
 
     public ReleaseNote createRelease(CreateReleaseDTO CreateReleaseDTO, Member member, Project project) {
 
@@ -62,32 +56,44 @@ public class ReleaseService {
     public void updateIssues(Long projectId, Long releaseId, List<Issue> newIssueList) {   // issueList : 결과물
         List<Issue> oldIssueListOfReleaseNote = issueRepository.findAllByReleaseNoteId(releaseId);
 
-        ReleaseNote releaseNote = releaseRepository.findReleaseNoteById(releaseId);
+        // 추가
+        for (int idx = 0; idx < newIssueList.size(); idx++) {
+            Long issueId = newIssueList.get(idx).getId();
+            boolean foundInOldList = false;
 
-        for (int i = 0; i < oldIssueListOfReleaseNote.size(); i++) {
-            for (int j = 0; j < newIssueList.size(); j++) {
-                if (oldIssueListOfReleaseNote.get(i) != newIssueList.get(j)) {
-                    Issue removedIssue = newIssueList.get(j);
-                    removedIssue.deleteReleaseNote();
+            for (Issue oldIssue : oldIssueListOfReleaseNote) {
+                if (issueId.equals(oldIssue.getId())) {
+                    foundInOldList = true;
+                    break;
                 }
+            }
+
+            if (!foundInOldList) {
+                Optional<Issue> existingIssue = issueRepository.findById(issueId); // Assuming you have an issueRepository to retrieve the existing issue by its ID
+                int res = issueRepository.insertIssueFromReleaseNote(releaseId, existingIssue.get().getId()); // Assuming you have a method addReleaseNote in your Issue class to associate the releaseNote
             }
         }
 
+        // 삭제
+        for (int idx = 0; idx < oldIssueListOfReleaseNote.size(); idx++) {
+            Long issueId = oldIssueListOfReleaseNote.get(idx).getId();
+            boolean foundInNewList = false;
 
-        for (int i = 0; i < newIssueList.size(); i++) {
-            for (int j = 0; j < oldIssueListOfReleaseNote.size(); j++) {
-                if (newIssueList.get(i) != oldIssueListOfReleaseNote.get(j)) {
-                    Issue newIssue = oldIssueListOfReleaseNote.get(j);
-                    newIssue.addReleaseNote(releaseNote);
+            for (Issue newIssue : newIssueList) {
+                if (issueId.equals(newIssue.getId())) {
+                    foundInNewList = true;
+                    break;
                 }
+            }
+
+            if (!foundInNewList) {
+                Optional<Issue> deleteIssue = issueRepository.findById(issueId); // Assuming you have an issueRepository to retrieve the existing issue by its ID
+                int res = issueRepository.deleteIssueFromReleaseNote(deleteIssue.get().getId()); // Assuming you have a method addReleaseNote in your Issue class to associate the releaseNote
             }
         }
 
         return;
-
-        // 또영이형 또와쭤!
     }
-
 
     public void deleteRelease(Long id) {
         // 릴리즈 노트 아이디로 isActive를 False로 바꾸고 지운 시간 넣어주기
