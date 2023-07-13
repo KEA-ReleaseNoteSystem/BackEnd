@@ -56,13 +56,14 @@ public class TokenProvider implements InitializingBean {
                 .setSubject(String.valueOf(member.getId()))
                 .claim("member", member.getId())
                 .claim("group", member.getGroup().getId())
-                .signWith(key, SignatureAlgorithm.HS256 )
+                .signWith(key, SignatureAlgorithm.HS512 )
                 .setExpiration(validity)
                 .compact();
     }
 
 
     public Authentication getAuthentication(String token) {
+        log.info("token={}", token);
         Claims claims = Jwts
                 .parserBuilder()
                 .setSigningKey(key)

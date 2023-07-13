@@ -13,6 +13,7 @@ import kakao99.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -44,7 +45,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
 
         String s = objectMapper.writeValueAsString(user);
-        log.info(s);
+        log.info("user={}",s);
 
         OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
 
@@ -92,7 +93,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             response.sendRedirect(redirectUrl);
         } else {
-            String token = tokenProvider.createAccessToken(findMemberByEmail.get());
+            Member member = saveOrUpdate(oAuthEmail,oAuthUserName, provider);
+            String token = tokenProvider.createAccessToken(member);
             response.sendRedirect("http://localhost:3000/social-login?token=" + token);
         }
 
