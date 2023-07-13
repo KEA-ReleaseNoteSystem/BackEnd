@@ -25,9 +25,6 @@ public class MemoController {
 
     private final MemoService memoService;
 
-    private final ResponseMessage responseMessage;
-
-
 
     @GetMapping("/api/memo/{projectId}/{issueId}")
     public ResponseEntity<?> getMemo(@PathVariable Long issueId)
@@ -36,7 +33,7 @@ public class MemoController {
 
         System.out.println("memo" + memo);
 
-        ResponseMessage message = responseMessage.createMessage(200, issueId+"번 이슈의 모든 댓글 조회 성공");
+        ResponseMessage message = new ResponseMessage(200, issueId+"번 이슈의 모든 댓글 조회 성공");
         message.setData(memo);
 
         return new ResponseEntity(message, HttpStatus.OK);
@@ -57,7 +54,7 @@ public class MemoController {
     {
         Member member = (Member) authentication.getPrincipal();
         ResponseEntity<?> updatedMemoId = memoService.updateMemo(memoId,obj);
-        ResponseMessage message = responseMessage.createMessage(200, memoId+"번 댓글 수정 성공");
+        ResponseMessage message = new ResponseMessage(200, memoId+"번 댓글 수정 성공");
         message.setData(updatedMemoId);
 
         return new ResponseEntity(updatedMemoId, HttpStatus.OK);
@@ -69,7 +66,7 @@ public class MemoController {
     {
         ResponseEntity<?> updatedMemoId = memoService.deleteMemo(memoId);
 
-        ResponseMessage message = responseMessage.createMessage(200, memoId+"번 댓글 삭제 성공");
+        ResponseMessage message = new ResponseMessage(200, memoId+"번 댓글 삭제 성공");
         message.setData(updatedMemoId);
 
         return new ResponseEntity(message, HttpStatus.OK);
