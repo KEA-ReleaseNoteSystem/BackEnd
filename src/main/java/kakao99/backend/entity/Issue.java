@@ -75,10 +75,21 @@ public class Issue {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "release_note_id")
     @JsonIgnore
     private ReleaseNote releaseNote;
 
+
+    public Issue addReleaseNote(ReleaseNote releaseNote) {
+        this.releaseNote = releaseNote;
+
+        return this;
+    }
+
+    public Issue deleteReleaseNote() {
+        this.releaseNote = null;
+        return this;
+    }
 
 }

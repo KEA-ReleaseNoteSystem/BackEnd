@@ -1,11 +1,11 @@
 package kakao99.backend.release.service;
 
-import kakao99.backend.entity.Member;
-import kakao99.backend.entity.Project;
-import kakao99.backend.entity.ReleaseNote;
+import kakao99.backend.entity.*;
+import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.release.dto.CreateReleaseDTO;
 import kakao99.backend.release.repository.ReleaseRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -13,26 +13,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ReleaseService {
 
-    private ReleaseRepository releaseRepository;
-    private MemberRepository memberRepository;
+    private final ReleaseRepository releaseRepository;
+    private final MemberRepository memberRepository;
+    private final IssueRepository issueRepository;
 
-    public ReleaseService(ReleaseRepository releaseRepository, MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-        this.releaseRepository = releaseRepository;
-    }
-
-    public ReleaseNote createRelease(CreateReleaseDTO createReleaseDTO, Member member, Project project) {
+    public ReleaseNote createRelease(CreateReleaseDTO CreateReleaseDTO, Member member, Project project) {
 
         Member member1 = memberRepository.findById(member.getId()).get();
         ReleaseNote releaseNote = ReleaseNote.builder()
-                .version(createReleaseDTO.getVersion())
-                .status(createReleaseDTO.getStatus())
-                .percent(createReleaseDTO.getPercent())
-                .releaseDate(createReleaseDTO.getReleaseDate())
-                .brief(createReleaseDTO.getBrief())
-                .description(createReleaseDTO.getDescription())
+                .version(CreateReleaseDTO.getVersion())
+                .status(CreateReleaseDTO.getStatus())
+                .percent(CreateReleaseDTO.getPercent())
+                .releaseDate(CreateReleaseDTO.getReleaseDate())
+                .brief(CreateReleaseDTO.getBrief())
+                .description(CreateReleaseDTO.getDescription())
                 .isActive(true)
                 .member(member1)
                 .project(project)
@@ -50,6 +47,52 @@ public class ReleaseService {
     public Optional<ReleaseNote> getReleaseInfo(Long id) {
         // 릴리즈 노트 하나 선택하면 해당하는 릴리즈 노트 정보 가져오기
         return releaseRepository.findById(id);
+    }
+
+    public void updateRelease(Long id, String version, String status, Float percent, Date releaseDate, String brief, String description) {
+        releaseRepository.updateReleaseNoteById(id, version, status, percent, releaseDate, brief, description);
+    }
+
+    public void updateIssues(Long projectId, Long releaseId, List<Issue> newIssueList) {   // issueList : 결과물
+        List<Issue> oldIssueListOfReleaseNote = issueRepository.findAllByReleaseNoteId(releaseId);
+
+        // 추가
+        for (int idx = 0; idx < newIssueList.size(); idx++) {
+            Long issueId = newIssueList.get(idx).getId();
+            boolean foundInOldList = false;
+
+            for (Issue oldIssue : oldIssueListOfReleaseNote) {
+                if (issueId.equals(oldIssue.getId())) {
+                    foundInOldList = true;
+                    break;
+                }
+            }
+
+            if (!foundInOldList) {
+                Optional<Issue> existingIssue = issueRepository.findById(issueId); // Assuming you have an issueRepository to retrieve the existing issue by its ID
+                int res = issueRepository.insertIssueFromReleaseNote(releaseId, existingIssue.get().getId()); // Assuming you have a method addReleaseNote in your Issue class to associate the releaseNote
+            }
+        }
+
+        // 삭제
+        for (int idx = 0; idx < oldIssueListOfReleaseNote.size(); idx++) {
+            Long issueId = oldIssueListOfReleaseNote.get(idx).getId();
+            boolean foundInNewList = false;
+
+            for (Issue newIssue : newIssueList) {
+                if (issueId.equals(newIssue.getId())) {
+                    foundInNewList = true;
+                    break;
+                }
+            }
+
+            if (!foundInNewList) {
+                Optional<Issue> deleteIssue = issueRepository.findById(issueId); // Assuming you have an issueRepository to retrieve the existing issue by its ID
+                int res = issueRepository.deleteIssueFromReleaseNote(deleteIssue.get().getId()); // Assuming you have a method addReleaseNote in your Issue class to associate the releaseNote
+            }
+        }
+
+        return;
     }
 
     public void deleteRelease(Long id) {
