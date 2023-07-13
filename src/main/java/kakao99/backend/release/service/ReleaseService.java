@@ -1,9 +1,6 @@
 package kakao99.backend.release.service;
 
-import kakao99.backend.entity.Issue;
-import kakao99.backend.entity.Member;
-import kakao99.backend.entity.Project;
-import kakao99.backend.entity.ReleaseNote;
+import kakao99.backend.entity.*;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.release.dto.CreateReleaseDTO;
@@ -20,10 +17,13 @@ public class ReleaseService {
     private ReleaseRepository releaseRepository;
     private MemberRepository memberRepository;
     private IssueRepository issueRepository;
+    private final ReleaseNoteRepository releaseNoteRepository;
 
-    public ReleaseService(ReleaseRepository releaseRepository, MemberRepository memberRepository) {
+    public ReleaseService(ReleaseRepository releaseRepository, MemberRepository memberRepository,
+                          ReleaseNoteRepository releaseNoteRepository) {
         this.memberRepository = memberRepository;
         this.releaseRepository = releaseRepository;
+        this.releaseNoteRepository = releaseNoteRepository;
     }
 
     public ReleaseNote createRelease(CreateReleaseDTO CreateReleaseDTO, Member member, Project project) {
@@ -59,7 +59,32 @@ public class ReleaseService {
         releaseRepository.updateReleaseNoteById(id, version, status, percent, releaseDate, brief, description);
     }
 
-    public void updateIssues(Long projectId, Long releaseId, List<Issue> issueList) {
+    public void updateIssues(Long projectId, Long releaseId, List<Issue> newIssueList) {   // issueList : 결과물
+        List<Issue> oldIssueListOfReleaseNote = issueRepository.findAllByReleaseNoteId(releaseId);
+
+        ReleaseNote releaseNote = releaseRepository.findReleaseNoteById(releaseId);
+
+        for (int i = 0; i < oldIssueListOfReleaseNote.size(); i++) {
+            for (int j = 0; j < newIssueList.size(); j++) {
+                if (oldIssueListOfReleaseNote.get(i) != newIssueList.get(j)) {
+                    Issue removedIssue = newIssueList.get(j);
+                    removedIssue.deleteReleaseNote();
+                }
+            }
+        }
+
+
+        for (int i = 0; i < newIssueList.size(); i++) {
+            for (int j = 0; j < oldIssueListOfReleaseNote.size(); j++) {
+                if (newIssueList.get(i) != oldIssueListOfReleaseNote.get(j)) {
+                    Issue newIssue = oldIssueListOfReleaseNote.get(j);
+                    newIssue.addReleaseNote(releaseNote);
+                }
+            }
+        }
+
+        return;
+
         // 또영이형 또와쭤!
     }
 

@@ -66,7 +66,7 @@ public class ReleaseController {
                 updateReleaseDTO.getPercent(), updateReleaseDTO.getReleaseDate(), updateReleaseDTO.getBrief(), updateReleaseDTO.getDescription());
 
         // 또영이형 또와쭤!
-        releaseService.함수이름(updateReleaseDTO.getProjectId(), updateReleaseDTO.getReleaseId(), updateReleaseDTO.getIssueList());
+        releaseService.updateIssues(updateReleaseDTO.getProjectId(), updateReleaseDTO.getReleaseId(), updateReleaseDTO.getIssueList());
 
         ResponseMessage message = new ResponseMessage(200, "릴리즈 업데이트 완료", null);
         return new ResponseEntity<>(message, HttpStatus.OK);
