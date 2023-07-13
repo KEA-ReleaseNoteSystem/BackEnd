@@ -26,6 +26,13 @@ public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long> {
 
     @Transactional
     @Modifying
+    @Query("UPDATE ReleaseNote e SET e.version = :version, e.status = :status, e.percent = :percent, e.releaseDate = :releaseDate, e.brief = :brief, " +
+            "e.description = :description WHERE e.id = :id")
+    void updateReleaseNoteById(@Param("id") Long id, @Param("version") String version, @Param("status") String status, @Param("percent")Float percent,
+                               @Param("releaseDate")Date releaseDate, @Param("brief") String brief, @Param("description") String description);
+
+    @Transactional
+    @Modifying
     @Query("UPDATE ReleaseNote e SET e.isActive = false, e.deletedAt = :deletedAt WHERE e.id = :id")
     void updateIsActiveById(@Param("id") Long id, @Param("deletedAt") Date deletedAt);
     // 릴리즈노트 삭제: isActive 상태를 변경하고 삭제한 시간을 입력

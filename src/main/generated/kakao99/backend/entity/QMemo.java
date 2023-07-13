@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -16,6 +17,8 @@ import com.querydsl.core.types.Path;
 public class QMemo extends EntityPathBase<Memo> {
 
     private static final long serialVersionUID = -114404128L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QMemo memo = new QMemo("memo");
 
@@ -27,24 +30,34 @@ public class QMemo extends EntityPathBase<Memo> {
 
     public final BooleanPath isActive = createBoolean("isActive");
 
-    public final NumberPath<Issue> issue = createNumber("issue", Issue.class);
+    public final QIssue issue;
 
-    public final NumberPath<Member> member = createNumber("member", Member.class);
+    public final QMember member;
 
     public final StringPath memo_content = createString("memo_content");
 
     public final DateTimePath<java.util.Date> updatedAt = createDateTime("updatedAt", java.util.Date.class);
 
     public QMemo(String variable) {
-        super(Memo.class, forVariable(variable));
+        this(Memo.class, forVariable(variable), INITS);
     }
 
     public QMemo(Path<? extends Memo> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QMemo(PathMetadata metadata) {
-        super(Memo.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QMemo(PathMetadata metadata, PathInits inits) {
+        this(Memo.class, metadata, inits);
+    }
+
+    public QMemo(Class<? extends Memo> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.issue = inits.isInitialized("issue") ? new QIssue(forProperty("issue"), inits.get("issue")) : null;
+        this.member = inits.isInitialized("member") ? new QMember(forProperty("member"), inits.get("member")) : null;
     }
 
 }

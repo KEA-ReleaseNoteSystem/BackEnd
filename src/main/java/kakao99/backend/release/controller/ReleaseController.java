@@ -6,10 +6,12 @@ import kakao99.backend.entity.ReleaseNote;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.release.dto.CreateReleaseDTO;
+import kakao99.backend.release.dto.UpdateReleaseDTO;
 import kakao99.backend.release.service.ReleaseService;
 import kakao99.backend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,17 +30,17 @@ public class ReleaseController {
     @PostMapping("/api/release/create")
     @ResponseBody
     public ResponseEntity<ResponseMessage> createRelease(
-            @RequestBody CreateReleaseDTO createReleaseDTO) {
+            @RequestBody CreateReleaseDTO CreateReleaseDTO) {
         // member와 project를 조회
-        Optional<Member> member = memberRepository.findById(createReleaseDTO.getMemberId());
-        Optional<Project> project = projectRepository.findById(createReleaseDTO.getProjectId());
+        Optional<Member> member = memberRepository.findById(CreateReleaseDTO.getMemberId());
+        Optional<Project> project = projectRepository.findById(CreateReleaseDTO.getProjectId());
 
         if (member.isEmpty() || project.isEmpty()) {
-            ResponseMessage message = new ResponseMessage(404, "멤버 또는 프로젝트를 찾을 수 없습니다.", null);
+            ResponseMessage message = new ResponseMessage(204, "멤버 또는 프로젝트를 찾을 수 없습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
 
-        ReleaseNote releaseNote = releaseService.createRelease(createReleaseDTO, member.get(), project.get());
+        ReleaseNote releaseNote = releaseService.createRelease(CreateReleaseDTO, member.get(), project.get());
 
         if (releaseNote == null) {
             ResponseMessage message = new ResponseMessage(500, "릴리즈 생성에 실패했습니다.", null);
@@ -49,6 +51,26 @@ public class ReleaseController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+    @PutMapping("/api/release/update")
+    @ResponseBody
+    public ResponseEntity<ResponseMessage> updateRelease(
+            @RequestBody UpdateReleaseDTO updateReleaseDTO) {
+        Optional<ReleaseNote> findReleaseNote = releaseService.getReleaseInfo(updateReleaseDTO.getReleaseId());
+
+        if (findReleaseNote.isEmpty()) {
+            ResponseMessage message = new ResponseMessage(204, "릴리즈 노트를 찾을 수 없습니다.", null);
+            return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+        }
+
+        releaseService.updateRelease(updateReleaseDTO.getReleaseId(), updateReleaseDTO.getVersion(), updateReleaseDTO.getStatus(),
+                updateReleaseDTO.getPercent(), updateReleaseDTO.getReleaseDate(), updateReleaseDTO.getBrief(), updateReleaseDTO.getDescription());
+
+        // 또영이형 또와쭤!
+        releaseService.함수이름(updateReleaseDTO.getProjectId(), updateReleaseDTO.getReleaseId(), updateReleaseDTO.getIssueList());
+
+        ResponseMessage message = new ResponseMessage(200, "릴리즈 업데이트 완료", null);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 
     @GetMapping("/api/release")
     @ResponseBody
