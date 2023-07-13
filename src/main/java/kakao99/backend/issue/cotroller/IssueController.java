@@ -80,8 +80,7 @@ public class IssueController {
 
         ArrayList<IssueDTO> allIssues = issueService.getAllIssues(projectId);
 
-        new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
-        ResponseMessage message = responseMessage.createMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
+        ResponseMessage message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
         message.setData(allIssues);
 
         return new ResponseEntity(message, HttpStatus.OK);
@@ -95,9 +94,9 @@ public class IssueController {
         String result = issueService.updateIssue(updateIssueForm.getTitle(), updateIssueForm.getDescription(), issueId);
         ResponseMessage message = null;
         if (result == "OK") {
-            message = responseMessage.createMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");
+            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");
         } else {
-            message = responseMessage.createMessage(500, projectId + "번 프로젝트의 모든 이슈 수정 실패: " + result);
+            message = new ResponseMessage(500, projectId + "번 프로젝트의 모든 이슈 수정 실패: " + result);
         }
         return new ResponseEntity(message, HttpStatus.OK);
     }
@@ -108,7 +107,7 @@ public class IssueController {
     public ResponseEntity<?> getIssuesByReleaseNote(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
         ArrayList<IssueDTO> allIssuesByReleaseNoteId = issueService.getAllIssuesByReleaseNoteId(releaseNoteId);
-        ResponseMessage message = responseMessage.createMessage(200, "릴리즈 노트의 관련된 이슈 조회 성공", allIssuesByReleaseNoteId);
+        ResponseMessage message = new ResponseMessage(200, "릴리즈 노트의 관련된 이슈 조회 성공", allIssuesByReleaseNoteId);
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
