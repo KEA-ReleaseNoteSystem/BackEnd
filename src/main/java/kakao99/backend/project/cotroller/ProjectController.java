@@ -32,7 +32,7 @@ public class ProjectController {
     private final ProjectService projectService;
     private final ProjectRepository projectRepository;
     private final MemberProjectRepository memberProjectRepository;
-    private final ResponseMessage responseMessage;
+
 
     @PostMapping("/api/project")
     public ResponseEntity<?> createProject(@RequestBody ProjectDTO projectDTO, Authentication authentication){
@@ -41,7 +41,7 @@ public class ProjectController {
     }
 
 
-    @PatchMapping("/api/project")
+    @PutMapping("/api/project")
     public ResponseEntity<?> patchProject(@RequestBody ProjectModifyDTO projectModifyDTO){
         return projectService.updateProject(projectModifyDTO);
     }
@@ -58,9 +58,9 @@ public class ProjectController {
 
         List<Project> project = memberProjectRepository.findProjectByMemberId(member.getId(), "true");
 
-        ResponseMessage message = responseMessage.createMessage(200, "내가 속한 프로젝트 목록 조회 완료", project);
+        ResponseMessage message = new ResponseMessage(200, "내가 속한 프로젝트 목록 조회 완료", project);
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity(message, HttpStatus.OK);
     }
 
 
@@ -72,9 +72,9 @@ public class ProjectController {
 
         List<Project> othersProject = memberProjectRepository.findOtherProject(member.getId(), member.getGroup().getId(), "true");
 
-        ResponseMessage message = responseMessage.createMessage(200, "내가 속하지 않은 프로젝트 목록 조회 완료", othersProject);
+        ResponseMessage message = new ResponseMessage(200, "내가 속하지 않은 프로젝트 목록 조회 완료", othersProject);
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity(message, HttpStatus.OK);
     }
 
 }
