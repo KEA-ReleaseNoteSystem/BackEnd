@@ -31,7 +31,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class IssueController {
 
-    private final ResponseMessage responseMessage;
     private final IssueRepository issueRepository;
     private final IssueRepositoryImpl issueRepositoryImpl;
     private final IssueService issueService;
@@ -45,14 +44,15 @@ public class IssueController {
         System.out.println("userId = " + issue.getUserId());
         Optional<Member> memberById = memberRepository.findById(issue.getUserId());
 
+
         if (memberById.isEmpty()) {
-            ResponseMessage message = responseMessage.createMessage(404, "해당 userId에 해당하는 유저 데이터 없음.");
+            ResponseMessage message = new ResponseMessage(404, "해당 userId에 해당하는 유저 데이터 없음.");
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
 
         Optional<Project> projectById = projectRepository.findById(projectId);
         if (projectById.isEmpty()) {
-            ResponseMessage message = responseMessage.createMessage(404, "해당 projectId 해당하는 프로젝트 데이터 없음.");
+            ResponseMessage message = new ResponseMessage(404, "해당 projectId 해당하는 프로젝트 데이터 없음.");
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
 
@@ -69,8 +69,7 @@ public class IssueController {
 
 
         issueRepository.save(newIssue);
-        ResponseMessage message = responseMessage.createMessage(200, "이슈 생성 성공");
-
+        ResponseMessage message = new ResponseMessage(200, "이슈 생성 성공");
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
