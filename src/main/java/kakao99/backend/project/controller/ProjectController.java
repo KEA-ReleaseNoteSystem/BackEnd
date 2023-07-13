@@ -34,7 +34,7 @@ public class ProjectController {
 
 
     @PostMapping("/api/project")
-    public ResponseEntity<?> createProject(@RequestBody ProjectDTO projectDTO, Authentication authentication){
+    public ResponseEntity<?> createProject(Authentication authentication, @RequestBody ProjectDTO projectDTO){
         Member member = (Member) authentication.getPrincipal();
         return projectService.saveProject(projectDTO, member);
     }
