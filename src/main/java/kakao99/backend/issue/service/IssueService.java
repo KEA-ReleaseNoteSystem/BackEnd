@@ -129,7 +129,7 @@ public class IssueService {
         return issueDTOList;
     }
 
-    public ArrayList<IssueDTO> findAllByNotReleaseNoteId(Long releaseNoteId, Long projectId){
+    public ArrayList<IssueDTO> findAllByNotReleaseNoteId(Long projectId){
         List<Issue> allByNotReleaseNoteId = issueRepository.findAllByNotReleaseNoteId(projectId);
         System.out.println("allByNotReleaseNoteId = " + allByNotReleaseNoteId);
         ArrayList<IssueDTO> issueDTOList = new ArrayList<>();
