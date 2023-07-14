@@ -5,6 +5,7 @@ import kakao99.backend.entity.Project;
 import kakao99.backend.entity.ReleaseNote;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
+
 import kakao99.backend.release.dto.CreateReleaseDTO;
 import kakao99.backend.release.dto.UpdateReleaseDTO;
 import kakao99.backend.release.service.ReleaseService;
@@ -30,7 +31,10 @@ public class ReleaseController {
 
     @PostMapping("/api/release/create")
     @ResponseBody
+    public ResponseEntity<ResponseMessage> createRelease(@RequestBody CreateReleaseDTO createReleaseDTO) {
+
     public ResponseEntity<ResponseMessage> createRelease(Authentication authentication, @RequestBody CreateReleaseDTO createReleaseDTO) {
+
         // member와 project를 조회
         Member member = (Member) authentication.getPrincipal();
         Optional<Project> project = projectRepository.findById(createReleaseDTO.getProjectId());

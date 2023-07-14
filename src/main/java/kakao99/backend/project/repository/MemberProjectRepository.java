@@ -96,7 +96,7 @@ public class MemberProjectRepository{
                 .fetchFirst());
     }
 
-    public Optional<String> findRole(Long projectId, Long memberId) {
+    public Optional<String> role(Long projectId, Long memberId) {
         return Optional.ofNullable(query
                 .select(memberProject.role)
                 .from(memberProject)
