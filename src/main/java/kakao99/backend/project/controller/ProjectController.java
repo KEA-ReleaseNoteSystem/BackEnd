@@ -5,6 +5,7 @@ import kakao99.backend.entity.Member;
 import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
 import kakao99.backend.project.dto.ProjectDTO;
+import kakao99.backend.project.dto.ProjectIdDTO;
 import kakao99.backend.project.dto.ProjectModifyDTO;
 import kakao99.backend.project.dto.ProjectPMDTO;
 import kakao99.backend.project.repository.MemberProjectRepository;
@@ -42,6 +43,11 @@ public class ProjectController {
 
     @PutMapping("/api/project")
     public ResponseEntity<?> patchProject(@RequestBody ProjectModifyDTO projectModifyDTO){
+        System.out.println(projectModifyDTO.getId());
+        System.out.println(projectModifyDTO.getName());
+        System.out.println(projectModifyDTO.getStatus());
+        System.out.println(projectModifyDTO.getDescription());
+
         return projectService.updateProject(projectModifyDTO);
     }
 
@@ -51,6 +57,26 @@ public class ProjectController {
         return projectService.removeProject(projectModifyDTO, member.getId());
     }
 
+    @GetMapping("/api/project/{projectId}")
+    public ResponseEntity<?> getProjectInfo(@PathVariable("projectId") Long projectId, Authentication authentication) {
+        Member member = (Member) authentication.getPrincipal();
+
+        return projectService.getProject(projectId, member.getId());
+    }
+
+    @GetMapping("/api/role/{projectId}")
+    public ResponseEntity<?> getRole(@PathVariable("projectId") Long projectId, Authentication authentication) throws Exception {
+        Member member = (Member) authentication.getPrincipal();
+        try {
+            String role =projectService.findRole(projectId, member.getId());
+            ResponseMessage message = new ResponseMessage(200, "프로젝트 권한 조회 완료", role);
+            return new ResponseEntity(message, HttpStatus.OK);
+        }catch (Exception e){
+            ResponseMessage message = new ResponseMessage(404, "해당 id로 찾은 role 데이터 없음.");
+
+            return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+        }
+    }
 
     @GetMapping("/api/myProject")
     public ResponseEntity<?> getMyProject(Authentication authentication){
@@ -73,7 +99,7 @@ public class ProjectController {
 
 
     //  내가 속한 그룹에서 내가 포함되지 않은 프로젝트 조회해오기
-    @GetMapping("api/otherProject")
+    @GetMapping("/api/otherProject")
     public ResponseEntity<?> getProjectFromGroup(Authentication authentication) {
         Member member = (Member) authentication.getPrincipal();
         System.out.println("userId = " + member.getId());
@@ -91,6 +117,9 @@ public class ProjectController {
 
         return new ResponseEntity(message, HttpStatus.OK);
     }
+    //선택한 프로젝트 조회
+
+
 
 }
 

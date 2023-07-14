@@ -1,4 +1,5 @@
 package kakao99.backend.utils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class ResponseMessage {
     @NotNull
     private String message;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer"})
     private Object data;
 
     public ResponseMessage(Integer statusCode, String message) {

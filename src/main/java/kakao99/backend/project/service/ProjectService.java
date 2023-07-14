@@ -8,6 +8,7 @@ import kakao99.backend.entity.Project;
 import kakao99.backend.group.dto.GroupNameDTO;
 import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.project.dto.ProjectDTO;
+import kakao99.backend.project.dto.ProjectIdDTO;
 import kakao99.backend.project.dto.ProjectModifyDTO;
 import kakao99.backend.project.dto.ProjectPMDTO;
 import kakao99.backend.project.repository.MemberProjectRepository;
@@ -89,7 +90,7 @@ public class ProjectService {
             return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Project project = optionalProject.get();
-        Optional<String> opRole = memberProjectRepository.findRole(project.getId(), memberId);
+        Optional<String> opRole = memberProjectRepository.role(project.getId(), memberId);
         if(opRole.isEmpty()){
             ResponseMessage message = new ResponseMessage(500, "id로 찾은 role 확인 실패");
 
@@ -109,6 +110,43 @@ public class ProjectService {
     }
 
     @Transactional
+    public ResponseEntity<?> getProject(Long projectId, Long memberId){
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if(optionalProject.isEmpty()) {
+                ResponseMessage message = new ResponseMessage(500, "id로 삭제할 프로젝트 확인 실패");
+                return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        Optional<String> opRole = memberProjectRepository.role(projectId, memberId);
+        if(opRole.isEmpty()){
+            ResponseMessage message = new ResponseMessage(500, "role id 찾을 수 없음");
+            return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        String role = opRole.get();
+        Project project = optionalProject.get();
+        ProjectIdDTO projectIdDTO = ProjectIdDTO.builder()
+                .id(project.getId())
+                .groupName(project.getGroup().getName())
+                .groupCode(project.getGroup().getCode())
+                .name(project.getName())
+                .role(role)
+                .status(project.getStatus())
+                .description(project.getDescription())
+                .createAt(project.getCreatedAt())
+                .build();
+        System.out.println(projectIdDTO.getRole());
+        ResponseMessage message = new ResponseMessage(200, "프로젝트 정보 조회 성공", projectIdDTO);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    public String findRole(long projectId, long memberId) throws Exception {
+        Optional<String> opRole = memberProjectRepository.role(projectId, memberId);
+        if(opRole.isEmpty()){
+            throw new Exception("role id 찾을 수 없음");
+        }
+        return opRole.get();
+    }
+
+    @Transactional
     public List<ProjectPMDTO> makeProjectPMDTOS(List<Project> projects) throws Exception {
         List<ProjectPMDTO> projectPMDTOS = new ArrayList<>();
         for (Project project : projects) {
@@ -123,6 +161,7 @@ public class ProjectService {
                     .PMName(pmMember.getNickname())
                     .id(project.getId())
                     .name(project.getName())
+                    .status(project.getStatus())
                     .description(project.getDescription())
                     .createdAt(project.getCreatedAt())
                     .groupId(project.getGroup().getId())
