@@ -21,14 +21,14 @@ public class MemberController {
     @PostMapping("/api/member/signup/group")
     public ResponseEntity<?> groupCreate(@Validated @RequestBody RegisterDTO registerDTO) {
         log.info("회원 가입 컨트롤러 시작");
-        return memberService.join(registerDTO);
+        return memberService.create(registerDTO);
 
     }
 
     @PostMapping("/api/member/signup/group/join")
     public ResponseEntity<?> groupJoin(@Validated @RequestBody RegisterDTO registerDTO) {
         log.info("회원 가입 컨트롤러 시작");
-        return memberService.create(registerDTO);
+        return memberService.join(registerDTO);
     }
 
     @PostMapping("/api/member/login")
