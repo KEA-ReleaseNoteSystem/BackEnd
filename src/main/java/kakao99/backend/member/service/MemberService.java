@@ -32,7 +32,7 @@ public class MemberService {
     private final MemberProjectRepository memberProjectRepository;
 
     @Transactional
-    public ResponseEntity<?> join(RegisterDTO registerDTO) {
+    public ResponseEntity<?> create(RegisterDTO registerDTO) {
 
         Optional<Member> findEmailMember = memberRepository.findByEmail(registerDTO.getEmail());
 
@@ -67,7 +67,7 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseEntity<?> create(RegisterDTO registerDTO) {
+    public ResponseEntity<?> join(RegisterDTO registerDTO) {
         Optional<Group> byCode = groupRepository.findByCode(registerDTO.getGroupName());
 
         if (byCode.isEmpty()) {

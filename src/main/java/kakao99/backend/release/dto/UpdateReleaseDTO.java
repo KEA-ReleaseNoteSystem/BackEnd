@@ -13,7 +13,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateReleaseDTO {
+public class UpdateReleaseDTO {
+    private Long projectId;
+    @NotBlank
+    private Long releaseId;
     @NotBlank
     private String version; // 버전
     @NotBlank
@@ -24,6 +27,5 @@ public class CreateReleaseDTO {
     private Date releaseDate;   // 배포일
     private String brief;   //  요약
     private String description; //세부 설명
-    private Long projectId;
     private List<Issue> issueList;
 }

@@ -61,7 +61,18 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
 
 
     // 프로젝트 내의 releaseNote에 포함되지 않은 이슈들 조회
-@Query("select m from Issue m join fetch m.releaseNote t join fetch m.memberInCharge join fetch m.memberReport where m.releaseNote.id <> :releaseNoteId and m.isActive = true and m.project.id =:projectId")
-List<Issue> findAllByNotReleaseNoteId(@Param("releaseNoteId") Long releaseNoteId, @Param("projectId") Long projectId);
+@   Query("select m from Issue m join fetch m.memberInCharge join fetch m.memberReport where m.releaseNote.id = null and m.isActive = true and m.project.id =:projectId")
+    List<Issue> findAllByNotReleaseNoteId(@Param("projectId") Long projectId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Issue m SET m.releaseNote.id = null where m.id =:issueId")
+    int deleteIssueFromReleaseNote(@Param("issueId") Long issueId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Issue m SET m.releaseNote.id =:releaseNoteId  where m.id =:issueId")
+    int insertIssueFromReleaseNote(@Param("releaseNoteId") Long releaseNoteId, @Param("issueId") Long issueId);
+
 
 }

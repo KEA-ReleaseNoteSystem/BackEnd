@@ -107,10 +107,10 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
-    @GetMapping("/api/project/{projectId}/releaseNote/{releaseNoteId}/issues")
-    public ResponseEntity<?> findAllByNotReleaseNoteId(@PathVariable("releaseNoteId") Long releaseNoteId, @PathVariable("projectId") Long projectId) {
+    @GetMapping("/api/project/{projectId}/issues")
+    public ResponseEntity<?> findAllByNotReleaseNoteId(@PathVariable("projectId") Long projectId) {
 
-        ArrayList<IssueDTO> allByNotReleaseNoteId = issueService.findAllByNotReleaseNoteId(releaseNoteId, projectId);
+        ArrayList<IssueDTO> allByNotReleaseNoteId = issueService.findAllByNotReleaseNoteId(projectId);
         ResponseMessage message = new ResponseMessage(200, "릴리즈 노트에 포함되지 않은 이슈 조회 성공", allByNotReleaseNoteId);
         return new ResponseEntity(message, HttpStatus.OK);
     }
