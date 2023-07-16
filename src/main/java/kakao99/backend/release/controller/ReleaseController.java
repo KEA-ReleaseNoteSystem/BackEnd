@@ -7,6 +7,8 @@ import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 
 import kakao99.backend.release.dto.CreateReleaseDTO;
+import kakao99.backend.release.dto.GetReleaseDTO;
+import kakao99.backend.release.dto.GetReleaseListDTO;
 import kakao99.backend.release.dto.UpdateReleaseDTO;
 import kakao99.backend.release.service.ReleaseService;
 import kakao99.backend.utils.ResponseMessage;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,14 +85,27 @@ public class ReleaseController {
     ) {
         List<ReleaseNote> releaseNotesInProject = releaseService.findRelease(projectId);
 
+        List<GetReleaseListDTO> releaseList = new ArrayList<>();
+
+        for (ReleaseNote releaseNote : releaseNotesInProject) {
+            GetReleaseListDTO releaseDTO = new GetReleaseListDTO();
+            releaseDTO.setId(releaseNote.getId());
+            releaseDTO.setVersion(releaseNote.getVersion());
+            releaseDTO.setStatus(releaseNote.getStatus());
+            releaseDTO.setReleaseDate(releaseNote.getReleaseDate());
+            releaseDTO.setCreatedAt(releaseNote.getCreatedAt());
+            releaseDTO.setMember(memberRepository.findById(releaseNote.getMember().getId()).get());
+            releaseList.add(releaseDTO);
+        }
+
         ResponseMessage message;
 
-        if (releaseNotesInProject.isEmpty()) {
+        if (releaseList.isEmpty()) {
             message = new ResponseMessage(204, "본 프로젝트에 속한 릴리즈노트가 없습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
         }
 
-        message = new ResponseMessage(200, "릴리즈노트 목록 조회 완료", releaseNotesInProject);
+        message = new ResponseMessage(200, "릴리즈노트 목록 조회 완료", releaseList);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
@@ -106,10 +122,22 @@ public class ReleaseController {
             return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
         }
 
-        message = new ResponseMessage(200, "해당 릴리즈노트 조회 완료", releaseNoteInfo.get());
+        ReleaseNote releaseNote = releaseNoteInfo.get();
+        GetReleaseDTO releaseDTO = new GetReleaseDTO();
+        releaseDTO.setVersion(releaseNote.getVersion());
+        releaseDTO.setStatus(releaseNote.getStatus());
+        releaseDTO.setPercent(releaseNote.getPercent());
+        releaseDTO.setReleaseDate(releaseNote.getReleaseDate());
+        releaseDTO.setCreatedAt(releaseNote.getCreatedAt());
+        releaseDTO.setBrief(releaseNote.getBrief());
+        releaseDTO.setDescription(releaseNote.getDescription());
+        releaseDTO.setMember(memberRepository.findById(releaseNote.getMember().getId()).get());
+
+        message = new ResponseMessage(200, "해당 릴리즈노트 조회 완료", releaseDTO);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
 
     @DeleteMapping("/api/release/{releaseId}")
     @ResponseBody
