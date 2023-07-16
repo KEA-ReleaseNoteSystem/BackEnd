@@ -15,7 +15,6 @@ import kakao99.backend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.hibernate.sql.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +33,6 @@ public class ReleaseController {
 
     @PostMapping("/api/release/create")
     @ResponseBody
-    public ResponseEntity<ResponseMessage> createRelease(@RequestBody CreateReleaseDTO createReleaseDTO) {
-
     public ResponseEntity<ResponseMessage> createRelease(Authentication authentication, @RequestBody CreateReleaseDTO createReleaseDTO) {
 
         // member와 project를 조회
