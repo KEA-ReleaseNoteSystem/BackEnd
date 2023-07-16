@@ -29,6 +29,12 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     List<Issue> findAllByProjectId(@Param("projectId") Long projectId);
 
 
+    @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId and m.status = :status and m.isActive = true")
+    List<Issue> findAllByStatus(@Param("projectId") Long projectId, @Param("status") String status);
+
+    @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId and m.issueType = :issueType and m.isActive = true")
+    List<Issue> findAllByType(@Param("projectId") Long projectId, @Param("issueType") String type);
+
     @Modifying
     @Transactional
     @Query("UPDATE Issue p SET p.title = :title, p.description =:description WHERE p.id = :issueId")
@@ -38,6 +44,17 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     @Transactional
     @Query("UPDATE Issue p SET p.title = :title WHERE p.id = :issueId")
     void updateIssueTitle(@Param("title") String title, @Param("issueId") Long issueId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Issue p SET p.status = :status WHERE p.id = :issueId")
+    void updateIssueStatus(@Param("status") String status, @Param("issueId") Long issueId);
+
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Issue p SET p.issueType = :issueType WHERE p.id = :issueId")
+    void updateIssueType(@Param("issueType") String issueType, @Param("issueId") Long issueId);
 
     @Modifying
     @Transactional
@@ -73,6 +90,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     @Transactional
     @Query("UPDATE Issue m SET m.releaseNote.id =:releaseNoteId  where m.id =:issueId")
     int insertIssueFromReleaseNote(@Param("releaseNoteId") Long releaseNoteId, @Param("issueId") Long issueId);
+
 
 
 }

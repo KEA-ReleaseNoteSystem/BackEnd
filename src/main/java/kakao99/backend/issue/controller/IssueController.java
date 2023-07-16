@@ -70,13 +70,31 @@ public class IssueController {
     }
 
 
-    // 프로젝트 id로 모든 이슈 조회
+
+
+
+
     @GetMapping("api/{projectId}/issues")
-    public ResponseEntity<?> getAllIssues(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity<?> getAllIssues(
+            @PathVariable("projectId") Long projectId,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "type", required = false) String type) {
 
-        ArrayList<IssueDTO> allIssues = issueService.getAllIssues(projectId);
+        ArrayList<IssueDTO> allIssues = null;
+        ResponseMessage message = null;
 
-        ResponseMessage message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
+        if (status == null && type == null) {
+            allIssues = issueService.getAllIssues(projectId);
+            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
+        } else if (status != null){
+            allIssues = issueService.getAllIssuesByFilter(projectId, status);
+            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태별 조회 성공");
+
+        } else if (type != null){
+            allIssues = issueService.getAllIssuesByFilter(projectId, type);
+            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 타입별 조회 성공");
+        }
+
         message.setData(allIssues);
 
         return new ResponseEntity(message, HttpStatus.OK);
@@ -86,8 +104,8 @@ public class IssueController {
     // 이슈 정보 업데이트
     @PutMapping("/api/{projectId}/issues/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
-//        System.out.println("projectId = " + projectId + ", issueId = " + issueId + ", title = " + title + ", description = " + description);
-        String result = issueService.updateIssue(updateIssueForm.getTitle(), updateIssueForm.getDescription(), issueId);
+        System.out.println("getStatus = "+ updateIssueForm.getStatus() + updateIssueForm.getIssueType() );
+        String result = issueService.updateIssue(updateIssueForm.getTitle(), updateIssueForm.getDescription(),updateIssueForm.getStatus(),updateIssueForm.getIssueType() , issueId);
         ResponseMessage message = null;
         if (result == "OK") {
             message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");

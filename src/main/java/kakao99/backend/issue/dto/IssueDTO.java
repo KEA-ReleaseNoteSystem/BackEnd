@@ -28,9 +28,13 @@ public class IssueDTO {
     private String description;
     private String status;
     private Integer listPosition;
+
+
     private Integer importance;
     private String file;
     private Date createdAt;
+
+    private String releasenote;
 
 
 ////    @JsonIgnore
