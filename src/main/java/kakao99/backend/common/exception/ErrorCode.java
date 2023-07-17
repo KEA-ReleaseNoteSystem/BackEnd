@@ -32,6 +32,7 @@ public enum ErrorCode {
 
     // 파일 관련 처리 실패
     FAIL_PROCESS_FILE(5000, "파일 처리에 실패하였습니다.");
+
     private int code;
     private String message;
 

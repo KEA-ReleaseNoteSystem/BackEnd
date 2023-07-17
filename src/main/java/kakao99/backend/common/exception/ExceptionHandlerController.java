@@ -11,11 +11,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler{
 
-        @ExceptionHandler(RuntimeException.class)
-        public ResponseEntity<?> testException(CustomException e) {
+        @ExceptionHandler(CustomException.class)
+        public ResponseEntity<?> customExceptionHandler(CustomException e) {
 
-            CustomErrorMessage customErrorMessage = new CustomErrorMessage(e.getStatusCode(), e.getMessage(), e.getPlace());
-
+            log.warn("[CustomException] "+e.getMessage());
+            CustomErrorMessage customErrorMessage = (e.getPlace() != null) ?
+                    new CustomErrorMessage(e.getStatusCode(), e.getMessage(), e.getPlace())
+                    : new CustomErrorMessage(e.getStatusCode(), e.getMessage());
             return new ResponseEntity<>(customErrorMessage, HttpStatus.NOT_IMPLEMENTED);
         }
 
