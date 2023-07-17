@@ -1,29 +1,21 @@
 package kakao99.backend.project.controller;
 
-import com.nimbusds.oauth2.sdk.Response;
 import kakao99.backend.entity.Member;
-import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
 import kakao99.backend.project.dto.ProjectDTO;
-import kakao99.backend.project.dto.ProjectIdDTO;
 import kakao99.backend.project.dto.ProjectModifyDTO;
 import kakao99.backend.project.dto.ProjectPMDTO;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static io.lettuce.core.pubsub.PubSubOutput.Type.message;
 
 @RestController
 @RequiredArgsConstructor

@@ -5,7 +5,6 @@ import kakao99.backend.entity.Group;
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
-import kakao99.backend.group.dto.GroupNameDTO;
 import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.project.dto.ProjectDTO;
 import kakao99.backend.project.dto.ProjectIdDTO;
@@ -13,18 +12,13 @@ import kakao99.backend.project.dto.ProjectModifyDTO;
 import kakao99.backend.project.dto.ProjectPMDTO;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-
-import static io.lettuce.core.pubsub.PubSubOutput.Type.message;
 
 @Service
 @RequiredArgsConstructor

@@ -11,7 +11,7 @@ import kakao99.backend.release.dto.GetReleaseDTO;
 import kakao99.backend.release.dto.GetReleaseListDTO;
 import kakao99.backend.release.dto.UpdateReleaseDTO;
 import kakao99.backend.release.service.ReleaseService;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
