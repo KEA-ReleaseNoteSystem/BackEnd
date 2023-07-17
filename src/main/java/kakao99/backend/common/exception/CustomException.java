@@ -10,9 +10,12 @@ public class CustomException extends RuntimeException{
         super();
     }
 
-    public CustomException(String message) {
-        super(message);
+    public CustomException(ErrorCode errorEnum) {
+        super(errorEnum.getMessage());
+        this.statusCode = errorEnum.getCode();
     }
+
+
     public CustomException(int statusCode, String message) {
         super(message);
         this.statusCode = statusCode;

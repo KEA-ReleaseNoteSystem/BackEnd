@@ -1,5 +1,6 @@
 package kakao99.backend.issue.controller;
 
+import kakao99.backend.common.exception.ErrorCode;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 
@@ -134,12 +135,11 @@ public class IssueController {
     }
 
 
+
+    // 예외 처리 예시
     @GetMapping("/test/test/{releaseNoteId}")
-    public String test2(@PathVariable("releaseNoteId") Long releaseNoteId) {
+    public String exceptionExample(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
-//        System.out.println("userId = " + testForm.getUserId());
-
-//        List<Issue> allIssuesByReleaseNoteId = issueRepository.getAllIssuesByReleaseNoteId(releaseNoteId);
         if(releaseNoteId ==0)
             throw new CustomException(5001, "테스트 Exception");
 
@@ -147,7 +147,11 @@ public class IssueController {
             throw new CustomException(5001, "테스트 Exception", "여기에서 예외 발생");
         }
 
-        return "test";
+        if(releaseNoteId == 2) {
+            throw new CustomException(ErrorCode.NOT_MATCH_CODE);
+        }
+
+        return "Success";
     }
 
 //    @GetMapping("/test/test/project/{projectId}")

@@ -13,7 +13,6 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler{
 
         @ExceptionHandler(RuntimeException.class)
         public ResponseEntity<?> testException(CustomException e) {
-            log.error("Exception 발생");
 
             CustomErrorMessage customErrorMessage = new CustomErrorMessage(e.getStatusCode(), e.getMessage(), e.getPlace());
 
