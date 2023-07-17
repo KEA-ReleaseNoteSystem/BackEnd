@@ -19,6 +19,7 @@ import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -81,22 +82,39 @@ public class IssueController {
     public ResponseEntity<?> getAllIssues(
             @PathVariable("projectId") Long projectId,
             @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "type", required = false) String type) {
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value="username", required = false) String name) {
 
-        ArrayList<IssueDTO> allIssues = null;
-        ResponseMessage message = null;
 
-        if (status == null && type == null) {
-            allIssues = issueService.getAllIssues(projectId);
-            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
-        } else if (status != null){
-            allIssues = issueService.getAllIssuesByFilter(projectId, status);
-            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태별 조회 성공");
 
-        } else if (type != null){
-            allIssues = issueService.getAllIssuesByFilter(projectId, type);
-            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 타입별 조회 성공");
-        }
+        ArrayList<IssueDTO> allIssues;
+        ResponseMessage message;
+
+//        if (status == null && type == null && name == null) {
+//            allIssues = issueService.getAllIssues(projectId);
+//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
+//        } else if (status != null && type == null && name == null){
+//            allIssues = issueService.getAllIssuesByFilter(projectId, status);
+//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태별 조회 성공");
+//
+//        } else if (status == null && type != null && name == null) {
+//            allIssues = issueService.getAllIssuesByFilter(projectId, type);
+//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 타입별 조회 성공");
+//        }else if (status == null && type == null && name != null){
+//                allIssues = issueService.getAllIssuesByFilter(projectId,name);
+//                message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 담당자별 조회 성공");
+//        } else if (status != null && type != null && name == null){
+//            allIssues = issueService.getAllIssuesByFilter(projectId, status,type);
+//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입별 조회 성공");
+//        } else if (status != null && type != null && name != null){
+//            allIssues = issueService.getAllIssuesByFilter(projectId, status,type,name);
+//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입,담당자별 조회 성공");
+//
+//        }
+
+        allIssues = issueService.getAllIssuesByFilter(projectId,status,type,name);
+        message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입,담당자별 조회 성공");
+
 
         message.setData(allIssues);
 

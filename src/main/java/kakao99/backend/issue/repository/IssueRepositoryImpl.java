@@ -1,6 +1,7 @@
 package kakao99.backend.issue.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import kakao99.backend.entity.*;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class IssueRepositoryImpl {
+public class IssueRepositoryImpl  {
 
     private final EntityManager em;
 
@@ -66,4 +67,23 @@ public class IssueRepositoryImpl {
 //                .where(issue.project.id.eq(projectId).and(issue.isActive.eq(true)))
 //                .stream().forEach();
 //    }
+
+    public List<Issue> findAllWithFilter(Long projectId, String status, String type, String username) {
+        JPAQuery<Issue> query = this.query.selectFrom(issue)
+                .where(issue.project.id.eq(projectId).and(issue.isActive.eq(true)));
+
+        if (status != null) {
+            query.where(issue.status.eq(status));
+        }
+
+        if (type != null) {
+            query.where(issue.issueType.eq(type));
+        }
+
+        if (username != null) {
+            query.where(issue.memberInCharge.username.eq(username));
+        }
+
+        return query.fetch();
+    }
 }
