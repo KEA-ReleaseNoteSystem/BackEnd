@@ -8,11 +8,13 @@ import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.jwt.TokenProvider;
 import kakao99.backend.member.dto.LoginDTO;
 import kakao99.backend.member.dto.MemberInfoDTO;
+import kakao99.backend.member.dto.MemberUpdateDTO;
 import kakao99.backend.member.dto.RegisterDTO;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -138,6 +141,7 @@ public class MemberService {
                 .email(member.getEmail())
                 .groupName(member.getGroup().getName())
                 .position(member.getPosition())
+                .introduce(member.getIntroduce())
                 .projectList(projectList)
                 .build();
 
@@ -148,6 +152,14 @@ public class MemberService {
     Boolean checkPassword(String rawPassword, String encodePassword) {
 
         return passwordEncoder.matches(rawPassword, encodePassword);
+    }
+
+    @Transactional
+    public void updateMember(Long id, MemberUpdateDTO memberUpdateDTO) {
+        Optional<Member> byId = memberRepository.findById(id);
+        Member member = byId.get();
+        member.update(memberUpdateDTO.getIntroduce(), memberUpdateDTO.getNickname(), memberUpdateDTO.getPosition());
+
     }
 
     public ResponseEntity<?> getMemberOfProject(Long projectId) {
