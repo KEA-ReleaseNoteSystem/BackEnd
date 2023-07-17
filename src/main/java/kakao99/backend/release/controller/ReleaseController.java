@@ -31,8 +31,6 @@ public class ReleaseController {
 
     @PostMapping("/api/release/create")
     @ResponseBody
-    public ResponseEntity<ResponseMessage> createRelease(@RequestBody CreateReleaseDTO createReleaseDTO) {
-
     public ResponseEntity<ResponseMessage> createRelease(Authentication authentication, @RequestBody CreateReleaseDTO createReleaseDTO) {
 
         // member와 project를 조회
