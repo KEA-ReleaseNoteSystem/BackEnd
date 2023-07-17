@@ -35,7 +35,7 @@ public class IssueController {
 
 
     // 이슈 생성
-    @PostMapping("/api/{projectId}/issue/new")
+    @PostMapping("/api/{projectId}/issue")
     public ResponseEntity<?> createIssue(@RequestBody IssueForm issue, @PathVariable("projectId") Long projectId) {
         System.out.println("userId = " + issue.getUserId());
         Optional<Member> memberById = memberRepository.findById(issue.getUserId());
