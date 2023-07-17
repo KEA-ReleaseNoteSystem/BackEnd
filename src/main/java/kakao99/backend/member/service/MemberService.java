@@ -1,7 +1,6 @@
 package kakao99.backend.member.service;
 
 import kakao99.backend.entity.Group;
-import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
 import kakao99.backend.group.repository.GroupRepository;
@@ -12,7 +11,7 @@ import kakao99.backend.member.dto.MemberUpdateDTO;
 import kakao99.backend.member.dto.RegisterDTO;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.MemberProjectRepository;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

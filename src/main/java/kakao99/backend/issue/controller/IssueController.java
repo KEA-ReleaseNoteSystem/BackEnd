@@ -5,6 +5,7 @@ import kakao99.backend.entity.Member;
 
 import kakao99.backend.entity.Project;
 
+import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.issue.dto.IssueDTO;
 
 
@@ -13,14 +14,13 @@ import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -135,15 +135,19 @@ public class IssueController {
 
 
     @GetMapping("/test/test/{releaseNoteId}")
-
-    public List<Issue> test2(@PathVariable("releaseNoteId") Long releaseNoteId) {
+    public String test2(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
 //        System.out.println("userId = " + testForm.getUserId());
 
-        List<Issue> allIssuesByReleaseNoteId = issueRepository.getAllIssuesByReleaseNoteId(releaseNoteId);
+//        List<Issue> allIssuesByReleaseNoteId = issueRepository.getAllIssuesByReleaseNoteId(releaseNoteId);
+        if(releaseNoteId ==0)
+            throw new CustomException(5001, "테스트 Exception");
 
+        if (releaseNoteId == 1) {
+            throw new CustomException(5001, "테스트 Exception", "여기에서 예외 발생");
+        }
 
-        return allIssuesByReleaseNoteId;
+        return "test";
     }
 
 //    @GetMapping("/test/test/project/{projectId}")
