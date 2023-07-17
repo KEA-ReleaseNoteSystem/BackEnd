@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -122,7 +123,7 @@ public class IssueController {
     @GetMapping("/api/releaseNote/{releaseNoteId}/issues")
     public ResponseEntity<?> getIssuesByReleaseNote(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
-        ArrayList<IssueDTO> allIssuesByReleaseNoteId = issueService.getAllIssuesByReleaseNoteId(releaseNoteId);
+        List<IssueDTO> allIssuesByReleaseNoteId = issueService.getAllIssuesByReleaseNoteId(releaseNoteId);
         ResponseMessage message = new ResponseMessage(200, "릴리즈 노트의 관련된 이슈 조회 성공", allIssuesByReleaseNoteId);
         return new ResponseEntity(message, HttpStatus.OK);
     }
@@ -130,7 +131,7 @@ public class IssueController {
     @GetMapping("/api/project/{projectId}/issues")
     public ResponseEntity<?> findAllByNotReleaseNoteId(@PathVariable("projectId") Long projectId) {
 
-        ArrayList<IssueDTO> allByNotReleaseNoteId = issueService.findAllByNotReleaseNoteId(projectId);
+        List<IssueDTO> allByNotReleaseNoteId = issueService.findAllByNotReleaseNoteId(projectId);
         ResponseMessage message = new ResponseMessage(200, "릴리즈 노트에 포함되지 않은 이슈 조회 성공", allByNotReleaseNoteId);
         return new ResponseEntity(message, HttpStatus.OK);
     }

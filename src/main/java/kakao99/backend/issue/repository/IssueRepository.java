@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IssueRepository extends JpaRepository<Issue, Long> {
@@ -79,7 +80,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
 
     // 프로젝트 내의 releaseNote에 포함되지 않은 이슈들 조회
 @   Query("select m from Issue m join fetch m.memberInCharge join fetch m.memberReport where m.releaseNote.id = null and m.isActive = true and m.project.id =:projectId")
-    List<Issue> findAllByNotReleaseNoteId(@Param("projectId") Long projectId);
+List<Issue> findAllByNotReleaseNoteId(@Param("projectId") Long projectId);
 
     @Modifying
     @Transactional

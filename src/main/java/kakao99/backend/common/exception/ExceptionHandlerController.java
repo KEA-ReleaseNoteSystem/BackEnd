@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice
 @Slf4j
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler{
@@ -14,11 +16,25 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler{
         @ExceptionHandler(CustomException.class)
         public ResponseEntity<?> customExceptionHandler(CustomException e) {
 
-            log.warn("[CustomException] "+e.getMessage());
             CustomErrorMessage customErrorMessage = (e.getPlace() != null) ?
                     new CustomErrorMessage(e.getStatusCode(), e.getMessage(), e.getPlace())
                     : new CustomErrorMessage(e.getStatusCode(), e.getMessage());
-            return new ResponseEntity<>(customErrorMessage, HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity<>(customErrorMessage, HttpStatus.OK);
         }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<?> noSuchElementExceptionHandler(NoSuchElementException e) {
+
+        CustomErrorMessage customErrorMessage = new CustomErrorMessage(404, e.getMessage());
+        return new ResponseEntity<>(customErrorMessage, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<?> nullPointExceptionHandler(NullPointerException e) {
+
+        CustomErrorMessage customErrorMessage = new CustomErrorMessage(500, e.getMessage());
+        return new ResponseEntity<>(customErrorMessage, HttpStatus.OK);
+    }
+
 
 }
