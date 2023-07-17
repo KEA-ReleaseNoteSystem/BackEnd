@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -142,9 +143,10 @@ public class IssueController {
 
         if(releaseNoteId ==0)
             throw new CustomException(5001, "테스트 Exception");
+//            throw new NoSuchElementException("멤ㄴㅇㄹ");
 
         if (releaseNoteId == 1) {
-            throw new CustomException(5001, "테스트 Exception", "여기에서 예외 발생");
+            throw new CustomException(5001, "테스트 Exception", "IssueController.exceptionExample()");
         }
 
         if(releaseNoteId == 2) {
