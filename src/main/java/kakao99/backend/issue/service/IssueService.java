@@ -5,6 +5,7 @@ import kakao99.backend.entity.Member;
 import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.repository.IssueRepository;
+import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.issue.repository.IssueStatus;
 import kakao99.backend.issue.repository.IssueType;
 import kakao99.backend.member.repository.MemberRepository;
@@ -24,6 +25,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class IssueService {
     private final IssueRepository issueRepository;
+
+    private final IssueRepositoryImpl issueRepositoryImpl;
     private final MemberRepository memberRepository;
 
     public List<Issue> getIssuesWithMemo(Long projectId) {
@@ -75,15 +78,17 @@ public class IssueService {
     return issueDTOList;
     }
 
-    public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId ,String state) {
+    public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name) {
 
-        List<Issue> allIssueByProjectId = null;
 
-        if (state != null && EnumUtils.isValidEnumIgnoreCase(IssueStatus.class, state.toUpperCase(Locale.ROOT))) {
-            allIssueByProjectId = issueRepository.findAllByStatus(projectId, state);
-        }else if(state != null && EnumUtils.isValidEnumIgnoreCase(IssueType.class, state.toUpperCase(Locale.ROOT))){
-            allIssueByProjectId = issueRepository.findAllByType(projectId, state);
-        }
+//        if (status != null && !EnumUtils.isValidEnumIgnoreCase(IssueStatus.class, status.toUpperCase(Locale.ROOT))) {
+//            status = null; // invalid status, ignore it
+//        }
+//        if (type != null && !EnumUtils.isValidEnumIgnoreCase(IssueType.class, type.toUpperCase(Locale.ROOT))) {
+//            type = null; // invalid type, ignore it
+//        }
+
+        List<Issue> allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
 
 
 

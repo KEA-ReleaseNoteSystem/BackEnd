@@ -35,6 +35,15 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId and m.issueType = :issueType and m.isActive = true")
     List<Issue> findAllByType(@Param("projectId") Long projectId, @Param("issueType") String type);
 
+
+    @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId and m.status = :status and m.issueType = :issueType and m.isActive = true")
+    List<Issue> findAllByStatusAndType(@Param("projectId") Long projectId, @Param("status") String status,@Param("issueType") String type);
+
+
+    @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId and m.status = :status and m.issueType = :issueType and m.memberInCharge.username = :username and m.isActive = true")
+    List<Issue> findAllByStatusAndTypeAndUsername(@Param("projectId") Long projectId, @Param("status") String status,@Param("issueType") String type,@Param("username") String username);
+
+
     @Modifying
     @Transactional
     @Query("UPDATE Issue p SET p.title = :title, p.description =:description WHERE p.id = :issueId")
