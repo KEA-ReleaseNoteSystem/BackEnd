@@ -10,6 +10,7 @@ import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.issue.dto.IssueDTO;
 
 
+import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.issue.service.IssueService;
@@ -83,7 +84,7 @@ public class IssueController {
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type) {
 
-        ArrayList<IssueDTO> allIssues = null;
+        List<IssueDTO> allIssues = null;
         ResponseMessage message = null;
 
         if (status == null && type == null) {
@@ -137,6 +138,15 @@ public class IssueController {
     }
 
 
+    // issue management 페이지에서 필요한 데이터 get
+    @GetMapping("/api/project/{projectId}/issues/management")
+    public ResponseEntity<?> getIssueManagementPageData(@PathVariable("projectId") Long projectId) {
+        ProjectWithIssuesDTO issueManagementPageData = issueService.getIssueManagementPageData(projectId);
+
+        ResponseMessage message = new ResponseMessage(200, "issue Management 페이지에 필요한 데이터 조회 성공", issueManagementPageData);
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
+
 
     // 예외 처리 예시
     @GetMapping("/test/test/{releaseNoteId}")
@@ -144,7 +154,6 @@ public class IssueController {
 
         if(releaseNoteId ==0)
             throw new CustomException(5001, "테스트 Exception");
-//            throw new NoSuchElementException("멤ㄴㅇㄹ");
 
         if (releaseNoteId == 1) {
             throw new CustomException(5001, "테스트 Exception", "IssueController.exceptionExample()");

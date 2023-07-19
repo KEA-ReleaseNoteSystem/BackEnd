@@ -4,11 +4,13 @@ import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.MemberInfoDTO;
+import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueStatus;
 import kakao99.backend.issue.repository.IssueType;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
+import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +25,16 @@ import java.util.stream.Collectors;
 public class IssueService {
     private final IssueRepository issueRepository;
     private final MemberRepository memberRepository;
+    private final ProjectService projectService;
 
     public List<Issue> getIssuesWithMemo(Long projectId) {
         return issueRepository.findAllByProjectId(projectId);
     }
 
 
-    public ArrayList<IssueDTO> getAllIssues(Long projectId) {
+    public List<IssueDTO> getAllIssues(Long projectId) {
         List<Issue> allIssueByProjectId = issueRepository.findAllByProjectId(projectId);
-        ArrayList<IssueDTO> issueDTOList = new ArrayList<>();
+        List<IssueDTO> issueDTOList = new ArrayList<>();
 
         for (Issue issue : allIssueByProjectId) {
 
@@ -69,19 +72,18 @@ public class IssueService {
 
             issueDTOList.add(issueDTO);
         }
-    return issueDTOList;
+        return issueDTOList;
     }
 
-    public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId ,String state) {
+    public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId, String state) {
 
         List<Issue> allIssueByProjectId = null;
 
         if (state != null && EnumUtils.isValidEnumIgnoreCase(IssueStatus.class, state.toUpperCase(Locale.ROOT))) {
             allIssueByProjectId = issueRepository.findAllByStatus(projectId, state);
-        }else if(state != null && EnumUtils.isValidEnumIgnoreCase(IssueType.class, state.toUpperCase(Locale.ROOT))){
+        } else if (state != null && EnumUtils.isValidEnumIgnoreCase(IssueType.class, state.toUpperCase(Locale.ROOT))) {
             allIssueByProjectId = issueRepository.findAllByType(projectId, state);
         }
-
 
 
         ArrayList<IssueDTO> issueDTOList = new ArrayList<>();
@@ -115,23 +117,20 @@ public class IssueService {
     }
 
 
-
-    public String updateIssue(String title, String description,String status, String issueType,Long issueId) {
+    public String updateIssue(String title, String description, String status, String issueType, Long issueId) {
 
         System.out.println("title = " + title);
-        if (title==null && description != null) {
+        if (title == null && description != null) {
             issueRepository.updateIssueDescription(description, issueId);
-        }
-        else if (title != null && description==null) {
+        } else if (title != null && description == null) {
             issueRepository.updateIssueTitle(title, issueId);
-        }else if (title!= null && description != null){
+        } else if (title != null && description != null) {
             issueRepository.updateIssue(title, description, issueId);
-        }else if (title == null && description == null && issueType == null){
+        } else if (title == null && description == null && issueType == null) {
             issueRepository.updateIssueStatus(status, issueId);
-        }else if (title == null && description == null && status == null){
+        } else if (title == null && description == null && status == null) {
             issueRepository.updateIssueType(issueType, issueId);
-        }
-        else{
+        } else {
             return "파라미터 전달되지 않음.";
         }
         return "OK";
@@ -169,7 +168,7 @@ public class IssueService {
     }
 
 
-    public List<IssueDTO> findAllByNotReleaseNoteId(Long projectId){
+    public List<IssueDTO> findAllByNotReleaseNoteId(Long projectId) {
         List<Issue> allByNotReleaseNoteId = issueRepository.findAllByNotReleaseNoteId(projectId);
         if (allByNotReleaseNoteId == null || allByNotReleaseNoteId.isEmpty()) {
             throw new NoSuchElementException("릴리즈 노트에 포함되지 않은 이슈가 없습니다.");
@@ -199,4 +198,19 @@ public class IssueService {
                 .build()).collect(Collectors.toList());
         return issueDTOList;
     }
+
+    // issue management 페이지에서 필요한 데이터 get
+    public ProjectWithIssuesDTO getIssueManagementPageData(Long projectId) {
+        // 프로젝트 info
+        ProjectWithIssuesDTO projectInfo = projectService.getProjectIdAndName(projectId);
+
+        // issue List
+        List<IssueDTO> allIssues = getAllIssues(projectId);
+        projectInfo.saveIssueList(allIssues);
+
+        // memo
+
+        return projectInfo;
+    }
+
 }
