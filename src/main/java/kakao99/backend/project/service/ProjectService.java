@@ -16,6 +16,7 @@ import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -107,8 +108,8 @@ public class ProjectService {
     public ResponseEntity<?> getProject(Long projectId, Long memberId){
         Optional<Project> optionalProject = projectRepository.findById(projectId);
         if(optionalProject.isEmpty()) {
-                ResponseMessage message = new ResponseMessage(500, "id로 삭제할 프로젝트 확인 실패");
-                return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+            ResponseMessage message = new ResponseMessage(500, "id로 삭제할 프로젝트 확인 실패");
+            return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         Optional<String> opRole = memberProjectRepository.role(projectId, memberId);
         if(opRole.isEmpty()){
@@ -116,18 +117,22 @@ public class ProjectService {
             return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         String role = opRole.get();
+        System.out.println(role);
+        if(!"PM".equals(role)){
+            System.out.println("111");
+            ResponseMessage message = new ResponseMessage(401, "PM 권한만 가능한 동작입니다.");
+            return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+        }
         Project project = optionalProject.get();
         ProjectIdDTO projectIdDTO = ProjectIdDTO.builder()
                 .id(project.getId())
                 .groupName(project.getGroup().getName())
                 .groupCode(project.getGroup().getCode())
                 .name(project.getName())
-                .role(role)
                 .status(project.getStatus())
                 .description(project.getDescription())
                 .createAt(project.getCreatedAt())
                 .build();
-        System.out.println(projectIdDTO.getRole());
         ResponseMessage message = new ResponseMessage(200, "프로젝트 정보 조회 성공", projectIdDTO);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
