@@ -2,24 +2,18 @@ package kakao99.backend.issue.service;
 
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
+import kakao99.backend.issue.controller.UpdateIssueForm;
 import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueRepositoryImpl;
-import kakao99.backend.issue.repository.IssueStatus;
-import kakao99.backend.issue.repository.IssueType;
 import kakao99.backend.member.repository.MemberRepository;
-import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.EnumUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,170 +31,46 @@ public class IssueService {
 
     public List<IssueDTO> getAllIssues(Long projectId) {
         List<Issue> allIssueByProjectId = issueRepository.findAllByProjectId(projectId);
-        List<IssueDTO> issueDTOList = new ArrayList<>();
+        List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
 
-        for (Issue issue : allIssueByProjectId) {
-
-            Member memberInCharge = issue.getMemberInCharge();
-            Member memberReport = issue.getMemberReport();
-
-            MemberInfoDTO memberInChargeInfoDTO = MemberInfoDTO.builder()
-                    .name(memberInCharge.getUsername())
-                    .nickname(memberInCharge.getNickname())
-                    .email(memberInCharge.getEmail())
-                    .position(memberInCharge.getPosition())
-                    .build();
-
-            MemberInfoDTO memberReportInfoDTO = MemberInfoDTO.builder()
-                    .name(memberReport.getUsername())
-                    .nickname(memberReport.getNickname())
-                    .email(memberReport.getEmail())
-                    .position(memberReport.getPosition())
-                    .build();
-
-            IssueDTO issueDTO = IssueDTO.builder()
-                    .id(issue.getId())
-                    .issueNum(issue.getIssueNum())
-                    .title(issue.getTitle())
-                    .issueType(issue.getIssueType())
-                    .description(issue.getDescription())
-                    .status(issue.getStatus())
-                    .file(issue.getFile())
-                    .createdAt(issue.getCreatedAt())
-                    .memberIdInCharge(memberInChargeInfoDTO)
-                    .memberReport(memberReportInfoDTO)
-                    .importance(issue.getImportance())
-
-                    .build();
-
-            issueDTOList.add(issueDTO);
-        }
-        return issueDTOList;
+        return issueDTOListFromIssueList;
     }
 
 
-    public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name) {
-
-//        if (status != null && !EnumUtils.isValidEnumIgnoreCase(IssueStatus.class, status.toUpperCase(Locale.ROOT))) {
-//            status = null; // invalid status, ignore it
-//        }
-//        if (type != null && !EnumUtils.isValidEnumIgnoreCase(IssueType.class, type.toUpperCase(Locale.ROOT))) {
-//            type = null; // invalid type, ignore it
-//        }
+    public List<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name) {
 
         List<Issue> allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
 
-        ArrayList<IssueDTO> issueDTOList = new ArrayList<>();
+        List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
 
-        for (Issue issue : allIssueByProjectId) {
-
-            Member memberInCharge = issue.getMemberInCharge();
-            MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
-                    .name(memberInCharge.getUsername())
-                    .nickname(memberInCharge.getNickname())
-                    .email(memberInCharge.getEmail())
-                    .position(memberInCharge.getPosition())
-                    .build();
-
-            IssueDTO issueDTO = IssueDTO.builder()
-                    .id(issue.getId())
-                    .issueNum(issue.getIssueNum())
-                    .title(issue.getTitle())
-                    .issueType(issue.getIssueType())
-                    .description(issue.getDescription())
-                    .status(issue.getStatus())
-                    .file(issue.getFile())
-                    .createdAt(issue.getCreatedAt())
-                    .memberIdInCharge(memberInfoDTO)
-                    .releasenote(issue.getReleaseNote().getVersion())
-                    .build();
-
-            issueDTOList.add(issueDTO);
-        }
-        return issueDTOList;
+        return issueDTOListFromIssueList;
     }
 
 
-    public String updateIssue(String title, String description, String status, String issueType, Long issueId) {
-
-        System.out.println("title = " + title);
-        if (title == null && description != null) {
-            issueRepository.updateIssueDescription(description, issueId);
-        } else if (title != null && description == null) {
-            issueRepository.updateIssueTitle(title, issueId);
-        } else if (title != null && description != null) {
-            issueRepository.updateIssue(title, description, issueId);
-        } else if (title == null && description == null && issueType == null) {
-            issueRepository.updateIssueStatus(status, issueId);
-        } else if (title == null && description == null && status == null) {
-            issueRepository.updateIssueType(issueType, issueId);
-        } else {
-            return "파라미터 전달되지 않음.";
-        }
-        return "OK";
+public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
+    issueRepositoryImpl.updateIssue(updateIssueForm, issueId);
     }
 
-    public List<IssueDTO> getAllIssuesByReleaseNoteId(Long releaseNoteId) {
-        List<Issue> allIssuesByReleaseNoteId = issueRepository.findAllByReleaseNoteId(releaseNoteId);
-        if (allIssuesByReleaseNoteId == null || allIssuesByReleaseNoteId.isEmpty()) {
+    public List<IssueDTO> getIssueListIncludedInReleaseNote(Long releaseNoteId) {
+        List<Issue> issueListIncludedInReleaseNote = issueRepository.findAllByReleaseNoteId(releaseNoteId);
+
+        if (issueListIncludedInReleaseNote == null || issueListIncludedInReleaseNote.isEmpty()) {
             throw new NoSuchElementException("릴리즈 노트에 포함된 이슈가 없습니다.");
         }
-        List<IssueDTO> issueDTOList = allIssuesByReleaseNoteId.stream().map(issue -> IssueDTO.builder()
-                .id(issue.getId())
-                .issueNum(issue.getIssueNum())
-                .title(issue.getTitle())
-                .issueType(issue.getIssueType())
-                .description(issue.getDescription())
-                .status(issue.getStatus())
-                .file(issue.getFile())
-                .createdAt(issue.getCreatedAt())
-                .memberIdInCharge(MemberInfoDTO.builder()
-                        .name(issue.getMemberInCharge().getUsername())
-                        .nickname(issue.getMemberInCharge().getNickname())
-                        .email(issue.getMemberInCharge().getEmail())
-                        .position(issue.getMemberInCharge().getPosition())
-                        .build())
-                .memberReport(MemberInfoDTO.builder()
-                        .name(issue.getMemberReport().getUsername())
-                        .nickname(issue.getMemberReport().getNickname())
-                        .email(issue.getMemberReport().getEmail())
-                        .position(issue.getMemberReport().getPosition())
-                        .build())
-                .importance(issue.getImportance())
-                .build()).collect(Collectors.toList());
-        return issueDTOList;
+        List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(issueListIncludedInReleaseNote);
+        return issueDTOListFromIssueList;
     }
 
 
-    public List<IssueDTO> findAllByNotReleaseNoteId(Long projectId) {
-        List<Issue> allByNotReleaseNoteId = issueRepository.findAllByNotReleaseNoteId(projectId);
-        if (allByNotReleaseNoteId == null || allByNotReleaseNoteId.isEmpty()) {
+    public List<IssueDTO> getIssueListNotIncludedInReleaseNote(Long projectId) {
+        List<Issue> issueListNotIncludedInReleaseNote = issueRepository.findAllByNotReleaseNoteId(projectId);
+
+        if (issueListNotIncludedInReleaseNote == null || issueListNotIncludedInReleaseNote.isEmpty()) {
             throw new NoSuchElementException("릴리즈 노트에 포함되지 않은 이슈가 없습니다.");
         }
-        List<IssueDTO> issueDTOList = allByNotReleaseNoteId.stream().map(issue -> IssueDTO.builder()
-                .id(issue.getId())
-                .issueNum(issue.getIssueNum())
-                .title(issue.getTitle())
-                .issueType(issue.getIssueType())
-                .description(issue.getDescription())
-                .status(issue.getStatus())
-                .file(issue.getFile())
-                .createdAt(issue.getCreatedAt())
-                .memberIdInCharge(MemberInfoDTO.builder()
-                        .name(issue.getMemberInCharge().getUsername())
-                        .nickname(issue.getMemberInCharge().getNickname())
-                        .email(issue.getMemberInCharge().getEmail())
-                        .position(issue.getMemberInCharge().getPosition())
-                        .build())
-                .memberReport(MemberInfoDTO.builder()
-                        .name(issue.getMemberReport().getUsername())
-                        .nickname(issue.getMemberReport().getNickname())
-                        .email(issue.getMemberReport().getEmail())
-                        .position(issue.getMemberReport().getPosition())
-                        .build())
-                .importance(issue.getImportance())
-                .build()).collect(Collectors.toList());
-        return issueDTOList;
+
+        List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(issueListNotIncludedInReleaseNote);
+       return issueDTOListFromIssueList;
     }
 
     // issue management 페이지에서 필요한 데이터 get
@@ -217,4 +87,5 @@ public class IssueService {
         return projectInfo;
     }
 
+//    public
 }
