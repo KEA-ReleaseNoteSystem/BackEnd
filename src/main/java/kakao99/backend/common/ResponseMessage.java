@@ -1,4 +1,4 @@
-package kakao99.backend.utils;
+package kakao99.backend.common;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class ResponseMessage {
 
     @NotNull
-    private Integer statusCode;
+    private int statusCode;
 
     @NotNull
     private String message;

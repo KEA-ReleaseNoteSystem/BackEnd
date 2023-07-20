@@ -1,8 +1,10 @@
 package kakao99.backend.memo.service;
 
 import kakao99.backend.memo.dto.MemoCreationResponseDTO;
+import kakao99.backend.memo.dto.MemoDTO;
 import kakao99.backend.memo.dto.UpdateMemoDTO;
 import kakao99.backend.memo.dto.MemoDTO;
+
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Memo;

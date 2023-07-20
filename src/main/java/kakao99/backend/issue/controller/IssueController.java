@@ -13,7 +13,7 @@ import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,7 +82,7 @@ public class IssueController {
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value="username", required = false) String name,
             @RequestParam(value = "exclude", required = false) String excludeIds
-            ) {
+    ) {
 
 
 

@@ -6,8 +6,6 @@ import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueRepositoryImpl;
-import kakao99.backend.issue.repository.IssueStatus;
-import kakao99.backend.issue.repository.IssueType;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +73,7 @@ public class IssueService {
 
             issueDTOList.add(issueDTO);
         }
-    return issueDTOList;
+        return issueDTOList;
     }
 
     public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name,List excludeIdList) {

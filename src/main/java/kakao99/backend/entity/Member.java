@@ -39,6 +39,9 @@ public class Member {
     private String nickname; // 닉네임
 
     @Column
+    private String introduce; // 소개
+
+    @Column
     @Email
     private String email; // 이메일
 
@@ -86,6 +89,13 @@ public class Member {
         this.email = email;
         this.username = username;
 
+        return this;
+    }
+
+    public Member update(String introduce, String nickname, String position) {
+        this.nickname = nickname;
+        this.introduce = introduce;
+        this.position = position;
         return this;
     }
 }

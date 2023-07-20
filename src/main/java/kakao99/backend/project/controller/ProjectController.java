@@ -1,29 +1,21 @@
 package kakao99.backend.project.controller;
 
-import com.nimbusds.oauth2.sdk.Response;
 import kakao99.backend.entity.Member;
-import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
 import kakao99.backend.project.dto.ProjectDTO;
-import kakao99.backend.project.dto.ProjectIdDTO;
 import kakao99.backend.project.dto.ProjectModifyDTO;
 import kakao99.backend.project.dto.ProjectPMDTO;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static io.lettuce.core.pubsub.PubSubOutput.Type.message;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,6 +49,7 @@ public class ProjectController {
         return projectService.removeProject(projectModifyDTO, member.getId());
     }
 
+    //프로젝트 정보 조회
     @GetMapping("/api/project/{projectId}")
     public ResponseEntity<?> getProjectInfo(@PathVariable("projectId") Long projectId, Authentication authentication) {
         Member member = (Member) authentication.getPrincipal();
@@ -64,6 +57,7 @@ public class ProjectController {
         return projectService.getProject(projectId, member.getId());
     }
 
+    //현재 프로젝트 권한 조회
     @GetMapping("/api/role/{projectId}")
     public ResponseEntity<?> getRole(@PathVariable("projectId") Long projectId, Authentication authentication) throws Exception {
         Member member = (Member) authentication.getPrincipal();
@@ -73,11 +67,11 @@ public class ProjectController {
             return new ResponseEntity(message, HttpStatus.OK);
         }catch (Exception e){
             ResponseMessage message = new ResponseMessage(404, "해당 id로 찾은 role 데이터 없음.");
-
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
         }
     }
 
+    //내가 속한 프로젝트 조회
     @GetMapping("/api/myProject")
     public ResponseEntity<?> getMyProject(Authentication authentication){
         Member member = (Member) authentication.getPrincipal();

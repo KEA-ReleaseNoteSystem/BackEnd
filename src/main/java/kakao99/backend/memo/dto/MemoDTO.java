@@ -37,6 +37,7 @@ public class MemoDTO {
                             , String memoContent, Date createdAt, Date updatedAt ) {
 
 
+
         return MemoDTO.builder()
                 .id(memoId)
                 .issueId(issueId)

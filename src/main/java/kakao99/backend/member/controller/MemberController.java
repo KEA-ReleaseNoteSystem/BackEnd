@@ -2,10 +2,14 @@ package kakao99.backend.member.controller;
 
 import kakao99.backend.entity.Member;
 import kakao99.backend.member.dto.LoginDTO;
+import kakao99.backend.member.dto.MemberInfoDTO;
+import kakao99.backend.member.dto.MemberUpdateDTO;
 import kakao99.backend.member.dto.RegisterDTO;
 import kakao99.backend.member.service.MemberService;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
@@ -20,30 +24,37 @@ public class MemberController {
 
     @PostMapping("/api/member/signup/group")
     public ResponseEntity<?> groupCreate(@Validated @RequestBody RegisterDTO registerDTO) {
-        log.info("회원 가입 컨트롤러 시작");
-        return memberService.create(registerDTO);
 
+        memberService.create(registerDTO);
+        ResponseMessage message = new ResponseMessage(200, "회원 가입이 완료 되었습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PostMapping("/api/member/signup/group/join")
     public ResponseEntity<?> groupJoin(@Validated @RequestBody RegisterDTO registerDTO) {
-        log.info("회원 가입 컨트롤러 시작");
-        return memberService.join(registerDTO);
+
+        memberService.join(registerDTO);
+        ResponseMessage message = new ResponseMessage(200, "회원 가입이 완료 되었습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PostMapping("/api/member/login")
-    public ResponseEntity<?> login(@Validated @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResponseMessage> login(@Validated @RequestBody LoginDTO loginDTO) {
 
-        log.info("email={}", loginDTO.getEmail());
-        log.info("password={}", loginDTO.getPassword());
-        return memberService.login(loginDTO);
+        String accessToken = memberService.login(loginDTO);
+
+        ResponseMessage message = new ResponseMessage(200, "로그인이 완료 되었습니다.", accessToken);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @GetMapping("/api/member")
-    public ResponseEntity<?> memberInfo(Authentication authentication) {
+    public ResponseEntity<ResponseMessage> memberInfo(Authentication authentication) {
         Member member = (Member) authentication.getPrincipal();
 
-        return memberService.getMemberInfo(member.getId());
+        MemberInfoDTO memberInfo = memberService.getMemberInfo(member.getId());
+
+        ResponseMessage message = new ResponseMessage(200, "회원 정보 조회 완료 되었습니다.", memberInfo);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     // 프로젝트 내의 멤버 조회 API
@@ -51,5 +62,15 @@ public class MemberController {
     public ResponseEntity<?> getMemberOfProject(@PathVariable("projectId") Long projectId) {
 
         return memberService.getMemberOfProject(projectId);
+    }
+
+    @PatchMapping("/api/member")
+    public ResponseEntity<?> updateMemberInfo(Authentication authentication, @RequestBody MemberUpdateDTO memberUpdateDTO) {
+        Member member = (Member) authentication.getPrincipal();
+
+        memberService.updateMember(member.getId(), memberUpdateDTO);
+
+        ResponseMessage message = new ResponseMessage(200,"멤버 정보 수정이 완료 되었습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }
