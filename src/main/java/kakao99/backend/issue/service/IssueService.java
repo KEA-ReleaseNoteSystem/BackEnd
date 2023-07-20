@@ -78,18 +78,22 @@ public class IssueService {
     return issueDTOList;
     }
 
-    public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name) {
+    public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name,List excludeIdList) {
 
-
+        List<Issue> allIssueByProjectId = null;
 //        if (status != null && !EnumUtils.isValidEnumIgnoreCase(IssueStatus.class, status.toUpperCase(Locale.ROOT))) {
 //            status = null; // invalid status, ignore it
 //        }
 //        if (type != null && !EnumUtils.isValidEnumIgnoreCase(IssueType.class, type.toUpperCase(Locale.ROOT))) {
 //            type = null; // invalid type, ignore it
 //        }
+        System.out.println("진짜?" + excludeIdList != null);
+        if(excludeIdList != null){
 
-        List<Issue> allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
-
+            allIssueByProjectId = issueRepositoryImpl.findWithoutExcludeId(projectId,excludeIdList);
+        }else {
+            allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
+        }
 
 
         ArrayList<IssueDTO> issueDTOList = new ArrayList<>();

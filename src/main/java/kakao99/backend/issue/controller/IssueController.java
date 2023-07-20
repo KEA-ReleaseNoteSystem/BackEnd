@@ -72,7 +72,7 @@ public class IssueController {
 
 
 
-
+    //해당 하는 이슈를 제외한 모든 이슈를 가져온다 .
 
 
     @GetMapping("api/{projectId}/issues")
@@ -80,36 +80,29 @@ public class IssueController {
             @PathVariable("projectId") Long projectId,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value="username", required = false) String name) {
+            @RequestParam(value="username", required = false) String name,
+            @RequestParam(value = "exclude", required = false) String excludeIds
+            ) {
 
 
 
         ArrayList<IssueDTO> allIssues;
         ResponseMessage message;
 
-//        if (status == null && type == null && name == null) {
-//            allIssues = issueService.getAllIssues(projectId);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
-//        } else if (status != null && type == null && name == null){
-//            allIssues = issueService.getAllIssuesByFilter(projectId, status);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태별 조회 성공");
-//
-//        } else if (status == null && type != null && name == null) {
-//            allIssues = issueService.getAllIssuesByFilter(projectId, type);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 타입별 조회 성공");
-//        }else if (status == null && type == null && name != null){
-//                allIssues = issueService.getAllIssuesByFilter(projectId,name);
-//                message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 담당자별 조회 성공");
-//        } else if (status != null && type != null && name == null){
-//            allIssues = issueService.getAllIssuesByFilter(projectId, status,type);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입별 조회 성공");
-//        } else if (status != null && type != null && name != null){
-//            allIssues = issueService.getAllIssuesByFilter(projectId, status,type,name);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입,담당자별 조회 성공");
-//
-//        }
+        List<Long> excludeIdList = new ArrayList<>();
+        if (excludeIds != null) {
+            String[] excludeIdArray = excludeIds.split(",");
+            for (String excludeId : excludeIdArray) {
+                try {
+                    excludeIdList.add(Long.parseLong(excludeId));
+                } catch (NumberFormatException e) {
+                    // 예외 처리: 올바른 숫자 형식이 아닌 경우
 
-        allIssues = issueService.getAllIssuesByFilter(projectId,status,type,name);
+                }
+            }
+        }
+
+        allIssues = issueService.getAllIssuesByFilter(projectId,status,type,name,excludeIdList);
         message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입,담당자별 조회 성공");
 
 

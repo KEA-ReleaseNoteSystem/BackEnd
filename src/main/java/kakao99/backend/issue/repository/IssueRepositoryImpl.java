@@ -85,5 +85,16 @@ public class IssueRepositoryImpl  {
         }
 
         return query.fetch();
+
+    }
+
+
+    public List<Issue> findWithoutExcludeId(Long projectId,  List excludeIdList) {
+        JPAQuery<Issue> query = this.query.selectFrom(issue)
+                .where(issue.project.id.eq(projectId)
+                        .and(issue.isActive.eq(true))
+                        .and(issue.id.notIn(excludeIdList)));
+
+        return query.fetch();
     }
 }
