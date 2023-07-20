@@ -5,7 +5,7 @@ import kakao99.backend.memo.dto.MemoCreationResponseDTO;
 import kakao99.backend.memo.dto.UpdateMemoDTO;
 import kakao99.backend.memo.dto.MemoDTO;
 import kakao99.backend.memo.service.MemoService;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import kakao99.backend.entity.Member;
 import org.springframework.http.HttpStatus;

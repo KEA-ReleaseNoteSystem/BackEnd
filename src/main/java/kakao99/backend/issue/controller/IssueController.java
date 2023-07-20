@@ -1,19 +1,22 @@
 package kakao99.backend.issue.controller;
 
+import kakao99.backend.common.exception.ErrorCode;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 
 import kakao99.backend.entity.Project;
 
+import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.issue.dto.IssueDTO;
 
 
+import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -71,49 +75,16 @@ public class IssueController {
     }
 
 
-
-
-
-
     @GetMapping("api/{projectId}/issues")
-    public ResponseEntity<?> getAllIssues(
+    public ResponseEntity<?> getAllIssuesWithFilter(
             @PathVariable("projectId") Long projectId,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value="username", required = false) String name) {
 
 
-
-        ArrayList<IssueDTO> allIssues;
-        ResponseMessage message;
-
-//        if (status == null && type == null && name == null) {
-//            allIssues = issueService.getAllIssues(projectId);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 조회 성공");
-//        } else if (status != null && type == null && name == null){
-//            allIssues = issueService.getAllIssuesByFilter(projectId, status);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태별 조회 성공");
-//
-//        } else if (status == null && type != null && name == null) {
-//            allIssues = issueService.getAllIssuesByFilter(projectId, type);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 타입별 조회 성공");
-//        }else if (status == null && type == null && name != null){
-//                allIssues = issueService.getAllIssuesByFilter(projectId,name);
-//                message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 담당자별 조회 성공");
-//        } else if (status != null && type != null && name == null){
-//            allIssues = issueService.getAllIssuesByFilter(projectId, status,type);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입별 조회 성공");
-//        } else if (status != null && type != null && name != null){
-//            allIssues = issueService.getAllIssuesByFilter(projectId, status,type,name);
-//            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입,담당자별 조회 성공");
-//
-//        }
-
-        allIssues = issueService.getAllIssuesByFilter(projectId,status,type,name);
-        message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입,담당자별 조회 성공");
-
-
-        message.setData(allIssues);
+        List<IssueDTO> allIssues = issueService.getAllIssuesByFilter(projectId,status,type,name);
+        ResponseMessage message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입,담당자별 조회 성공", allIssues);
 
         return new ResponseEntity(message, HttpStatus.OK);
     }
@@ -122,46 +93,58 @@ public class IssueController {
     // 이슈 정보 업데이트
     @PutMapping("/api/{projectId}/issues/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
-        System.out.println("getStatus = "+ updateIssueForm.getStatus() + updateIssueForm.getIssueType() );
-        String result = issueService.updateIssue(updateIssueForm.getTitle(), updateIssueForm.getDescription(),updateIssueForm.getStatus(),updateIssueForm.getIssueType() , issueId);
-        ResponseMessage message = null;
-        if (result == "OK") {
-            message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");
-        } else {
-            message = new ResponseMessage(500, projectId + "번 프로젝트의 모든 이슈 수정 실패: " + result);
-        }
+        issueService.updateIssue(updateIssueForm, issueId);
+
+        ResponseMessage message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");
+
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
 
     // releaseNote id로 모든 이슈 조회
     @GetMapping("/api/releaseNote/{releaseNoteId}/issues")
-    public ResponseEntity<?> getIssuesByReleaseNote(@PathVariable("releaseNoteId") Long releaseNoteId) {
+    public ResponseEntity<?> getIssueListIncludedInReleaseNote(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
-        ArrayList<IssueDTO> allIssuesByReleaseNoteId = issueService.getAllIssuesByReleaseNoteId(releaseNoteId);
+        List<IssueDTO> allIssuesByReleaseNoteId = issueService.getIssueListIncludedInReleaseNote(releaseNoteId);
         ResponseMessage message = new ResponseMessage(200, "릴리즈 노트의 관련된 이슈 조회 성공", allIssuesByReleaseNoteId);
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
     @GetMapping("/api/project/{projectId}/issues")
-    public ResponseEntity<?> findAllByNotReleaseNoteId(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity<?> getIssueListNotIncludedInReleaseNote(@PathVariable("projectId") Long projectId) {
 
-        ArrayList<IssueDTO> allByNotReleaseNoteId = issueService.findAllByNotReleaseNoteId(projectId);
+        List<IssueDTO> allByNotReleaseNoteId = issueService.getIssueListNotIncludedInReleaseNote(projectId);
         ResponseMessage message = new ResponseMessage(200, "릴리즈 노트에 포함되지 않은 이슈 조회 성공", allByNotReleaseNoteId);
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
 
+    // issue management 페이지에서 필요한 데이터 get
+    @GetMapping("/api/project/{projectId}/issues/management")
+    public ResponseEntity<?> getIssueManagementPageData(@PathVariable("projectId") Long projectId) {
+        ProjectWithIssuesDTO issueManagementPageData = issueService.getIssueManagementPageData(projectId);
+
+        ResponseMessage message = new ResponseMessage(200, "issue Management 페이지에 필요한 데이터 조회 성공", issueManagementPageData);
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
+
+
+    // 예외 처리 예시
     @GetMapping("/test/test/{releaseNoteId}")
+    public String exceptionExample(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
-    public List<Issue> test2(@PathVariable("releaseNoteId") Long releaseNoteId) {
+        if(releaseNoteId ==0)
+            throw new CustomException(5001, "테스트 Exception");
 
-//        System.out.println("userId = " + testForm.getUserId());
+        if (releaseNoteId == 1) {
+            throw new CustomException(5001, "테스트 Exception", "IssueController.exceptionExample()");
+        }
 
-        List<Issue> allIssuesByReleaseNoteId = issueRepository.getAllIssuesByReleaseNoteId(releaseNoteId);
+        if(releaseNoteId == 2) {
+            throw new CustomException(ErrorCode.NOT_MATCH_CODE);
+        }
 
-
-        return allIssuesByReleaseNoteId;
+        return "Success";
     }
 
 //    @GetMapping("/test/test/project/{projectId}")

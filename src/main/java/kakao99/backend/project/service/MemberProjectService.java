@@ -1,23 +1,20 @@
 package kakao99.backend.project.service;
 
 import jakarta.transaction.Transactional;
-import kakao99.backend.entity.Group;
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
 import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.dto.MemberProjectDTO;
-import kakao99.backend.project.dto.ProjectDTO;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
-import kakao99.backend.utils.ResponseMessage;
+import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service

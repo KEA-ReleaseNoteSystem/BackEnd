@@ -15,15 +15,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface IssueRepository extends JpaRepository<Issue, Long> {
+public interface IssueRepository extends JpaRepository<Issue, Long>, IssueRepositoryCustom {
     Issue save(Issue issue);
-
-//    Issue findByProjectIdAndIssueId(Long projectId, Long issueId);
-
-//    @Query("select m from Issue m join fetch m.project")
-//    List<Issue> findAllByProjectId(Long projectId);
 
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge join fetch m.memberReport where m.project.id=:projectId and m.isActive = true")
     List<Issue> findAllByProjectId(@Param("projectId") Long projectId);
@@ -99,7 +95,6 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     @Transactional
     @Query("UPDATE Issue m SET m.releaseNote.id =:releaseNoteId  where m.id =:issueId")
     int insertIssueFromReleaseNote(@Param("releaseNoteId") Long releaseNoteId, @Param("issueId") Long issueId);
-
 
 
 }
