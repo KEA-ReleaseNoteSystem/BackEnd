@@ -76,7 +76,7 @@ public class IssueController {
 
 
 
-
+// jira 연동 테스트
 
 
     @GetMapping("api/{projectId}/issues")
@@ -86,15 +86,10 @@ public class IssueController {
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value="username", required = false) String name) {
 
-<<<<<<< HEAD
-=======
+
         List<IssueDTO> allIssues = null;
         ResponseMessage message = null;
->>>>>>> feature/issue
 
-
-        ArrayList<IssueDTO> allIssues;
-        ResponseMessage message;
 
 //        if (status == null && type == null && name == null) {
 //            allIssues = issueService.getAllIssues(projectId);
