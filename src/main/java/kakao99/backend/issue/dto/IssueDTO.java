@@ -54,6 +54,7 @@ public class IssueDTO {
                 .status(issue.getStatus())
                 .file(issue.getFile())
                 .createdAt(issue.getCreatedAt())
+                .listPosition(issue.getListPosition())
                 .memberIdInCharge(MemberInfoDTO.builder()
                         .name(issue.getMemberInCharge().getUsername())
                         .nickname(issue.getMemberInCharge().getNickname())
