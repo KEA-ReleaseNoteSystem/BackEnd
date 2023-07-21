@@ -79,6 +79,7 @@ public class IssueService {
     public ArrayList<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name,List excludeIdList) {
 
         List<Issue> allIssueByProjectId = null;
+        int excludeIdListLength = excludeIdList != null ? excludeIdList.size() : 0;
 //        if (status != null && !EnumUtils.isValidEnumIgnoreCase(IssueStatus.class, status.toUpperCase(Locale.ROOT))) {
 //            status = null; // invalid status, ignore it
 //        }
@@ -86,7 +87,7 @@ public class IssueService {
 //            type = null; // invalid type, ignore it
 //        }
         System.out.println("진짜?" + excludeIdList != null);
-        if(excludeIdList != null){
+        if(excludeIdListLength != 0){
 
             allIssueByProjectId = issueRepositoryImpl.findWithoutExcludeId(projectId,excludeIdList);
         }else {
