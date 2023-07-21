@@ -1,5 +1,6 @@
 package kakao99.backend.issue.service;
 
+import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.issue.controller.UpdateIssueForm;
@@ -12,6 +13,7 @@ import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -85,6 +87,18 @@ public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
         // memo
 
         return projectInfo;
+    }
+
+    @Transactional
+    public Long deleteIssue(Long issueId, Long memberId) {
+        Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
+        if (issueByIssueId.isEmpty()) {
+            throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
+        }
+
+        issueRepositoryImpl.deleteIssue(issueId, memberId);
+
+        return issueId;
     }
 
 //    public
