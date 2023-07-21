@@ -3,6 +3,7 @@ package kakao99.backend.issue.service;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.issue.controller.UpdateIssueForm;
+import kakao99.backend.issue.dto.DragNDropDTO;
 import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
@@ -87,5 +88,8 @@ public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
         return projectInfo;
     }
 
-//    public
+    public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO) {
+        issueRepositoryImpl.updateIssueByDragNDrop(dragNDropDTO);
+    }
+
 }

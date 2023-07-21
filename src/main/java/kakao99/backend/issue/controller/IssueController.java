@@ -7,6 +7,7 @@ import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
 
 import kakao99.backend.common.exception.CustomException;
+import kakao99.backend.issue.dto.DragNDropDTO;
 import kakao99.backend.issue.dto.IssueDTO;
 
 
@@ -18,6 +19,7 @@ import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,8 +30,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static java.awt.SystemColor.info;
+
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class IssueController {
 
     private final IssueRepository issueRepository;
@@ -128,10 +133,15 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
-//    @PostMapping("/api/project/{projectId}/issues/management/dragndrop")
-//    public ResponseEntity<?> updateIssueByDragNDrop() {
-//
-//    }
+    @PostMapping("/api/project/{projectId}/issues/management/dragndrop")
+    public ResponseEntity<?> updateIssueByDragNDrop(@PathVariable("projectId") Long projectId, @RequestBody DragNDropDTO dragNDropDTO) {
+        log.info("드래그앤드랍");
+
+        issueService.updateIssueByDragNDrop(dragNDropDTO);
+
+        ResponseMessage message = new ResponseMessage(200, "issue Management 페이지에 필요한 데이터 조회 성공");
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
 
     // 예외 처리 예시
     @GetMapping("/test/test/{releaseNoteId}")
