@@ -77,4 +77,10 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         }
         query.execute();
     }
+
+    @Transactional
+    public void updateIssueByDragNDrop() {
+
+    }
+
 }

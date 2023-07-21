@@ -41,7 +41,7 @@ public class IssueController {
 
     // 이슈 생성
     @PostMapping("/api/{projectId}/issue")
-    public ResponseEntity<?> createIssue(@RequestBody IssueForm issue, @PathVariable("projectId") Long projectId) {
+        public ResponseEntity<?> createIssue(@RequestBody IssueForm issue, @PathVariable("projectId") Long projectId) {
         System.out.println("userId = " + issue.getUserId());
         Optional<Member> memberById = memberRepository.findById(issue.getUserId());
 
@@ -80,10 +80,10 @@ public class IssueController {
             @PathVariable("projectId") Long projectId,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value="username", required = false) String name) {
+            @RequestParam(value = "username", required = false) String name) {
 
 
-        List<IssueDTO> allIssues = issueService.getAllIssuesByFilter(projectId,status,type,name);
+        List<IssueDTO> allIssues = issueService.getAllIssuesByFilter(projectId, status, type, name);
         ResponseMessage message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 상태,타입,담당자별 조회 성공", allIssues);
 
         return new ResponseEntity(message, HttpStatus.OK);
@@ -128,19 +128,24 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
+//    @PostMapping("/api/project/{projectId}/issues/management/dragndrop")
+//    public ResponseEntity<?> updateIssueByDragNDrop() {
+//
+//    }
 
     // 예외 처리 예시
     @GetMapping("/test/test/{releaseNoteId}")
+
     public String exceptionExample(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
-        if(releaseNoteId ==0)
+        if (releaseNoteId == 0)
             throw new CustomException(5001, "테스트 Exception");
 
         if (releaseNoteId == 1) {
             throw new CustomException(5001, "테스트 Exception", "IssueController.exceptionExample()");
         }
 
-        if(releaseNoteId == 2) {
+        if (releaseNoteId == 2) {
             throw new CustomException(ErrorCode.NOT_MATCH_CODE);
         }
 
@@ -157,7 +162,6 @@ public class IssueController {
 //
 //        return allByProjectIdImpl;
 //    }
-
 
 
 }
