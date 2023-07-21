@@ -15,6 +15,7 @@ import kakao99.backend.issue.dto.IssueDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -31,6 +32,8 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     private QReleaseNote releaseNote = QReleaseNote.releaseNote;
 
     private QMember member = QMember.member;
+
+    private QIssueParentChild issueParentChild = QIssueParentChild.issueParentChild;
 
     public List<Issue> findAllWithFilter(Long projectId, String status, String type, String username) {
         JPAQuery<Issue> query = this.query.selectFrom(issue)
@@ -96,6 +99,21 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
         query.execute();
+    }
+
+    @Transactional
+    public void deleteIssue(Long issueId, Long memberId) {
+        long execute1 = this.query.update(issue)
+                .set(issue.isActive, false)
+                .set(issue.deletedAt, new Date())
+                .where(issue.id.eq(issueId).and(issue.memberReport.id.eq(memberId)))
+                .execute();
+
+        long execute = this.query.update(issueParentChild)
+                .set(issueParentChild.isActive, false)
+                .set(issueParentChild.deletedAt, new Date())
+                .where(issueParentChild.parentIssue.id.eq(issueId).or(issueParentChild.childIssue.id.eq(issueId)))
+                .execute();
     }
 
 }

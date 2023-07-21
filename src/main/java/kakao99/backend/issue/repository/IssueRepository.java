@@ -21,6 +21,8 @@ import java.util.Optional;
 public interface IssueRepository extends JpaRepository<Issue, Long>, IssueRepositoryCustom {
     Issue save(Issue issue);
 
+    Optional<Issue> findIssueById(Long issueId);
+
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge join fetch m.memberReport where m.project.id=:projectId and m.isActive = true")
     List<Issue> findAllByProjectId(@Param("projectId") Long projectId);
 
