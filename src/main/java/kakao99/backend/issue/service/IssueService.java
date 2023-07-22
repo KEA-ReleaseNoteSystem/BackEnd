@@ -32,6 +32,7 @@ public class IssueService {
 
     public List<IssueDTO> getAllIssues(Long projectId) {
         List<Issue> allIssueByProjectId = issueRepository.findAllByProjectId(projectId);
+        System.out.println("allIssueByProjectId.toArray().length = " + allIssueByProjectId.toArray().length);
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
 
         return issueDTOListFromIssueList;

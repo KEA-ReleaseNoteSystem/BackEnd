@@ -45,12 +45,11 @@ public class IssueController {
 
 
     // 이슈 생성
-    @PostMapping("/api/{projectId}/issue")
+    @PostMapping("/api/project/{projectId}/issue")
         public ResponseEntity<?> createIssue(@RequestBody IssueForm issue, @PathVariable("projectId") Long projectId) {
-        System.out.println("userId = " + issue.getUserId());
+
         Optional<Member> memberById = memberRepository.findById(issue.getUserId());
-
-
+        
         if (memberById.isEmpty()) {
             ResponseMessage message = new ResponseMessage(404, "해당 userId에 해당하는 유저 데이터 없음.");
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
@@ -70,7 +69,10 @@ public class IssueController {
                 .issueType(issue.getType())
                 .description(issue.getDescription())
                 .memberReport(member)
+                .memberInCharge(member)
+                .status("backlog")
                 .project(project)
+                .isActive(true)
                 .build();
 
 
