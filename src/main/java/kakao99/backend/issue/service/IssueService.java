@@ -1,5 +1,6 @@
 package kakao99.backend.issue.service;
 
+import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.issue.controller.UpdateIssueForm;
@@ -13,6 +14,7 @@ import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -20,8 +22,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class IssueService {
     private final IssueRepository issueRepository;
-
-    private final IssueRepositoryImpl issueRepositoryImpl;
     private final MemberRepository memberRepository;
     private final ProjectService projectService;
 
@@ -41,7 +41,7 @@ public class IssueService {
 
     public List<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name) {
 
-        List<Issue> allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
+        List<Issue> allIssueByProjectId = issueRepository.findAllWithFilter(projectId, status, type, name);
 
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
 
@@ -50,7 +50,8 @@ public class IssueService {
 
 
 public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
-    issueRepositoryImpl.updateIssue(updateIssueForm, issueId);
+//    issueRepositoryImpl.updateIssue(updateIssueForm, issueId);
+    issueRepository.updateIssue(updateIssueForm, issueId);
     }
 
     public List<IssueDTO> getIssueListIncludedInReleaseNote(Long releaseNoteId) {
@@ -89,8 +90,21 @@ public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
         return projectInfo;
     }
 
+    @Transactional
+    public Long deleteIssue(Long issueId, Long memberId) {
+        Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
+        if (issueByIssueId.isEmpty()) {
+            throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
+        }
+
+        issueRepository.deleteIssue(issueId, memberId);
+
+        return issueId;
+    }
+
+
     public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO) {
-        issueRepositoryImpl.updateIssueByDragNDrop(dragNDropDTO);
+        issueRepository.updateIssueByDragNDrop(dragNDropDTO);
     }
 
 }

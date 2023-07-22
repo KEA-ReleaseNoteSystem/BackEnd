@@ -98,7 +98,7 @@ public class IssueController {
 
 
     // 이슈 정보 업데이트
-    @PutMapping("/api/{projectId}/issues/{issueId}")
+    @PutMapping("/api/project/{projectId}/issue/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
         issueService.updateIssue(updateIssueForm, issueId);
 
@@ -174,6 +174,17 @@ public class IssueController {
 //
 //        return allByProjectIdImpl;
 //    }
+
+
+    @DeleteMapping("/api/issue")
+    public ResponseEntity<?> deleteIssue(Authentication authentication, @RequestBody Long issueId) {
+        Member member = (Member) authentication.getPrincipal();
+
+        issueService.deleteIssue(issueId, member.getId());
+
+        ResponseMessage message = new ResponseMessage(200, issueId + "번이 삭제되었습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 
 
 }
