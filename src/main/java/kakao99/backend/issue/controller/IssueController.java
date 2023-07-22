@@ -96,7 +96,7 @@ public class IssueController {
 
 
     // 이슈 정보 업데이트
-    @PutMapping("/api/{projectId}/issues/{issueId}")
+    @PutMapping("/api/project/{projectId}/issue/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
         issueService.updateIssue(updateIssueForm, issueId);
 

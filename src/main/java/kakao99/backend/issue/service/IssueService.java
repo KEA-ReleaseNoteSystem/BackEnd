@@ -22,8 +22,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class IssueService {
     private final IssueRepository issueRepository;
-
-    private final IssueRepositoryImpl issueRepositoryImpl;
     private final MemberRepository memberRepository;
     private final ProjectService projectService;
 
@@ -42,7 +40,7 @@ public class IssueService {
 
     public List<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type,String name) {
 
-        List<Issue> allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
+        List<Issue> allIssueByProjectId = issueRepository.findAllWithFilter(projectId, status, type, name);
 
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
 
@@ -51,7 +49,8 @@ public class IssueService {
 
 
 public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
-    issueRepositoryImpl.updateIssue(updateIssueForm, issueId);
+//    issueRepositoryImpl.updateIssue(updateIssueForm, issueId);
+    issueRepository.updateIssue(updateIssueForm, issueId);
     }
 
     public List<IssueDTO> getIssueListIncludedInReleaseNote(Long releaseNoteId) {
@@ -97,14 +96,14 @@ public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
         }
 
-        issueRepositoryImpl.deleteIssue(issueId, memberId);
+        issueRepository.deleteIssue(issueId, memberId);
 
         return issueId;
     }
 
 
     public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO) {
-        issueRepositoryImpl.updateIssueByDragNDrop(dragNDropDTO);
+        issueRepository.updateIssueByDragNDrop(dragNDropDTO);
     }
 
 }
