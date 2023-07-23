@@ -1,10 +1,12 @@
 package kakao99.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -22,7 +24,9 @@ public class Notification {
     @Column(name = "notification_id")
     private Long id;
 
-    private String content; // 알림 내용
+    private String updatedIssueStatusBefore; // 변경 이전 status
+
+    private String updatedIssueStatusAfter; // 변경 이후 status
 
     private String type;    // 알림 유형
 
@@ -44,8 +48,14 @@ public class Notification {
     @Column(name = "is_active")
     private Boolean isActive; // 삭제 여부
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id_in_charge")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
+    private Member memberInCharge;  // 담당자
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id_report")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Member memberReport;    // 알림 보고자
 }
