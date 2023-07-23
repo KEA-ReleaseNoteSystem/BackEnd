@@ -3,6 +3,7 @@ package kakao99.backend.issue.service;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
+import kakao99.backend.entity.Notification;
 import kakao99.backend.issue.controller.UpdateIssueForm;
 import kakao99.backend.issue.dto.DragNDropDTO;
 import kakao99.backend.issue.dto.IssueDTO;
@@ -11,6 +12,7 @@ import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.member.repository.MemberRepository;
+import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class IssueService {
     private final IssueRepository issueRepository;
     private final MemberRepository memberRepository;
     private final ProjectService projectService;
+    private final NotificationService notificationService;
 
     public List<Issue> getIssuesWithMemo(Long projectId) {
         return issueRepository.findAllByProjectId(projectId);
@@ -103,8 +106,21 @@ public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
     }
 
 
-    public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO) {
+    public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO, Long userId) {
         issueRepository.updateIssueByDragNDrop(dragNDropDTO);
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+        if (optionalMember.isEmpty()) {
+            throw new NoSuchElementException("해당 멤버가 존재하지 않습니다.");
+        }
+
+        Long issueId = dragNDropDTO.getIssueId();
+        Optional<Issue> issueOptional = issueRepository.findIssueById(issueId);
+        if (issueOptional.isEmpty()) {
+            throw new CustomException(404, issueId + "번 이슈가 존재하지 않습니다.");
+        }
+        Issue issue = issueOptional.get();
+        Member memberReport = optionalMember.get();
+        Notification notification = notificationService.createNotification(dragNDropDTO, memberReport, issue);
     }
 
 }

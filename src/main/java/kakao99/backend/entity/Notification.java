@@ -1,7 +1,10 @@
 package kakao99.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import kakao99.backend.entity.types.NotificationType;
+import kakao99.backend.issue.dto.DragNDropDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +32,11 @@ public class Notification {
     private String updatedIssueStatusAfter; // 변경 이후 status
 
     private String type;    // 알림 유형
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "issue_id")
+    @JsonManagedReference
+    private Issue issue;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -58,4 +66,19 @@ public class Notification {
     @JoinColumn(name = "member_id_report")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Member memberReport;    // 알림 보고자
+
+    public static Notification createdByDragNDrop(DragNDropDTO dragNDropDTO, Member memberReport, Issue issue) {
+
+        return Notification.builder()
+                .memberReport(memberReport)
+                .type(NotificationType.DRAGNDROP.getType())// 이슈 타입
+                .updatedIssueStatusBefore(dragNDropDTO.getSourceStatus())
+                .updatedIssueStatusAfter(dragNDropDTO.getDestinationStatus())
+                .issue(issue)
+                .createdAt(new Date())
+                .updatedAt(null)
+                .deletedAt(null)
+                .isActive(true)  // Assuming memos are active when created
+                .build();
+    }
 }
