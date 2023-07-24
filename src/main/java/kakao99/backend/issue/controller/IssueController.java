@@ -176,8 +176,10 @@ public class IssueController {
 //    }
 
 
-    @DeleteMapping("/api/issue")
-    public ResponseEntity<?> deleteIssue(Authentication authentication, @RequestBody Long issueId) {
+    @DeleteMapping("/api/issue/{issueId}")
+    public ResponseEntity<?> deleteIssue(Authentication authentication, /* @RequestBody Long issueId */ @PathVariable("issueId") Long issueId) {
+        System.out.println("issueId = " + issueId);
+
         Member member = (Member) authentication.getPrincipal();
 
         issueService.deleteIssue(issueId, member.getId());
