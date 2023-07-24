@@ -98,6 +98,11 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         if(dragNDropDTO.getDestinationStatus() == null && dragNDropDTO.getSourceStatus() == null){
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
+
+        if(dragNDropDTO.getListPosition() != null ){
+            query.set(issue.listPosition, dragNDropDTO.getListPosition());
+        }
+
         query.execute();
     }
 
