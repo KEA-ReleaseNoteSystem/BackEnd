@@ -1,10 +1,7 @@
 package kakao99.backend.member.controller;
 
 import kakao99.backend.entity.Member;
-import kakao99.backend.member.dto.LoginDTO;
-import kakao99.backend.member.dto.MemberInfoDTO;
-import kakao99.backend.member.dto.MemberUpdateDTO;
-import kakao99.backend.member.dto.RegisterDTO;
+import kakao99.backend.member.dto.*;
 import kakao99.backend.member.service.MemberService;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +59,23 @@ public class MemberController {
     public ResponseEntity<?> getMemberOfProject(@PathVariable("projectId") Long projectId) {
 
         return memberService.getMemberOfProject(projectId);
+    }
+
+    // 그룹 내의 멤버 조회 API
+    @GetMapping("/api/group/members")
+    public ResponseEntity<?> getMemberOfGroup(Authentication authentication) {
+
+        Member member = (Member) authentication.getPrincipal();
+        String authority = member.getAuthority();
+        if(authority.equals("GM")) {
+            MemberGroupDTO memberInfoWithGroupMember = memberService.getMemberInfoWithGroupMember(member.getId());
+            ResponseMessage message = new ResponseMessage(200, "회원 정보 및 그룹원 조회 완료 되었습니다.", memberInfoWithGroupMember);
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        }else {
+            MemberInfoDTO memberInfo = memberService.getMemberInfo(member.getId());
+            ResponseMessage message = new ResponseMessage(200, "회원 정보 조회 완료 되었습니다.", memberInfo);
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        }
     }
 
     @PatchMapping("/api/member")

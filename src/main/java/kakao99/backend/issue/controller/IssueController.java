@@ -130,7 +130,6 @@ public class IssueController {
     @GetMapping("/api/project/{projectId}/issues/management")
     public ResponseEntity<?> getIssueManagementPageData(@PathVariable("projectId") Long projectId) {
         ProjectWithIssuesDTO issueManagementPageData = issueService.getIssueManagementPageData(projectId);
-
         ResponseMessage message = new ResponseMessage(200, "issue Management 페이지에 필요한 데이터 조회 성공", issueManagementPageData);
         return new ResponseEntity(message, HttpStatus.OK);
     }

@@ -6,10 +6,7 @@ import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
 import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.jwt.TokenProvider;
-import kakao99.backend.member.dto.LoginDTO;
-import kakao99.backend.member.dto.MemberInfoDTO;
-import kakao99.backend.member.dto.MemberUpdateDTO;
-import kakao99.backend.member.dto.RegisterDTO;
+import kakao99.backend.member.dto.*;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.common.ResponseMessage;
@@ -137,6 +134,45 @@ public class MemberService {
                 .position(member.getPosition())
                 .introduce(member.getIntroduce())
                 .projectList(projectList)
+                .build();
+    }
+
+    @Transactional
+    public MemberGroupDTO getMemberInfoWithGroupMember(Long memberId) {
+        Optional<Member> byId = memberRepository.findById(memberId);
+
+        if (byId.isEmpty()) {
+            //ResponseMessage message = new ResponseMessage(404, "회원 정보가 존재하지 않습니다.");
+            throw new CustomException(404, "회원정보가 존재하지 않습니다.");
+        }
+
+        Member member = byId.get();
+        List<Member> groupMembers = memberRepository.findByGroupIdAndIsActiveTrue(member.getGroup().getId());
+        if (groupMembers.isEmpty()) {
+            throw new CustomException(404, "그룹의 회원이 존재하지 않습니다.");
+        }
+
+        List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
+        for (Member groupMember : groupMembers) {
+            memberInfoDTOList.add(
+                    MemberInfoDTO.builder()
+                            .name(groupMember.getUsername())
+                            .nickname(groupMember.getNickname())
+                            .email(groupMember.getEmail())
+                            .position(groupMember.getPosition())
+                            .build()
+            );
+        }
+
+        System.out.println(memberInfoDTOList);
+        return MemberGroupDTO.builder()
+                .name(member.getUsername())
+                .nickname(member.getNickname())
+                .email(member.getEmail())
+                .groupName(member.getGroup().getName())
+                .position(member.getPosition())
+                .introduce(member.getIntroduce())
+                .groupMember(memberInfoDTOList)
                 .build();
     }
 
