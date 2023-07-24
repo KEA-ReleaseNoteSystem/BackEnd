@@ -3,6 +3,7 @@ package kakao99.backend.member.dto;
 import kakao99.backend.entity.Project;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -17,6 +18,7 @@ public class MemberInfoDTO {
     private String groupName;
     private String position;
     private String introduce;
+    private Date createdAt;
     private List<Project> projectList;
-
+    private String role;
 }
