@@ -156,10 +156,12 @@ public class MemberService {
         for (Member groupMember : groupMembers) {
             memberInfoDTOList.add(
                     MemberInfoDTO.builder()
+                            .id(groupMember.getId())
                             .name(groupMember.getUsername())
                             .nickname(groupMember.getNickname())
                             .email(groupMember.getEmail())
                             .position(groupMember.getPosition())
+                            .authority(groupMember.getAuthority())
                             .build()
             );
         }
