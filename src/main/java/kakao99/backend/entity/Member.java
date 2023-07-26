@@ -98,6 +98,18 @@ public class Member {
         this.position = position;
         return this;
     }
+
+    public Member deleteGroupMember() {
+        this.group = null;
+        this.authority= null;
+        return this;
+    }
+
+    public Member updateGroup(Group group, String authority) {
+        this.group = group;
+        this.authority= authority;
+        return this;
+    }
 }
 
 

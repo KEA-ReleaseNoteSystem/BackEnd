@@ -1,25 +1,25 @@
 package kakao99.backend.member.dto;
 
+import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
-public class MemberInfoDTO {
-    private Long id;
+public class MemberGroupDTO {
     private String name;
     private String nickname;
     private String email;
     private String groupName;
     private String position;
     private String introduce;
-    private String authority;
-    private Date createdAt;
-    private List<Project> projectList;
-    private String role;
+    private String groupCode;
+    private List<MemberInfoDTO> groupMember;
 }
