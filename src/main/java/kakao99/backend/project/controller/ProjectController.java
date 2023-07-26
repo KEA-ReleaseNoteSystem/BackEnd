@@ -10,6 +10,7 @@ import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -45,6 +47,9 @@ public class ProjectController {
 
     @DeleteMapping("/api/project")
     public ResponseEntity<?> removeProject(@RequestBody ProjectModifyDTO projectModifyDTO,Authentication authentication){
+
+        log.info("프로젝트 삭제 컨트롤러 진입");
+
         Member member = (Member) authentication.getPrincipal();
         return projectService.removeProject(projectModifyDTO, member.getId());
     }

@@ -49,6 +49,8 @@ public class MemberController {
 
     @GetMapping("/api/member")
     public ResponseEntity<ResponseMessage> memberInfo(Authentication authentication) {
+
+        log.info("authentication={}", authentication);
         Member member = (Member) authentication.getPrincipal();
 
         MemberInfoDTO memberInfo = memberService.getMemberInfo(member.getId());
