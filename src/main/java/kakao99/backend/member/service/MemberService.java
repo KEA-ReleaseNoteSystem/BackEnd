@@ -147,13 +147,13 @@ public class MemberService {
         }
 
         Member member = byId.get();
-        List<Member> groupMembers = memberRepository.findByGroupIdAndIsActiveTrue(member.getGroup().getId());
-        if (groupMembers.isEmpty()) {
+        List<Member> groupMemberList = memberRepository.findByGroupIdAndIsActiveTrue(member.getGroup().getId());
+        if (groupMemberList.isEmpty()) {
             throw new CustomException(404, "그룹의 회원이 존재하지 않습니다.");
         }
 
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
-        for (Member groupMember : groupMembers) {
+        for (Member groupMember : groupMemberList) {
             memberInfoDTOList.add(
                     MemberInfoDTO.builder()
                             .id(groupMember.getId())
@@ -171,6 +171,7 @@ public class MemberService {
                 .name(member.getUsername())
                 .nickname(member.getNickname())
                 .email(member.getEmail())
+                .groupCode(member.getGroup().getCode())
                 .groupName(member.getGroup().getName())
                 .position(member.getPosition())
                 .introduce(member.getIntroduce())
@@ -191,6 +192,12 @@ public class MemberService {
 
     }
 
+    @Transactional
+    public void removeMemberGroup(MemberInfoDTO memberInfoDTO){
+        Optional<Member> byId = memberRepository.findById(memberInfoDTO.getId());
+        Member member = byId.get();
+        member.deleteGroupMember();
+    }
     public ResponseEntity<?> getMemberOfProject(Long projectId) {
         List<Member> memberByProjectId = memberProjectRepository.findMemberByProjectId(projectId);
         if (memberByProjectId.isEmpty()) {

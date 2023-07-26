@@ -98,6 +98,12 @@ public class Member {
         this.position = position;
         return this;
     }
+
+    public Member deleteGroupMember() {
+        this.group = null;
+        this.authority= null;
+        return this;
+    }
 }
 
 

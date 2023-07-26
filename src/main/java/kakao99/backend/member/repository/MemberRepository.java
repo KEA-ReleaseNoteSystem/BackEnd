@@ -26,8 +26,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByGroupIdAndIsActiveTrue(Long id);
 
     /*
-
-        private String name;
+    private String name;
     private String nickname;
     private String email;
     private String position;

@@ -1,6 +1,7 @@
 package kakao99.backend.member.controller;
 
 import kakao99.backend.entity.Member;
+import kakao99.backend.group.dto.GroupNameDTO;
 import kakao99.backend.member.dto.*;
 import kakao99.backend.member.service.MemberService;
 import kakao99.backend.common.ResponseMessage;
@@ -87,4 +88,14 @@ public class MemberController {
         ResponseMessage message = new ResponseMessage(200,"멤버 정보 수정이 완료 되었습니다.");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    //사용자를 그룹에서 삭제
+    @DeleteMapping ("/api/groupMember")
+    public ResponseEntity<?> deleteMemberGroup(@RequestBody MemberInfoDTO memberInfoDTO) {
+        memberService.removeMemberGroup(memberInfoDTO);
+
+        ResponseMessage message = new ResponseMessage(200,memberInfoDTO.getName()+"유저가 그룹에서 삭제됐습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
 }

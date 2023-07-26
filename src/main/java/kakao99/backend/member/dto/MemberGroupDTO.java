@@ -20,5 +20,6 @@ public class MemberGroupDTO {
     private String groupName;
     private String position;
     private String introduce;
+    private String groupCode;
     private List<MemberInfoDTO> groupMember;
 }
