@@ -65,6 +65,24 @@ public class MemberService {
         return savedMember.getId();
     }
 
+    //그룹에서 삭제당하고 다시 그룹을 만들 때
+    @Transactional
+    public void createRejoin(ReJoinDTO reJoinDTO) {
+        Optional<Member> findEmailMember = memberRepository.findByEmail(reJoinDTO.getEmail());
+        if (findEmailMember.isEmpty()) {
+            throw new CustomException(404, "멤버가 존재하지 않습니다.");
+        }
+        Member member = findEmailMember.get();
+        Group group = Group.builder()
+                .name(reJoinDTO.getGroupName())
+                .createdAt(new Date())
+                .isActive("true")
+                .code(UUID.randomUUID().toString())
+                .build();
+
+        member.updateGroup(group, "GM");
+    }
+
     @Transactional
     public Long join(RegisterDTO registerDTO) {
         Optional<Group> byCode = groupRepository.findByCode(registerDTO.getGroupName());
@@ -92,6 +110,23 @@ public class MemberService {
         return savedMember.getId();
     }
 
+
+    @Transactional
+    public void rejoin(ReJoinDTO reJoinDTD) {
+        Optional<Group> byCode = groupRepository.findByCode(reJoinDTD.getGroupName());
+        if (byCode.isEmpty()) {
+            throw new CustomException(404, "그룹이 존재하지 않습니다.");
+        }
+        Optional<Member> findEmailMember = memberRepository.findByEmail(reJoinDTD.getEmail());
+        if (findEmailMember.isEmpty()) {
+            throw new CustomException(404, "멤버가 존재하지 않습니다.");
+        }
+        Group group = byCode.get();
+        Member member = findEmailMember.get();
+
+        member.updateGroup(group, "Slave");
+    }
+
     @Transactional(readOnly = true)
     public String login(LoginDTO loginDTO) {
 
@@ -107,6 +142,11 @@ public class MemberService {
         if (!checkPassword(loginDTO.getPassword(), member.getPassword())) {
             //ResponseMessage message = new ResponseMessage(400, "비밀번호가 일치 하지 않습니다.");
             throw new CustomException(400, "비밀번호가 일치하지 않습니다.");
+        }
+
+        if (member.getGroup() == null) {
+            //ResponseMessage message = new ResponseMessage(400, "비밀번호가 일치 하지 않습니다.");
+            throw new CustomException(401, "그룹이 존재하지 않습니다.");
         }
 
         String accessToken = tokenProvider.createAccessToken(member);
@@ -199,6 +239,7 @@ public class MemberService {
         Member member = byId.get();
         member.deleteGroupMember();
     }
+
     public ResponseEntity<?> getMemberOfProject(Long projectId) {
         List<MemberProject> memberByProjectId = memberProjectRepository.findMemberProjectByProjectId(projectId);
         if (memberByProjectId.isEmpty()) {

@@ -36,6 +36,20 @@ public class MemberController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+    @PostMapping("/api/member/rejoin/group")
+    public ResponseEntity<?> groupCreateRejoin(@Validated @RequestBody ReJoinDTO reJoinDTD) {
+        memberService.createRejoin(reJoinDTD);
+        ResponseMessage message = new ResponseMessage(200, "그룹 생성이 완료 되었습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @PostMapping("/api/member/rejoin/group/join")
+    public ResponseEntity<?> groupReJoin(@Validated @RequestBody ReJoinDTO reJoinDTD ) {
+        memberService.rejoin(reJoinDTD);
+        ResponseMessage message = new ResponseMessage(200, "그룹 참가가 완료 되었습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
     @PostMapping("/api/member/login")
     public ResponseEntity<ResponseMessage> login(@Validated @RequestBody LoginDTO loginDTO) {
 
