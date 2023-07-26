@@ -2,6 +2,7 @@ package kakao99.backend.issue.repository;
 
 import jakarta.persistence.EntityManager;
 import kakao99.backend.entity.Issue;
+import kakao99.backend.entity.IssueParentChild;
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
 import kakao99.backend.issue.dto.MemberInfoDTO;
@@ -25,6 +26,8 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
     List<Issue> findAllByProjectId(@Param("projectId") Long projectId);
 
 
+    Optional<Issue> findById(Long issueId);
+
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId and m.status = :status and m.isActive = true")
     List<Issue> findAllByStatus(@Param("projectId") Long projectId, @Param("status") String status);
 
@@ -38,6 +41,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
 
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge where m.project.id=:projectId and m.status = :status and m.issueType = :issueType and m.memberInCharge.username = :username and m.isActive = true")
     List<Issue> findAllByStatusAndTypeAndUsername(@Param("projectId") Long projectId, @Param("status") String status,@Param("issueType") String type,@Param("username") String username);
+
 
 
     @Modifying
@@ -95,6 +99,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
     @Transactional
     @Query("UPDATE Issue m SET m.releaseNote.id =:releaseNoteId  where m.id =:issueId")
     int insertIssueFromReleaseNote(@Param("releaseNoteId") Long releaseNoteId, @Param("issueId") Long issueId);
+
 
 
 }

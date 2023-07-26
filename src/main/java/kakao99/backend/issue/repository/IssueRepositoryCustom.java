@@ -9,4 +9,6 @@ public interface IssueRepositoryCustom {
     public List<Issue> findAllWithFilter(Long projectId, String status, String type, String username);
 
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId);
+
+
 }
