@@ -3,6 +3,7 @@ package kakao99.backend.member.service;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Group;
 import kakao99.backend.entity.Member;
+import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
 import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.jwt.TokenProvider;
@@ -199,7 +200,7 @@ public class MemberService {
         member.deleteGroupMember();
     }
     public ResponseEntity<?> getMemberOfProject(Long projectId) {
-        List<Member> memberByProjectId = memberProjectRepository.findMemberByProjectId(projectId);
+        List<MemberProject> memberByProjectId = memberProjectRepository.findMemberProjectByProjectId(projectId);
         if (memberByProjectId.isEmpty()) {
             ResponseMessage message = new ResponseMessage(404, projectId+"번 프로젝트에 해당하는 회원이 존재하지 않습니다.");
             return new ResponseEntity<>(message,HttpStatus.OK);
@@ -207,13 +208,15 @@ public class MemberService {
 
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
 
-            for (Member member : memberByProjectId) {
+            for (MemberProject memberProject : memberByProjectId) {
                 MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
-                        .name(member.getUsername())
-                        .nickname(member.getNickname())
-                        .email(member.getEmail())
+                        .name(memberProject.getMember().getUsername())
+                        .nickname(memberProject.getMember().getNickname())
+                        .email(memberProject.getMember().getEmail())
 //                        .groupName(member.getGroup().getName())
-                        .position(member.getPosition())
+                        .position(memberProject.getMember().getPosition())
+                        .createdAt(memberProject.getMember().getCreatedAt())
+                        .role(memberProject.getRole())
 //                        .projectList(projectList)
                         .build();
                 memberInfoDTOList.add(memberInfoDTO);
