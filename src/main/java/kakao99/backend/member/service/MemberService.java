@@ -174,6 +174,7 @@ public class MemberService {
                 .groupName(member.getGroup().getName())
                 .position(member.getPosition())
                 .introduce(member.getIntroduce())
+                .groupCode(member.getGroup().getCode())
                 .projectList(projectList)
                 .build();
     }

@@ -20,6 +20,7 @@ public class MemberInfoDTO {
     private String introduce;
     private String authority;
     private Date createdAt;
+    private String groupCode;
     private List<Project> projectList;
     private String role;
 }
