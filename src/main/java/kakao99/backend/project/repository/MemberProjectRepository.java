@@ -41,9 +41,10 @@ public class MemberProjectRepository{
         return Optional.ofNullable(query
                 .select(memberProject)
                 .from(memberProject)
-                .where(memberProject.project.id.eq(projectId).and(memberProject.member.id.eq(memberId)))
+                .where(memberProject.project.id.eq(projectId).and(memberProject.member.id.eq(memberId)).and(memberProject.isActive.eq("true")))
                 .fetchOne());
     }
+
 
 
     public List<MemberProject> findMemberProjectByProjectId(Long projectId) {
@@ -51,7 +52,7 @@ public class MemberProjectRepository{
         return query
                 .select(memberProject)
                 .from(memberProject)
-                .where(memberProject.project.id.eq(projectId))
+                .where(memberProject.project.id.eq(projectId).and(memberProject.isActive.eq("true")))
                 .fetch();
     }
 
@@ -75,7 +76,6 @@ public class MemberProjectRepository{
 
                 .fetch();
     }
-
 
 
     public void deleteMemberProjectByProjectId(Long projectId) {
@@ -103,6 +103,18 @@ public class MemberProjectRepository{
                 .where(memberProject.member.id.eq(memberId)
                         .and(memberProject.project.id.eq(projectId)))
                 .fetchOne());
+    }
+
+    public void updateRole(Long pmId, Long memberId, Long projectId) {
+        new JPAUpdateClause(em, memberProject)
+                .where(memberProject.member.id.eq(pmId).and(memberProject.project.id.eq(projectId)))
+                .set(memberProject.role, "Member")
+                .execute();
+
+        new JPAUpdateClause(em, memberProject)
+                .where(memberProject.member.id.eq(memberId).and(memberProject.project.id.eq(projectId)))
+                .set(memberProject.role, "PM")
+                .execute();
     }
 
 }

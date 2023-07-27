@@ -203,6 +203,7 @@ public class MemberService {
                             .email(groupMember.getEmail())
                             .position(groupMember.getPosition())
                             .authority(groupMember.getAuthority())
+                            .createdAt(groupMember.getCreatedAt())
                             .build()
             );
         }

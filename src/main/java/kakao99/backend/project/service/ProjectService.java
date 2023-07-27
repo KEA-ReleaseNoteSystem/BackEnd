@@ -6,6 +6,7 @@ import kakao99.backend.entity.Member;
 import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
 import kakao99.backend.group.repository.GroupRepository;
+import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.project.dto.ProjectDTO;
 import kakao99.backend.project.dto.ProjectIdDTO;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -113,6 +115,7 @@ public class ProjectService {
     @Transactional
     public ResponseEntity<?> getProject(Long projectId, Long memberId) {
         Optional<Project> optionalProject = projectRepository.findById(projectId);
+        List<MemberProject> memberList = memberProjectRepository.findMemberProjectByProjectId(projectId);
         if (optionalProject.isEmpty()) {
 
             ResponseMessage message = new ResponseMessage(500, "id로 삭제할 프로젝트 확인 실패");
@@ -124,13 +127,27 @@ public class ProjectService {
             return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         String role = opRole.get();
-        System.out.println(role);
+
         if(!"PM".equals(role)){
-            System.out.println("111");
             ResponseMessage message = new ResponseMessage(401, "PM 권한만 가능한 동작입니다.");
             return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
         }
         Project project = optionalProject.get();
+
+        List<MemberInfoDTO> memberDTOList = memberList.stream()
+                .map(memberProject -> {
+                    Member member = memberProject.getMember();
+                    return MemberInfoDTO.builder()
+                            .id(member.getId())
+                            .name(member.getUsername())
+                            .nickname(member.getNickname())
+                            .email(member.getEmail())
+                            .position(member.getPosition())
+                            .role(memberProject.getRole())
+                            .build();
+                }).toList();
+
+
         ProjectIdDTO projectIdDTO = ProjectIdDTO.builder()
                 .id(project.getId())
                 .groupName(project.getGroup().getName())
@@ -139,6 +156,7 @@ public class ProjectService {
                 .status(project.getStatus())
                 .description(project.getDescription())
                 .createAt(project.getCreatedAt())
+                .memberInfoDTOList(memberDTOList)
                 .build();
         ResponseMessage message = new ResponseMessage(200, "프로젝트 정보 조회 성공", projectIdDTO);
         return new ResponseEntity<>(message, HttpStatus.OK);
