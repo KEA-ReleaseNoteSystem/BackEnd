@@ -2,9 +2,14 @@ package kakao99.backend.project.controller;
 
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
+
+
 import kakao99.backend.project.dto.ProjectDTO;
 import kakao99.backend.project.dto.ProjectModifyDTO;
 import kakao99.backend.project.dto.ProjectPMDTO;
+
+import kakao99.backend.project.dto.*;
+
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
@@ -95,6 +100,18 @@ public class ProjectController {
 
         return new ResponseEntity(message, HttpStatus.OK);
     }
+
+    @GetMapping("api/project/{projectId}/members/{memberId}")
+    public ResponseEntity<?> getMembersProject(@PathVariable("projectId") Long projectId,@PathVariable("memberId") Long memberId) {
+
+
+        List<ProjectMemberDTO> projectDTOS = projectService.findMemberProject(memberId);
+        ResponseMessage message = new ResponseMessage(200, "내가 속한 프로젝트 목록 조회 완료", projectDTOS);
+
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
+
+
 
 
     //  내가 속한 그룹에서 내가 포함되지 않은 프로젝트 조회해오기

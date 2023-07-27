@@ -9,9 +9,11 @@ import java.util.List;
 public interface IssueRepositoryCustom {
     List<Issue> findAllWithFilter(Long projectId, String status, String type, String username);
 
+
     void updateIssue(UpdateIssueForm updateIssueForm, Long issueId);
 
     void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO);
 
     void deleteIssue(Long issueId, Long memberId);
+
 }

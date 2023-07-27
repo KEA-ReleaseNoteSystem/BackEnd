@@ -8,10 +8,8 @@ import kakao99.backend.entity.Project;
 import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
-import kakao99.backend.project.dto.ProjectDTO;
-import kakao99.backend.project.dto.ProjectIdDTO;
-import kakao99.backend.project.dto.ProjectModifyDTO;
-import kakao99.backend.project.dto.ProjectPMDTO;
+import kakao99.backend.member.dto.MemberInfoDTO;
+import kakao99.backend.project.dto.*;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.common.ResponseMessage;
@@ -196,6 +194,27 @@ public class ProjectService {
         }
 
         return projectPMDTOS;
+    }
+
+
+
+
+    public List<ProjectMemberDTO> findMemberProject(Long memberId) {
+        List<Project> projectByMemberId = memberProjectRepository.findProjectByMemberId(memberId,"true");
+
+        List<ProjectMemberDTO> ProjectMemberDTOList = new ArrayList<>();
+
+        for (Project project : projectByMemberId) {
+            ProjectMemberDTO projectDTO = ProjectMemberDTO.builder()
+                    .name(project.getName())
+                    .description(project.getDescription())
+                    .status(project.getStatus())
+                    .createdAt(project.getCreatedAt())
+                    .build();
+            ProjectMemberDTOList.add(projectDTO);
+        }
+
+        return ProjectMemberDTOList;
     }
 
     public ProjectWithIssuesDTO getProjectIdAndName(@PathVariable("projectId") Long projectId) {
