@@ -45,13 +45,6 @@ public class MemberProjectRepository{
                 .fetchOne());
     }
 
-    public List<MemberProject> findMemberProjectByProjectId(Long projectId) {
-        return query
-                .select(memberProject)
-                .from(memberProject)
-                .where(memberProject.project.id.eq(projectId).and(memberProject.isActive.eq("true")))
-                .fetch();
-    }
 
 
     public List<MemberProject> findMemberProjectByProjectId(Long projectId) {
@@ -59,7 +52,7 @@ public class MemberProjectRepository{
         return query
                 .select(memberProject)
                 .from(memberProject)
-                .where(memberProject.project.id.eq(projectId))
+                .where(memberProject.project.id.eq(projectId).and(memberProject.isActive.eq("true")))
                 .fetch();
     }
 
