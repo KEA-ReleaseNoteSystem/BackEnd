@@ -46,10 +46,10 @@ public class MemberProjectRepository{
     }
 
 
-    public List<Member> findMemberByProjectId(Long projectId) {
+    public List<MemberProject> findMemberProjectByProjectId(Long projectId) {
         memberProject = QMemberProject.memberProject;
         return query
-                .select(memberProject.member)
+                .select(memberProject)
                 .from(memberProject)
                 .where(memberProject.project.id.eq(projectId))
                 .fetch();

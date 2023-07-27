@@ -1,6 +1,5 @@
 package kakao99.backend.issue.repository;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
@@ -10,16 +9,18 @@ import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.common.exception.ErrorCode;
 import kakao99.backend.entity.*;
 import kakao99.backend.issue.controller.UpdateIssueForm;
-import kakao99.backend.issue.dto.IssueDTO;
+import kakao99.backend.issue.dto.DragNDropDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+
 import java.util.*;
-import java.util.stream.Collectors;
 
 import kakao99.backend.entity.QIssueParentChild;
 
-import javax.swing.text.html.Option;
+
+import java.util.Date;
+import java.util.List;
 
 
 @Repository
@@ -28,7 +29,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
 
     private final EntityManager em;
 
-    private final IssueParentChildRepositiory issueParentChildRepositiory;
+    private final IssueParentChildRepository issueParentChildRepository;
 
     private final JPAQueryFactory query;
 
@@ -47,47 +48,47 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
 
 // 제외할 id(excludeId)를 받아오면 childIssue와 issueParentChild와 같은 excludeId가 있는지 확인.
 // 확인 후 List로 저장
-public List<Long> findExcludeId(Long projectId, Long excludeId) {
-    JPAQuery<IssueParentChild> query = this.query.selectFrom(issueParentChild)
-            .where(issueParentChild.isActive.eq(true)
-                    .and(issueParentChild.parentIssue.project.id.eq(projectId)
-                            .and(issueParentChild.childIssue.project.id.eq(projectId)
-                                    .and(issueParentChild.parentIssue.id.eq(excludeId))
-                                    )));
+    public List<Long> findExcludeId(Long projectId, Long excludeId) {
+        JPAQuery<IssueParentChild> query = this.query.selectFrom(issueParentChild)
+                .where(issueParentChild.isActive.eq(true)
+                        .and(issueParentChild.parentIssue.project.id.eq(projectId)
+                                .and(issueParentChild.childIssue.project.id.eq(projectId)
+                                        .and(issueParentChild.parentIssue.id.eq(excludeId))
+                                        )));
 
-    List<IssueParentChild> issues = query.fetch();
+        List<IssueParentChild> issues = query.fetch();
 
-    List<Long> results = new ArrayList<>();
+        List<Long> results = new ArrayList<>();
 
-    for (IssueParentChild issue : issues) {
+        for (IssueParentChild issue : issues) {
 
-//        if (issue.getParentIssue().getId().equals(excludeId)){
-//            List<IssueParentChild> otherChildIssues = issueParentChildRepositiory.findByparentIssue(issue.getChildIssue());
-//            for (IssueParentChild childIssue : otherChildIssues) {
-//
-//                if(!results.contains(issue.getChildIssue().getId())){
-//                    results.add(childIssue.getChildIssue().getId());
-//                }
-//            }
-//        }
-//
-//        if (issue.getChildIssue().getId().equals(excludeId)) {
-//            List<IssueParentChild> otherChildIssues = issueParentChildRepositiory.findByparentIssue(issue.getParentIssue());
-//            for (IssueParentChild childIssue : otherChildIssues) {
-//
-//                if(!results.contains(issue.getChildIssue().getId())){
-//                results.add(childIssue.getChildIssue().getId());
-//                }
-//            }
+    //        if (issue.getParentIssue().getId().equals(excludeId)){
+    //            List<IssueParentChild> otherChildIssues = issueParentChildRepositiory.findByparentIssue(issue.getChildIssue());
+    //            for (IssueParentChild childIssue : otherChildIssues) {
+    //
+    //                if(!results.contains(issue.getChildIssue().getId())){
+    //                    results.add(childIssue.getChildIssue().getId());
+    //                }
+    //            }
+    //        }
+    //
+    //        if (issue.getChildIssue().getId().equals(excludeId)) {
+    //            List<IssueParentChild> otherChildIssues = issueParentChildRepositiory.findByparentIssue(issue.getParentIssue());
+    //            for (IssueParentChild childIssue : otherChildIssues) {
+    //
+    //                if(!results.contains(issue.getChildIssue().getId())){
+    //                results.add(childIssue.getChildIssue().getId());
+    //                }
+    //            }
 
-//            List<IssueParentChild> otherParentIssues = issueParentChildRepositiory.findBychildIssue(issue.getParentIssue());
-//            for (IssueParentChild parentIssue : otherParentIssues) {
-//
-//                if(!results.contains(issue.getParentIssue().getId())){
-//                    results.add(parentIssue.getParentIssue().getId());
-//                }
-//            }
-//        }
+    //            List<IssueParentChild> otherParentIssues = issueParentChildRepositiory.findBychildIssue(issue.getParentIssue());
+    //            for (IssueParentChild parentIssue : otherParentIssues) {
+    //
+    //                if(!results.contains(issue.getParentIssue().getId())){
+    //                    results.add(parentIssue.getParentIssue().getId());
+    //                }
+    //            }
+    //        }
 
         if(!results.contains(issue.getChildIssue().getId())){
             results.add(issue.getChildIssue().getId());
@@ -172,8 +173,42 @@ public List<Long> findExcludeId(Long projectId, Long excludeId) {
     }
 
     @Transactional
-    public void updateIssueByDragNDrop() {
+    public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO) {
+        JPAUpdateClause query = this.query.update(issue)
+                .where(issue.id.eq(dragNDropDTO.getIssueId()).and(issue.isActive.eq(true)));
 
+        if (dragNDropDTO.getDestinationStatus() != null) {
+            query.set(issue.status, dragNDropDTO.getDestinationStatus());
+        }
+
+        if (dragNDropDTO.getSourceStatus() != null) {
+            query.set(issue.status, dragNDropDTO.getDestinationStatus());
+        }
+
+        if(dragNDropDTO.getDestinationStatus() == null && dragNDropDTO.getSourceStatus() == null){
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        if(dragNDropDTO.getListPosition() != null ){
+            query.set(issue.listPosition, dragNDropDTO.getListPosition());
+        }
+
+        query.execute();
+    }
+
+    @Transactional
+    public void deleteIssue(Long issueId, Long memberId) {
+        long execute1 = this.query.update(issue)
+                .set(issue.isActive, false)
+                .set(issue.deletedAt, new Date())
+                .where(issue.id.eq(issueId))
+                .execute();
+
+        long execute = this.query.update(issueParentChild)
+                .set(issueParentChild.isActive, false)
+                .set(issueParentChild.deletedAt, new Date())
+                .where(issueParentChild.parentIssue.id.eq(issueId).or(issueParentChild.childIssue.id.eq(issueId)))
+                .execute();
     }
 
 }

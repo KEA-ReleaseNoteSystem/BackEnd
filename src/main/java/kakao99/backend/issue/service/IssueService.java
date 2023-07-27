@@ -1,19 +1,24 @@
 package kakao99.backend.issue.service;
 
+import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
+import kakao99.backend.entity.Notification;
 import kakao99.backend.issue.controller.UpdateIssueForm;
-import kakao99.backend.issue.dto.IssueChildDTO;
+
+import kakao99.backend.issue.dto.DragNDropDTO;
+
 import kakao99.backend.issue.dto.IssueDTO;
-import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
-import kakao99.backend.issue.repository.IssueParentChildRepositiory;
+import kakao99.backend.issue.repository.IssueParentChildRepository;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.member.repository.MemberRepository;
+import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,12 +27,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class IssueService {
     private final IssueRepository issueRepository;
-
-    private final IssueRepositoryImpl issueRepositoryImpl;
     private final MemberRepository memberRepository;
     private final ProjectService projectService;
+    private final NotificationService notificationService;
 
-    private final IssueParentChildRepositiory issueParentChildRepositiory;
+    private  final IssueRepositoryImpl issueRepositoryImpl;
+
+
+
+    private final IssueParentChildRepository issueParentChildRepository;
 
     public List<Issue> getIssuesWithMemo(Long projectId) {
         return issueRepository.findAllByProjectId(projectId);
@@ -35,12 +43,13 @@ public class IssueService {
 
 
     public boolean isChildIssue(Issue issue) {
-        return issueParentChildRepositiory.existsByChildIssue(issue);
+        return issueParentChildRepository.existsByChildIssue(issue);
     }
 
     public List<IssueDTO> getAllIssues(Long projectId) {
         List<Issue> allIssueByProjectId = issueRepository.findAllByProjectId(projectId);
 
+        System.out.println("allIssueByProjectId.toArray().length = " + allIssueByProjectId.toArray().length);
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
 
         return issueDTOListFromIssueList;
@@ -50,11 +59,13 @@ public class IssueService {
 
 
     public List<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type, String name) {
+
         List<Issue> allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
+
 
         return allIssueByProjectId.stream().map(issue -> {
             // Call the existsByChildIssue here
-            boolean isChild = issueParentChildRepositiory.existsByChildIssue(issue);
+            boolean isChild = issueParentChildRepository.existsByChildIssue(issue);
 
             // Pass the isChild value to the DTO
             IssueDTO issueDTO = IssueDTO.fromIssueAndIsChild(issue, isChild);
@@ -73,6 +84,9 @@ public class IssueService {
 
         return issueDTOListFromIssueList;
     }
+
+
+
 
 
 
@@ -118,5 +132,34 @@ public class IssueService {
         return projectInfo;
     }
 
-//    public
+    @Transactional
+    public Long deleteIssue(Long issueId, Long memberId) {
+        Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
+        if (issueByIssueId.isEmpty()) {
+            throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
+        }
+
+        issueRepository.deleteIssue(issueId, memberId);
+
+        return issueId;
+    }
+
+
+    public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO, Long userId) {
+        issueRepository.updateIssueByDragNDrop(dragNDropDTO);
+        Optional<Member> optionalMember = memberRepository.findById(userId);
+        if (optionalMember.isEmpty()) {
+            throw new NoSuchElementException("해당 멤버가 존재하지 않습니다.");
+        }
+
+        Long issueId = dragNDropDTO.getIssueId();
+        Optional<Issue> issueOptional = issueRepository.findIssueById(issueId);
+        if (issueOptional.isEmpty()) {
+            throw new CustomException(404, issueId + "번 이슈가 존재하지 않습니다.");
+        }
+        Issue issue = issueOptional.get();
+        Member memberReport = optionalMember.get();
+        Notification notification = notificationService.createNotification(dragNDropDTO, memberReport, issue);
+    }
+
 }
