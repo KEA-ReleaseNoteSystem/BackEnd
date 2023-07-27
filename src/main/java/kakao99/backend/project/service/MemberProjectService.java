@@ -27,6 +27,7 @@ public class MemberProjectService {
     private final MemberProjectRepository memberProjectRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public ResponseEntity<?> join(MemberProjectDTO memberProjectDTO) {
 
         Optional<Project> optionalProject = projectRepository.findById(memberProjectDTO.getProjectId());
@@ -40,7 +41,7 @@ public class MemberProjectService {
                 .project(project)
                 .member(member)
                 .isActive("true")
-                .role("slave")
+                .role("Member")
                 .build();
 
         memberProjectRepository.save(memberProject);
