@@ -134,11 +134,11 @@ public class IssueController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
-    @PostMapping("/api/project/{projectId}/issues/management/dragndrop/{userId}")
-    public ResponseEntity<?> updateIssueByDragNDrop(@PathVariable("projectId") Long projectId, @RequestBody DragNDropDTO dragNDropDTO, @PathVariable("userId") Long userId) {
+    @PostMapping("/api/project/{projectId}/issues/management/dragndrop")
+    public ResponseEntity<?> updateIssueByDragNDrop(@PathVariable("projectId") Long projectId, @RequestBody DragNDropDTO dragNDropDTO, Authentication authentication) {
         log.info("드래그앤드랍");
-
-        issueService.updateIssueByDragNDrop(dragNDropDTO, userId);
+        Member member = (Member) authentication.getPrincipal();
+        issueService.updateIssueByDragNDrop(dragNDropDTO, member.getId());
 
         ResponseMessage message = new ResponseMessage(200, "드래그앤드랍으로 이슈 상태 update 성공");
         return new ResponseEntity(message, HttpStatus.OK);
