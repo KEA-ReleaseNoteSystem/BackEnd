@@ -45,12 +45,11 @@ public class IssueController {
 
 
     // 이슈 생성
-    @PostMapping("/api/{projectId}/issue")
+    @PostMapping("/api/project/{projectId}/issue")
         public ResponseEntity<?> createIssue(@RequestBody IssueForm issue, @PathVariable("projectId") Long projectId) {
-        System.out.println("userId = " + issue.getUserId());
+
         Optional<Member> memberById = memberRepository.findById(issue.getUserId());
-
-
+        
         if (memberById.isEmpty()) {
             ResponseMessage message = new ResponseMessage(404, "해당 userId에 해당하는 유저 데이터 없음.");
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
@@ -70,7 +69,10 @@ public class IssueController {
                 .issueType(issue.getType())
                 .description(issue.getDescription())
                 .memberReport(member)
+                .memberInCharge(member)
+                .status("backlog")
                 .project(project)
+                .isActive(true)
                 .build();
 
 
@@ -96,7 +98,7 @@ public class IssueController {
 
 
     // 이슈 정보 업데이트
-    @PutMapping("/api/{projectId}/issues/{issueId}")
+    @PutMapping("/api/project/{projectId}/issue/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
         issueService.updateIssue(updateIssueForm, issueId);
 
@@ -128,18 +130,17 @@ public class IssueController {
     @GetMapping("/api/project/{projectId}/issues/management")
     public ResponseEntity<?> getIssueManagementPageData(@PathVariable("projectId") Long projectId) {
         ProjectWithIssuesDTO issueManagementPageData = issueService.getIssueManagementPageData(projectId);
-
         ResponseMessage message = new ResponseMessage(200, "issue Management 페이지에 필요한 데이터 조회 성공", issueManagementPageData);
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
-    @PostMapping("/api/project/{projectId}/issues/management/dragndrop")
-    public ResponseEntity<?> updateIssueByDragNDrop(@PathVariable("projectId") Long projectId, @RequestBody DragNDropDTO dragNDropDTO) {
+    @PostMapping("/api/project/{projectId}/issues/management/dragndrop/{userId}")
+    public ResponseEntity<?> updateIssueByDragNDrop(@PathVariable("projectId") Long projectId, @RequestBody DragNDropDTO dragNDropDTO, @PathVariable("userId") Long userId) {
         log.info("드래그앤드랍");
 
-        issueService.updateIssueByDragNDrop(dragNDropDTO);
+        issueService.updateIssueByDragNDrop(dragNDropDTO, userId);
 
-        ResponseMessage message = new ResponseMessage(200, "issue Management 페이지에 필요한 데이터 조회 성공");
+        ResponseMessage message = new ResponseMessage(200, "드래그앤드랍으로 이슈 상태 update 성공");
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
@@ -174,8 +175,10 @@ public class IssueController {
 //    }
 
 
-    @DeleteMapping("/api/issue")
-    public ResponseEntity<?> deleteIssue(Authentication authentication, @RequestBody Long issueId) {
+    @DeleteMapping("/api/issue/{issueId}")
+    public ResponseEntity<?> deleteIssue(Authentication authentication, /* @RequestBody Long issueId */ @PathVariable("issueId") Long issueId) {
+        System.out.println("issueId = " + issueId);
+
         Member member = (Member) authentication.getPrincipal();
 
         issueService.deleteIssue(issueId, member.getId());

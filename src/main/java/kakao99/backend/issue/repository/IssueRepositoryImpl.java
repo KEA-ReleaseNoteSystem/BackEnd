@@ -111,7 +111,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         long execute1 = this.query.update(issue)
                 .set(issue.isActive, false)
                 .set(issue.deletedAt, new Date())
-                .where(issue.id.eq(issueId).and(issue.memberReport.id.eq(memberId)))
+                .where(issue.id.eq(issueId))
                 .execute();
 
         long execute = this.query.update(issueParentChild)

@@ -4,6 +4,7 @@ import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Project;
 import kakao99.backend.project.dto.ProjectDTO;
 import kakao99.backend.project.dto.ProjectModifyDTO;
+import kakao99.backend.project.dto.ProjectNameDTO;
 import kakao99.backend.project.dto.ProjectPMDTO;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +34,24 @@ public class ProjectController {
     public ResponseEntity<?> createProject(Authentication authentication, @RequestBody ProjectDTO projectDTO){
         Member member = (Member) authentication.getPrincipal();
         return projectService.saveProject(projectDTO, member);
+    }
+
+    @GetMapping("/api/project/{projectId}/name") // project 이름 가져오기 (Members 페이지)
+    public ResponseEntity<?> getProjectName(@PathVariable("projectId") Long projectId) {
+        ProjectNameDTO projectNameDTO = new ProjectNameDTO();
+
+        try {
+            Optional<Project> project = projectRepository.findById(projectId);
+            projectNameDTO.setName(project.get().getName());
+        } catch (Exception e) {
+            ResponseMessage message = new ResponseMessage(404, "해당 프로젝트가 존재하지 않음.");
+
+            return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
+        }
+
+        ResponseMessage message = new ResponseMessage(200, "해당 프로젝트 이름 조회 완료", projectNameDTO);
+
+        return new ResponseEntity(message, HttpStatus.OK);
     }
 
 
