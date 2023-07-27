@@ -249,10 +249,13 @@ public class MemberService {
             return new ResponseEntity<>(message,HttpStatus.OK);
         }
 
+
+
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
 
             for (MemberProject memberProject : memberByProjectId) {
                 MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+                        .id(memberProject.getId())
                         .name(memberProject.getMember().getUsername())
                         .nickname(memberProject.getMember().getNickname())
                         .email(memberProject.getMember().getEmail())
@@ -260,7 +263,7 @@ public class MemberService {
                         .position(memberProject.getMember().getPosition())
                         .createdAt(memberProject.getMember().getCreatedAt())
                         .role(memberProject.getRole())
-//                        .projectList(projectList)
+//                        .projectList(memberProjectRepository.findProjectByMemberId(memberProject.getId(),"true"))
                         .build();
                 memberInfoDTOList.add(memberInfoDTO);
             }
