@@ -81,7 +81,6 @@ public class MemberController {
     // 그룹 내의 멤버 조회 API
     @GetMapping("/api/group/members")
     public ResponseEntity<?> getMemberOfGroup(Authentication authentication) {
-
         Member member = (Member) authentication.getPrincipal();
         String authority = member.getAuthority();
         if(authority.equals("GM")) {
