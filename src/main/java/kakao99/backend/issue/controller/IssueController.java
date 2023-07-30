@@ -32,6 +32,7 @@ import java.util.Optional;
 public class IssueController {
 
     private final IssueRepository issueRepository;
+
     private final IssueParentChildRepository issueParentChildRepository;
     private final IssueService issueService;
     private final TreeService treeService;
@@ -237,6 +238,16 @@ public class IssueController {
         issueService.deleteIssue(issueId, member.getId());
 
         ResponseMessage message = new ResponseMessage(200, issueId + "번이 삭제되었습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+
+    @GetMapping("api/project/{projectId}/importance")
+    public ResponseEntity<?> askImportanceToGPT(@PathVariable("projectId") Long projectId) {
+
+        issueService.askImportanceToGPT(projectId);
+
+        ResponseMessage message = new ResponseMessage(200, "번이 삭제되었습니다.");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 

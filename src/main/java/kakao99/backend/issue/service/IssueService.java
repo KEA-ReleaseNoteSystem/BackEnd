@@ -5,20 +5,24 @@ import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Notification;
 import kakao99.backend.issue.controller.UpdateIssueForm;
-
 import kakao99.backend.issue.dto.DragNDropDTO;
 
 import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueParentChildRepository;
+
+import kakao99.backend.issue.dto.*;
+
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,11 +51,10 @@ public class IssueService {
     }
 
     public List<IssueDTO> getAllIssues(Long projectId) {
-        List<Issue> allIssueByProjectId = issueRepository.findAllByProjectId(projectId);
 
-        System.out.println("allIssueByProjectId.toArray().length = " + allIssueByProjectId.toArray().length);
-        List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
-
+        List<Issue> issueList = issueRepository.findAllByProjectId(projectId);
+        System.out.println("allIssueByProjectId.toArray().length = " + issueList.toArray().length);
+        List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(issueList);
         return issueDTOListFromIssueList;
     }
 
@@ -159,7 +162,26 @@ public class IssueService {
         }
         Issue issue = issueOptional.get();
         Member memberReport = optionalMember.get();
-        Notification notification = notificationService.createNotification(dragNDropDTO, memberReport, issue);
+         Notification notification = notificationService.createNotification(dragNDropDTO, memberReport, issue);
+    }
+
+    public void askImportanceToGPT(Long projectId){
+        // get Issues Of ProjectId (except done status)
+        List<Issue> issueListNotFinished = issueRepository.getIssueListNotFinishedOf(projectId);
+
+        // ask importance to gpt
+        List<GPTQuestionDTO> questionList = GPTQuestionDTO.organizeIssueListIntoQuestion(issueListNotFinished);
+
+        // save importance and return response
+    }
+
+
+
+    public void sendIssueListToGPT(List<GPTQuestionDTO> questionList) {
+        RestTemplate rt = new RestTemplate();
+
+        ResponseEntity<GPTQuestionDTO> gptQuestionResponse = rt.postForEntity("localhost:8080", questionList, GPTQuestionDTO.class);
+
     }
 
 }
