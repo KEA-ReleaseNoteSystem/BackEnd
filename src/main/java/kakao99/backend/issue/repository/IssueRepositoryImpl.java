@@ -145,7 +145,6 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         return childIssues;
     }
 
-    @Transactional
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
 
         JPAUpdateClause query = this.query.update(issue)
@@ -173,7 +172,6 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         query.execute();
     }
 
-    @Transactional
     public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO) {
         JPAUpdateClause query = this.query.update(issue)
                 .where(issue.id.eq(dragNDropDTO.getIssueId()).and(issue.isActive.eq(true)));
@@ -197,7 +195,6 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         query.execute();
     }
 
-    @Transactional
     public void deleteIssue(Long issueId, Long memberId) {
         long execute1 = this.query.update(issue)
                 .set(issue.isActive, false)

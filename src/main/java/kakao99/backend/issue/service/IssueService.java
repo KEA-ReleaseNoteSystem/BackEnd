@@ -1,5 +1,6 @@
 package kakao99.backend.issue.service;
 
+import jakarta.persistence.Table;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class IssueService {
     private final IssueRepository issueRepository;
     private final MemberRepository memberRepository;
@@ -95,6 +97,7 @@ public class IssueService {
 
 
 
+    @Transactional
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
         issueRepositoryImpl.updateIssue(updateIssueForm, issueId);
         }
@@ -148,6 +151,7 @@ public class IssueService {
     }
 
 
+    @Transactional
     public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO, Long userId) {
         issueRepository.updateIssueByDragNDrop(dragNDropDTO);
         Optional<Member> optionalMember = memberRepository.findById(userId);
