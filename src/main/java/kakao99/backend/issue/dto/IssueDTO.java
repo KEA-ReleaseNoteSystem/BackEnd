@@ -64,6 +64,7 @@ public class IssueDTO {
                     .status(issue.getStatus())
                     .file(issue.getFile())
                     .createdAt(issue.getCreatedAt())
+                    .updatedAt(issue.getUpdatedAt())
                     .memberIdInCharge(MemberInfoDTO.builder()
                             .name(issue.getMemberInCharge().getUsername())
                             .nickname(issue.getMemberInCharge().getNickname())
@@ -80,6 +81,7 @@ public class IssueDTO {
                     .build();
 
             List<IssueChildDTO> childIssueDTOs = issue.getChildIssues().stream()
+                    .filter(issueParentChild -> issueParentChild.getIsActive()) // Apply the filter here
                     .map(issueParentChild -> IssueChildDTO.fromIssue(issueParentChild.getChildIssue()))
                     .collect(Collectors.toList());
 
@@ -119,12 +121,15 @@ public class IssueDTO {
                 .build();
 
         List<IssueChildDTO> childIssueDTOs = issue.getChildIssues().stream()
+                .filter(issueParentChild -> issueParentChild.getIsActive()) // Apply the filter here
                 .map(issueParentChild -> IssueChildDTO.fromIssue(issueParentChild.getChildIssue()))
                 .collect(Collectors.toList());
 
         List<IssueChildDTO> parentIssueDTOs = issue.getParentIssues().stream()
+                .filter(issueParentChild -> issueParentChild.getIsActive()) // Apply the filter here
                 .map(issueParentChild -> IssueChildDTO.fromIssue(issueParentChild.getParentIssue()))
                 .collect(Collectors.toList());
+
 
         // Add the childIssueDTOs to the issueDTO
         issueDTO.setChildIssue(childIssueDTOs);

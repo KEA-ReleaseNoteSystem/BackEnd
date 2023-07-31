@@ -8,6 +8,10 @@ import kakao99.backend.entity.Project;
 import kakao99.backend.group.repository.GroupRepository;
 import kakao99.backend.issue.dto.MemberInfoDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
+<<<<<<< Updated upstream
+=======
+//import kakao99.backend.member.dto.MemberInfoDTO;
+>>>>>>> Stashed changes
 import kakao99.backend.project.dto.*;
 import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.project.repository.ProjectRepository;
