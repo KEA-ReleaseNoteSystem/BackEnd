@@ -37,6 +37,7 @@ public class IssueDTO {
     private Integer importance;
     private String file;
     private Date createdAt;
+    private Date updatedAt;
     private String releasenote;
     private List<IssueChildDTO> childIssue;
     private List<IssueChildDTO> parentIssue;
@@ -99,6 +100,7 @@ public class IssueDTO {
                 .status(issue.getStatus())
                 .file(issue.getFile())
                 .createdAt(issue.getCreatedAt())
+                .updatedAt(issue.getUpdatedAt())
                 .listPosition(issue.getListPosition())
                 .memberIdInCharge(MemberInfoDTO.builder()
                         .name(issue.getMemberInCharge().getUsername())

@@ -31,7 +31,7 @@ public class IssueService {
     private final ProjectService projectService;
     private final NotificationService notificationService;
 
-    private  final IssueRepositoryImpl issueRepositoryImpl;
+    private final IssueRepositoryImpl issueRepositoryImpl;
 
 
 
