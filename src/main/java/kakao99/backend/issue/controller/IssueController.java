@@ -145,10 +145,6 @@ public class IssueController {
         return ResponseEntity.ok(wholeTree);
     }
 
-
-
-
-
     // 이슈 정보 업데이트
     @PutMapping("/api/project/{projectId}/issues/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
