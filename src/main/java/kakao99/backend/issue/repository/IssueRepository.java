@@ -98,5 +98,6 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
     int insertIssueFromReleaseNote(@Param("releaseNoteId") Long releaseNoteId, @Param("issueId") Long issueId);
 
 
-
+    @Query("SELECT MAX(i.id) FROM Issue i")
+    Long findMaxId();
 }

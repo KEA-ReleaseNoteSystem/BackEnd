@@ -45,8 +45,6 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
 
 
 
-
-
 // 제외할 id(excludeId)를 받아오면 childIssue와 issueParentChild와 같은 excludeId가 있는지 확인.
 // 확인 후 List로 저장
     public List<Long> findExcludeId(Long projectId, Long excludeId) {
