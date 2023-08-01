@@ -266,6 +266,7 @@ public class MemberService {
                         .createdAt(memberProject.getMember().getCreatedAt())
                         .role(memberProject.getRole())
 //                        .projectList(memberProjectRepository.findProjectByMemberId(memberProject.getId(),"true"))
+                        .exp(memberProject.getMember().getExp())
                         .build();
                 memberInfoDTOList.add(memberInfoDTO);
             }
