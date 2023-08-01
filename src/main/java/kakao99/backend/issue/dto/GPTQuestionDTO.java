@@ -14,15 +14,15 @@ import java.util.stream.Collectors;
 public class GPTQuestionDTO {
     private Long id;
     private String question;
-    private String importance;
-    private String requestToGPT;
+    private int importance;
+
 
     public static List<GPTQuestionDTO> organizeIssueListIntoQuestion(List<Issue> issueListNotFinished) {
         List<GPTQuestionDTO> questionList = issueListNotFinished.stream().map(issue ->
                 GPTQuestionDTO.builder()
                         .id(issue.getId())
                         .question(issue.getTitle())
-                        .requestToGPT("위의 질문들에 대한 각각의 중요도 알려줘.")
+                        .importance(0)
                         .build()
         ).collect(Collectors.toList());
         return questionList;

@@ -219,5 +219,4 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         }
         return issueList;
     }
-
 }
