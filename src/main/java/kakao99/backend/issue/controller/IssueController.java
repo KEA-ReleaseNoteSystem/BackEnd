@@ -1,10 +1,13 @@
 package kakao99.backend.issue.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kakao99.backend.common.exception.ErrorCode;
 import kakao99.backend.entity.*;
 
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.issue.dto.DragNDropDTO;
+import kakao99.backend.issue.dto.GPTQuestionDTO;
 import kakao99.backend.issue.dto.IssueDTO;
 
 
@@ -18,11 +21,14 @@ import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,6 +39,7 @@ import java.util.Optional;
 public class IssueController {
 
     private final IssueRepository issueRepository;
+
     private final IssueParentChildRepository issueParentChildRepository;
     private final IssueService issueService;
     private final TreeService treeService;
@@ -264,6 +271,14 @@ public class IssueController {
     }
 
 
+    @GetMapping("api/project/{projectId}/importance")
+    public ResponseEntity<?> askImportanceToGPT(@PathVariable("projectId") Long projectId) throws Exception {
+        log.info("chatGPT에 이슈 중요도 요청");
+
+        List<GPTQuestionDTO> askedResult = issueService.askImportanceToGPT(projectId);
+        ResponseMessage message = new ResponseMessage(200, "GPT 중요도 추천이 완료되었습니다.", askedResult);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 }
 
 
