@@ -223,6 +223,18 @@ public class IssueController {
 //        return allByProjectIdImpl;
 //    }
 
+    @DeleteMapping("/api/project/{projectId}/issues/{issueId}/parentchild/{childIssueId}")
+    public ResponseEntity<?> deleteChildIssue(@PathVariable("projectId") Long projectId
+                                                ,@PathVariable("issueId") Long issueId
+                                                ,@PathVariable("childIssueId") Long childIssueId)
+    {
+        issueService.deleteChildIssue(issueId,childIssueId);
+
+        ResponseMessage message = new ResponseMessage(200, "프로젝트 "+ projectId+ " 에 속하며 "+ issueId + "이슈의 하위 이슈 " + childIssueId
+                + "번이 삭제되었습니다.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
 
     @DeleteMapping("/api/issue/{issueId}")
     public ResponseEntity<?> deleteIssue(Authentication authentication, /* @RequestBody Long issueId */ @PathVariable("issueId") Long issueId) {

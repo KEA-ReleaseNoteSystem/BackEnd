@@ -13,6 +13,8 @@ public interface IssueParentChildRepository extends JpaRepository <IssueParentCh
     List<IssueParentChild> findBychildIssue(Issue childIssue);
     List<IssueParentChild> findByChildIssueAndIsActive(Issue childIssue, Boolean isActive);
 
+
+
     boolean existsByChildIssue(Issue issue);
 }
 

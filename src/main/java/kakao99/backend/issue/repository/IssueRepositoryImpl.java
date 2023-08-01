@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-import kakao99.backend.entity.QIssueParentChild;
+import kakao99.backend.entity.*;
 
 
 import java.util.Date;
@@ -147,7 +147,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     @Transactional
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
 
-        JPAUpdateClause query = this.query.update(issue)
+        JPAUpdateClause query = this.query.update(issue).set(issue.updatedAt, new Date())
                 .where(issue.id.eq(issueId).and(issue.isActive.eq(true)));
 
         if(updateIssueForm.getTitle() != null){
@@ -208,6 +208,17 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
                 .set(issueParentChild.isActive, false)
                 .set(issueParentChild.deletedAt, new Date())
                 .where(issueParentChild.parentIssue.id.eq(issueId).or(issueParentChild.childIssue.id.eq(issueId)))
+                .execute();
+    }
+
+    @Transactional
+    public void deleteChild(Long issueId, Long childissueId) {
+
+
+        long execute = this.query.update(issueParentChild)
+                .set(issueParentChild.isActive, false)
+                .set(issueParentChild.deletedAt, new Date())
+                .where(issueParentChild.parentIssue.id.eq(issueId).and(issueParentChild.childIssue.id.eq(childissueId)))
                 .execute();
     }
 

@@ -132,6 +132,10 @@ public class IssueService {
         return projectInfo;
     }
 
+
+
+
+
     @Transactional
     public Long deleteIssue(Long issueId, Long memberId) {
         Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
@@ -143,6 +147,20 @@ public class IssueService {
 
         return issueId;
     }
+
+
+    @Transactional
+    public Long deleteChildIssue(Long issueId, Long childIssueId) {
+        Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
+        if (issueByIssueId.isEmpty()) {
+            throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
+        }
+
+        issueRepositoryImpl.deleteChild(issueId, childIssueId);
+
+        return issueId;
+    }
+
 
 
     public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO, Long userId) {
