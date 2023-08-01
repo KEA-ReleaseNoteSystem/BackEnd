@@ -22,7 +22,9 @@ import java.util.Optional;
 public interface IssueRepository extends JpaRepository<Issue, Long>, IssueRepositoryCustom {
     Issue save(Issue issue);
 
+    @Query("select m from Issue m where m.isActive = true")
     Optional<Issue> findIssueById(Long issueId);
+
 
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge join fetch m.memberReport where m.project.id=:projectId and m.isActive = true")
     List<Issue> findAllByProjectId(@Param("projectId") Long projectId);
@@ -47,28 +49,23 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
 
 
     @Modifying
-    @Transactional
     @Query("UPDATE Issue p SET p.title = :title, p.description =:description WHERE p.id = :issueId")
     void updateIssue(@Param("title") String title, @Param("description") String description, @Param("issueId") Long issueId);
 
     @Modifying
-    @Transactional
     @Query("UPDATE Issue p SET p.title = :title WHERE p.id = :issueId")
     void updateIssueTitle(@Param("title") String title, @Param("issueId") Long issueId);
 
     @Modifying
-    @Transactional
     @Query("UPDATE Issue p SET p.status = :status WHERE p.id = :issueId")
     void updateIssueStatus(@Param("status") String status, @Param("issueId") Long issueId);
 
 
     @Modifying
-    @Transactional
     @Query("UPDATE Issue p SET p.issueType = :issueType WHERE p.id = :issueId")
     void updateIssueType(@Param("issueType") String issueType, @Param("issueId") Long issueId);
 
     @Modifying
-    @Transactional
     @Query("UPDATE Issue p SET p.description = :description WHERE p.id = :issueId")
     void updateIssueDescription(@Param("description") String description, @Param("issueId") Long issueId);
 
@@ -93,15 +90,14 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
     List<Issue> findAllByNotReleaseNoteId(@Param("projectId") Long projectId);
 
     @Modifying
-    @Transactional
     @Query("UPDATE Issue m SET m.releaseNote.id = null where m.id =:issueId")
     int deleteIssueFromReleaseNote(@Param("issueId") Long issueId);
 
     @Modifying
-    @Transactional
     @Query("UPDATE Issue m SET m.releaseNote.id =:releaseNoteId  where m.id =:issueId")
     int insertIssueFromReleaseNote(@Param("releaseNoteId") Long releaseNoteId, @Param("issueId") Long issueId);
 
 
-
+    @Query("SELECT MAX(i.id) FROM Issue i")
+    Long findMaxId();
 }
