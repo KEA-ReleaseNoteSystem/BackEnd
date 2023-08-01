@@ -70,6 +70,9 @@ dependencies {
 
     // list to json으로 변환
     implementation 'com.google.code.gson:gson:2.8.8'
+
+    // RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 tasks.named('test') {

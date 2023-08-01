@@ -271,7 +271,7 @@ public class IssueController {
     }
 
 
-    @GetMapping("api/project/{projectId}/importance")
+    @GetMapping("/api/project/{projectId}/importance")
     public ResponseEntity<?> askImportanceToGPT(@PathVariable("projectId") Long projectId) throws Exception {
         log.info("chatGPT에 이슈 중요도 요청");
 

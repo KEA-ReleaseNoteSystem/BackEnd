@@ -25,6 +25,7 @@ import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.tomcat.util.json.JSONParser;
@@ -43,6 +44,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 @Transactional(readOnly = true)
@@ -214,7 +216,7 @@ public class IssueService {
             QuestionList += "id:"+GptQuestion.getId()+ "- question: "+GptQuestion.getQuestion()+", ";
         }
 
-        QuestionList +=" 너가 이 작업들의 중요도를 임의로 0과 100 사이의 숫자로 정하고, 그 값만 딱 알려줘. 답변은 무조건 다른 말 아무것도 없이 값만 json형식으로 표시해줘";
+        QuestionList +=" 너가 이 작업들의 중요도를 임의로 0과 100 사이의 숫자로 정하고, 그 값만 딱 알려줘. 답변은 무조건 다른 말 아무것도 없이 json형식으로 표시해줘. json 형식은 {id값: 중요도값, } 으로 정해서 표시해줘.";
 
         String requestBody = "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": \"You are a helpful assistant.\"}, {\"role\": \"user\", \"content\": " +
                 "\"" + QuestionList + "\"}]}";
@@ -233,10 +235,11 @@ public class IssueService {
         String response = exchange.getBody().getChoices().get(0).getMessage().getContent();
 
         JsonObject gptSentResult = (JsonObject)jsonParser.parse(response);
+        log.info("gptSentResult = " + gptSentResult);
         for (GPTQuestionDTO GptQuestion : questionList) {
             String questionId = Long.toString(GptQuestion.getId());
-            JsonElement jsonPpoint = gptSentResult.get(questionId);
-            int importance = Integer.parseInt(String.valueOf(jsonPpoint));
+            JsonElement jsonPoint = gptSentResult.get(questionId);
+            int importance = Integer.parseInt(String.valueOf(jsonPoint));
 
             GptQuestion.setImportance(importance);
         }
