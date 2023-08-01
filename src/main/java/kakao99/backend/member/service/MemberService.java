@@ -59,6 +59,7 @@ public class MemberService {
                 .position(registerDTO.getPosition())
                 .group(group)
                 .isActive(true)
+                .exp(0L)
                 .build();
 
         Member savedMember = memberRepository.save(member);
@@ -104,6 +105,7 @@ public class MemberService {
                 .position(registerDTO.getPosition())
                 .group(group)
                 .isActive(true)
+                .exp(0L)
                 .build();
 
         Member savedMember = memberRepository.save(member);
@@ -176,6 +178,7 @@ public class MemberService {
                 .introduce(member.getIntroduce())
                 .groupCode(member.getGroup().getCode())
                 .projectList(projectList)
+                .exp(member.getExp())
                 .build();
     }
 
@@ -232,7 +235,6 @@ public class MemberService {
         Optional<Member> byId = memberRepository.findById(id);
         Member member = byId.get();
         member.update(memberUpdateDTO.getIntroduce(), memberUpdateDTO.getNickname(), memberUpdateDTO.getPosition());
-
     }
 
     @Transactional

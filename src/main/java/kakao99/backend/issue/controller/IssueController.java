@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -188,6 +189,20 @@ public class IssueController {
         log.info("드래그앤드랍");
         Member member = (Member) authentication.getPrincipal();
         issueService.updateIssueByDragNDrop(dragNDropDTO, member.getId());
+
+        Optional<Issue> issue = issueRepository.findById(dragNDropDTO.getIssueId());
+        // Done으로 바뀔 때 issue의 importance만큼 멤버의 경험치 증가
+        if ((!Objects.equals(dragNDropDTO.getSourceStatus(), dragNDropDTO.getDestinationStatus())) &&
+                Objects.equals(dragNDropDTO.getDestinationStatus(), "done")) {
+            memberRepository.updateExp(issue.get().getMemberInCharge().getId(), issue.get().getImportance());
+        }
+
+        // Done에서 다시 돌아오면 멤버의 경험치를 다시 회수해야 함
+        if ((!Objects.equals(dragNDropDTO.getSourceStatus(), dragNDropDTO.getDestinationStatus())) &&
+                Objects.equals(dragNDropDTO.getSourceStatus(), "done")) {
+            memberRepository.updateExp(issue.get().getMemberInCharge().getId(), -1 * issue.get().getImportance());
+        }
+
 
         ResponseMessage message = new ResponseMessage(200, "드래그앤드랍으로 이슈 상태 update 성공");
         return new ResponseEntity(message, HttpStatus.OK);
