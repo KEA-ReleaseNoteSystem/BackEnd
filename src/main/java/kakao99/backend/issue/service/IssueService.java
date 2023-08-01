@@ -185,7 +185,7 @@ public class IssueService {
         }
 
         Long issueId = dragNDropDTO.getIssueId();
-        Optional<Issue> issueOptional = issueRepository.findIssueById(issueId);
+        Optional<Issue> issueOptional = issueRepository.findById(issueId);
         if (issueOptional.isEmpty()) {
             throw new CustomException(404, issueId + "번 이슈가 존재하지 않습니다.");
         }
