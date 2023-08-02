@@ -1,5 +1,7 @@
 package kakao99.backend.member.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Group;
 import kakao99.backend.entity.Member;
@@ -13,6 +15,7 @@ import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +35,7 @@ public class MemberService {
     private final TokenProvider tokenProvider;
     private final GroupRepository groupRepository;
     private final MemberProjectRepository memberProjectRepository;
-
+    private final RedisTemplate<String, String> redisTemplate;
     @Transactional
     public Long create(RegisterDTO registerDTO) {
 
@@ -150,6 +154,9 @@ public class MemberService {
         }
 
         String accessToken = tokenProvider.createAccessToken(member);
+        String key = String.valueOf(member.getId());
+        String value = "Online";
+        redisTemplate.opsForValue().set(key, value, 10, TimeUnit.MINUTES);
         //ResponseMessage message = new ResponseMessage(200, "로그인이 완료 되었습니다.", accessToken);
         return accessToken;
     }
@@ -249,23 +256,46 @@ public class MemberService {
             return new ResponseEntity<>(message,HttpStatus.OK);
         }
 
-
-
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
 
             for (MemberProject memberProject : memberByProjectId) {
-                MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
-                        .id(memberProject.getId())
-                        .name(memberProject.getMember().getUsername())
-                        .nickname(memberProject.getMember().getNickname())
-                        .email(memberProject.getMember().getEmail())
+                String memberIdKey = String.valueOf(memberProject.getMember().getId());
+                System.out.println("key"+memberIdKey);
+                Boolean isOnline = redisTemplate.hasKey(memberIdKey);
+                if(isOnline) {
+                    System.out.println("11111");
+                    MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+                            .id(memberProject.getId())
+                            .status("online")
+                            .name(memberProject.getMember().getUsername())
+                            .nickname(memberProject.getMember().getNickname())
+                            .email(memberProject.getMember().getEmail())
 //                        .groupName(member.getGroup().getName())
-                        .position(memberProject.getMember().getPosition())
-                        .createdAt(memberProject.getMember().getCreatedAt())
-                        .role(memberProject.getRole())
+                            .position(memberProject.getMember().getPosition())
+                            .createdAt(memberProject.getMember().getCreatedAt())
+                            .role(memberProject.getRole())
 //                        .projectList(memberProjectRepository.findProjectByMemberId(memberProject.getId(),"true"))
-                        .build();
-                memberInfoDTOList.add(memberInfoDTO);
+                            .build();
+
+                    memberInfoDTOList.add(memberInfoDTO);
+                }else {
+                    System.out.println("22222");
+                    MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+                            .id(memberProject.getId())
+                            .status("offline")
+                            .name(memberProject.getMember().getUsername())
+                            .nickname(memberProject.getMember().getNickname())
+                            .email(memberProject.getMember().getEmail())
+//                        .groupName(member.getGroup().getName())
+                            .position(memberProject.getMember().getPosition())
+                            .createdAt(memberProject.getMember().getCreatedAt())
+                            .role(memberProject.getRole())
+//                        .projectList(memberProjectRepository.findProjectByMemberId(memberProject.getId(),"true"))
+                            .build();
+
+                    memberInfoDTOList.add(memberInfoDTO);
+                }
+
             }
         ResponseMessage message = new ResponseMessage(200, projectId+"번 프로젝트의 회원 정보 조회 완료", memberInfoDTOList);
         return new ResponseEntity<>(message, HttpStatus.OK);

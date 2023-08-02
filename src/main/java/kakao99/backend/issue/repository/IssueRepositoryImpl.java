@@ -13,10 +13,7 @@ import kakao99.backend.issue.dto.DragNDropDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-
 import java.util.*;
-
-import kakao99.backend.entity.*;
 
 
 import java.util.Date;
