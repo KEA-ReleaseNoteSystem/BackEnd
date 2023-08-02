@@ -6,12 +6,9 @@ import kakao99.backend.common.exception.ErrorCode;
 import kakao99.backend.entity.*;
 
 import kakao99.backend.common.exception.CustomException;
-import kakao99.backend.issue.dto.DragNDropDTO;
-import kakao99.backend.issue.dto.GPTQuestionDTO;
-import kakao99.backend.issue.dto.IssueDTO;
+import kakao99.backend.issue.dto.*;
 
 
-import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueParentChildRepository;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.service.IssueService;
@@ -279,6 +276,17 @@ public class IssueController {
         ResponseMessage message = new ResponseMessage(200, "GPT 중요도 추천이 완료되었습니다.", askedResult);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
-}
 
+    @PostMapping("api/project/{projectId}/importance")
+    public ResponseEntity<?> saveImportanceFromGPT(@PathVariable("projectId") Long projectId, @RequestBody List<GPTsaveDTO> gptsaveDTOList, Authentication authentication) throws Exception {
+        log.info("chatGPT로 요청한 이슈 중요도 저장");
+
+        for (GPTsaveDTO dto : gptsaveDTOList) {
+            issueRepository.updateImportanceByGPT(dto.getId(), dto.getImportance());
+        }
+
+        ResponseMessage message = new ResponseMessage(200, "GPT 중요도 추천이 완료되었습니다.", gptsaveDTOList);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+}
 
