@@ -75,6 +75,9 @@ public class Member implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive; // false: 탈퇴한 회원, true: 탈퇴x 회원도
 
+    @Column(name = "exp")
+    private Long exp;
+
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

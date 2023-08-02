@@ -16,4 +16,6 @@ public interface IssueRepositoryCustom {
 
     void deleteIssue(Long issueId, Long memberId);
 
+    List<Issue> getIssueListNotFinishedOf(Long projectId);
+
 }

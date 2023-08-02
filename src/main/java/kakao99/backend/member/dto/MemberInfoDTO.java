@@ -24,4 +24,5 @@ public class MemberInfoDTO {
     private String groupCode;
     private List<Project> projectList;
     private String role;
+    private Long exp;
 }

@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -107,6 +108,17 @@ public class ProjectController {
 
         List<ProjectMemberDTO> projectDTOS = projectService.findMemberProject(memberId);
         ResponseMessage message = new ResponseMessage(200, "내가 속한 프로젝트 목록 조회 완료", projectDTOS);
+
+        return new ResponseEntity(message, HttpStatus.OK);
+    }
+
+    // Members' info 창에서 project이름 가져오기
+    @GetMapping("api/project/{projectId}/name")
+    public ResponseEntity<?> getProjectName(@PathVariable("projectId") Long projectId) {
+        Optional<Project> project = projectRepository.findById(projectId);
+        ProjectNameDTO projectNameDTO = projectService.makeProjectNameDTO(project.get());
+
+        ResponseMessage message = new ResponseMessage(200, "프로젝트 이름 조회 완료", projectNameDTO);
 
         return new ResponseEntity(message, HttpStatus.OK);
     }

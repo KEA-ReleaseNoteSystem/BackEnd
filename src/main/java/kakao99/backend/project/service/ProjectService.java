@@ -195,8 +195,14 @@ public class ProjectService {
         return projectPMDTOS;
     }
 
+    public ProjectNameDTO makeProjectNameDTO(Project project) {
 
+        ProjectNameDTO projectNameDTO = ProjectNameDTO.builder()
+                .name(project.getName())
+                .build();
 
+        return projectNameDTO;
+    }
 
     public List<ProjectMemberDTO> findMemberProject(Long memberId) {
         List<Project> projectByMemberId = memberProjectRepository.findProjectByMemberId(memberId,"true");

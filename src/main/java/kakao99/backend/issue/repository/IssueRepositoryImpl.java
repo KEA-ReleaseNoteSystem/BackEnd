@@ -18,6 +18,7 @@ import java.util.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @Repository
@@ -144,7 +145,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     @Transactional
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
 
-        JPAUpdateClause query = this.query.update(issue).set(issue.updatedAt, new Date())
+        JPAUpdateClause query = this.query.update(issue)
                 .where(issue.id.eq(issueId).and(issue.isActive.eq(true)));
 
         if(updateIssueForm.getTitle() != null){
@@ -219,4 +220,16 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
                 .execute();
     }
 
+    public List<Issue> getIssueListNotFinishedOf(Long projectId) {
+        JPAQuery<Issue> query = this.query.selectFrom(issue)
+                .where(issue.project.id.eq(projectId).and(issue.isActive.eq(true))
+                        .and(issue.status.ne("done")));
+
+        List<Issue> issueList = query.fetch();
+
+        if (issueList == null || issueList.isEmpty()) {
+            throw new NoSuchElementException("릴리즈 노트에 포함되지 않은 이슈가 없습니다.");
+        }
+        return issueList;
+    }
 }
