@@ -105,9 +105,7 @@ public class IssueController {
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "username", required = false) String name,
-            @RequestParam(value = "exclude",required = false) Long excludeId)
-    {
-
+            @RequestParam(value = "exclude",required = false) Long excludeId) {
 
         List<IssueDTO> allIssues = null;
 
@@ -193,7 +191,6 @@ public class IssueController {
 
     // 예외 처리 예시
     @GetMapping("/test/test/{releaseNoteId}")
-
     public String exceptionExample(@PathVariable("releaseNoteId") Long releaseNoteId) {
 
         if (releaseNoteId == 0)
@@ -235,12 +232,11 @@ public class IssueController {
 
 
     @DeleteMapping("/api/issue/{issueId}")
-    public ResponseEntity<?> deleteIssue(Authentication authentication, /* @RequestBody Long issueId */ @PathVariable("issueId") Long issueId) {
-        System.out.println("issueId = " + issueId);
+    public ResponseEntity<?> deleteIssue(Authentication authentication, @PathVariable("issueId") Long issueId) {
 
         Member member = (Member) authentication.getPrincipal();
 
-        issueService.deleteIssue(issueId, member.getId());
+        issueService.deleteIssue(issueId, member);
 
         ResponseMessage message = new ResponseMessage(200, issueId + "번이 삭제되었습니다.");
         return new ResponseEntity<>(message, HttpStatus.OK);

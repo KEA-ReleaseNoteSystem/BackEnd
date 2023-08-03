@@ -23,41 +23,55 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final ProjectRepository projectRepository;
     private final IssueRepository issueRepository;
 
+    @Transactional
     public void createNotification(RequestMessageDTO requestMessageDTO) {
         Long projectId = requestMessageDTO.getProjectId();
         Project project = projectRepository.findProjectById(projectId);
 
+        System.out.println("requestMessageDTO.getType().getType() = " + requestMessageDTO.getType());
+
         if (requestMessageDTO.getType().equals(NotificationType.ISSUEDONE)) {
         Long issueId = requestMessageDTO.getSpecificTypeId();
-            String issueTitle = issueRepository.findIssueById(issueId).getTitle();
-            String notificationMessage = "'"+issueTitle+NotificationType.ISSUEDONE.getVerb();
+
+            Issue issue = issueRepository.findById(issueId).get();
+            String issueTitle = issue.getTitle();
+            String notificationMessage = "'"+issueTitle + NotificationType.ISSUEDONE.getVerb();
             Notification newNotification = new Notification().builder()
                     .message(notificationMessage)
                     .type(requestMessageDTO.getType().getType())
                     .typeSpecificId(requestMessageDTO.getSpecificTypeId())
                     .project(project).build();
             notificationRepository.save(newNotification);
-        }
-        else if(requestMessageDTO.getType().equals(NotificationType.ISSUEDELETED)) {
+
+        } else if(requestMessageDTO.getType().equals(NotificationType.ISSUEDELETED)) {
+            log.info("New Notification: 이슈 삭제");
             Long issueId = requestMessageDTO.getSpecificTypeId();
-            String issueTitle = issueRepository.findIssueById(issueId).getTitle();
-            String notificationMessage = "'"+issueTitle+NotificationType.ISSUEDELETED.getVerb();
+            System.out.println("issueId = " + issueId);
+
+            Issue issue = issueRepository.findById(issueId).get();
+            String issueTitle = issue.getTitle();
+
+            String notificationMessage = "'"+issueTitle + NotificationType.ISSUEDELETED.getVerb();
+
             Notification newNotification = new Notification().builder()
                     .message(notificationMessage)
                     .type(requestMessageDTO.getType().getType())
                     .typeSpecificId(requestMessageDTO.getSpecificTypeId())
                     .project(project).build();
             notificationRepository.save(newNotification);
+            System.out.println("된거야?");
+
         }else if(requestMessageDTO.getType().equals(NotificationType.ISSUECREATED)) {
             log.info("New Notification: 이슈 발행");
             Long issueId = requestMessageDTO.getSpecificTypeId();
-            String issueTitle = issueRepository.findIssueById(issueId).getTitle();
+            Issue issue = issueRepository.findById(issueId).get();
+            String issueTitle = issue.getTitle();
             String myNickname = requestMessageDTO.getMyNickname();
             String notificationMessage = "'"+issueTitle+"' 이슈가 '"+ myNickname+NotificationType.ISSUECREATED.getVerb();
             Notification newNotification = new Notification().builder()
@@ -66,6 +80,9 @@ public class NotificationService {
                     .typeSpecificId(requestMessageDTO.getSpecificTypeId())
                     .project(project).build();
             notificationRepository.save(newNotification);
+        }else{
+            System.out.println("Error");
+
         }
     }
 

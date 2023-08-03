@@ -66,8 +66,6 @@ public class IssueService {
     private final MemberRepository memberRepository;
     private final ProjectService projectService;
     private final NotificationService notificationService;
-
-    private final IssueRepositoryImpl issueRepositoryImpl;
     private final ProjectRepository projectRepository;
 
     @Value("${chatGptSecretKey}")
@@ -131,7 +129,7 @@ public class IssueService {
 
     public List<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type, String name) {
 
-        List<Issue> allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
+        List<Issue> allIssueByProjectId = issueRepository.findAllWithFilter(projectId, status, type, name);
 
 
         return allIssueByProjectId.stream().map(issue -> {
@@ -147,9 +145,9 @@ public class IssueService {
 
     public List<IssueDTO> getAllIssuesWithoutexcludeId(Long projectId , Long excludeId) {
 
-        List<Long>  issueParentChildId = issueRepositoryImpl.findExcludeId(projectId,excludeId);
+        List<Long>  issueParentChildId = issueRepository.findExcludeId(projectId,excludeId);
 
-        List<Issue> allIssueByProjectId = issueRepositoryImpl.findWithoutExcludeId(projectId,issueParentChildId);
+        List<Issue> allIssueByProjectId = issueRepository.findWithoutExcludeId(projectId,issueParentChildId);
 
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
 
@@ -159,7 +157,7 @@ public class IssueService {
 
     @Transactional
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
-        issueRepositoryImpl.updateIssue(updateIssueForm, issueId);
+        issueRepository.updateIssue(updateIssueForm, issueId);
         }
 
         public List<IssueDTO> getIssueListIncludedInReleaseNote(Long releaseNoteId) {
@@ -199,14 +197,26 @@ public class IssueService {
     }
 
     @Transactional
-    public Long deleteIssue(Long issueId, Long memberId) {
+    public Long deleteIssue(Long issueId, Member member) {
         Optional<Issue> issueByIssueId = issueRepository.findById(issueId);
         if (issueByIssueId.isEmpty()) {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
         }
-
+        Long memberId = member.getId();
+        System.out.println("memberId = " + memberId);
         issueRepository.deleteIssue(issueId, memberId);
+        System.out.println("이슈 삭제 완료");
 
+        Issue issue = issueByIssueId.get();
+        RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
+                .type(NotificationType.ISSUEDELETED)
+                .specificTypeId(issueId)
+                .projectId(issue.getProject().getId())
+                .build();
+
+        System.out.println("Noti 생성 시작");
+        notificationService.createNotification(requestMessageDTO);
+        System.out.println("Noti 생성 완료");
         return issueId;
     }
 
@@ -218,7 +228,7 @@ public class IssueService {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
         }
 
-        issueRepositoryImpl.deleteChild(issueId, childIssueId);
+        issueRepository.deleteChild(issueId, childIssueId);
 
         return issueId;
     }

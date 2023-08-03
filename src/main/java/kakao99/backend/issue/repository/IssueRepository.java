@@ -23,12 +23,8 @@ import java.util.Optional;
 public interface IssueRepository extends JpaRepository<Issue, Long>, IssueRepositoryCustom {
     Issue save(Issue issue);
 
-    @Query("select m from Issue m where m.isActive = true and m.id = :issueId")
-    Issue findIssueById(@Param("issueId") Long issueId);
-
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge join fetch m.memberReport where m.project.id=:projectId and m.isActive = true")
     List<Issue> findAllByProjectId(@Param("projectId") Long projectId);
-
 
     Optional<Issue> findById(Long issueId);
 
@@ -108,4 +104,9 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
     @Query("UPDATE Issue m SET m.importance = :importance where m.id = :issueId")
     int updateImportanceByGPT(@Param("issueId") Long issueId, @Param("importance") Integer importance);
 
+    void deleteChild(Long issueId, Long childissueId);
+
+    List<Issue> findWithoutExcludeId(Long projectId,  List<Long> excludeIdList);
+
+    List<Long> findExcludeId(Long projectId, Long excludeId);
 }
