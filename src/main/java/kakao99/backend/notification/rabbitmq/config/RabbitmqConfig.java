@@ -46,12 +46,12 @@ public class RabbitmqConfig {
 
     @Bean
     DirectExchange directExchange() {
-        return new DirectExchange("hello.exchange");
+        return new DirectExchange("notification.exchange");
     }
 
     @Bean
     Binding binding(DirectExchange directExchange, Queue queue) {
-        return BindingBuilder.bind(queue).to(directExchange).with("hello.key");
+        return BindingBuilder.bind(queue).to(directExchange).with("notification.key");
     }
 
     @Bean

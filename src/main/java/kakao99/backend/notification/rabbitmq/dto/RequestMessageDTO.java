@@ -13,6 +13,10 @@ public class RequestMessageDTO {
     private NotificationType type;
     private Long specificTypeId;
     private Long projectId;
+    private String myNickname;
+    private Long objectNickname;
+
+
 //    private String title;
 //    private String content;
 }

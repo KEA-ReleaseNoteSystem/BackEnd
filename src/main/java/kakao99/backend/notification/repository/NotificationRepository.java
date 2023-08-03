@@ -12,5 +12,4 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<Notification> findAllByProjectId(Long projectId);
 
 
-
 }

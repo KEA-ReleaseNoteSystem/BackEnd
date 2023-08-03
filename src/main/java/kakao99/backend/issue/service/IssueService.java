@@ -1,48 +1,35 @@
 package kakao99.backend.issue.service;
 
-
 import com.google.gson.*;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
-import kakao99.backend.entity.Notification;
+import kakao99.backend.entity.Project;
 import kakao99.backend.entity.types.NotificationType;
+import kakao99.backend.issue.controller.IssueForm;
 import kakao99.backend.issue.controller.UpdateIssueForm;
 import kakao99.backend.issue.dto.DragNDropDTO;
 
 import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueParentChildRepository;
-
 import kakao99.backend.issue.dto.*;
-
 import kakao99.backend.issue.repository.IssueRepository;
-import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
 import kakao99.backend.notification.rabbitmq.service.MessageService;
 import kakao99.backend.notification.service.NotificationService;
+import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import org.apache.tomcat.util.json.JSONParser;
-import org.aspectj.bridge.Message;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -59,16 +46,48 @@ public class IssueService {
     private final MemberRepository memberRepository;
     private final ProjectService projectService;
     private final NotificationService notificationService;
-
-    private final IssueRepositoryImpl issueRepositoryImpl;
+    private final ProjectRepository projectRepository;
 
     @Value("${chatGptSecretKey}")
     private String chatGptSecretKey;
 
-    private MessageService messageService;
+    private final MessageService messageService;
 
 
     private final IssueParentChildRepository issueParentChildRepository;
+
+    @Transactional
+    public Issue createNewIssue(Member member, IssueForm issueForm, Long projectId) {
+        Optional<Project> projectById = projectRepository.findById(projectId);
+        if (projectById.isEmpty()) {
+            throw new NoSuchElementException("해당 projectId 해당하는 프로젝트 데이터 없음.");
+        }
+        Project project = projectById.get();
+
+        Issue newIssue = new Issue().builder()
+                .title(issueForm.getTitle())
+                .issueType(issueForm.getType())
+                .description(issueForm.getDescription())
+                .memberReport(member)
+                .memberInCharge(member)
+                .status("backlog")
+                .project(project)
+                .isActive(true)
+                .build();
+
+        issueRepository.save(newIssue);
+
+        RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
+                .type(NotificationType.ISSUECREATED)
+                .specificTypeId(newIssue.getId())
+                .projectId(newIssue.getProject().getId())
+                .myNickname(member.getNickname())
+                .build();
+
+        notificationService.createNotification(requestMessageDTO);
+
+        return newIssue;
+    }
 
 
     public List<Issue> getIssuesWithMemo(Long projectId) {
@@ -81,16 +100,14 @@ public class IssueService {
     }
 
     public List<IssueDTO> getAllIssues(Long projectId) {
-
         List<Issue> issueList = issueRepository.findAllByProjectId(projectId);
-        System.out.println("allIssueByProjectId.toArray().length = " + issueList.toArray().length);
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(issueList);
         return issueDTOListFromIssueList;
     }
 
     public List<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type, String name) {
 
-        List<Issue> allIssueByProjectId = issueRepositoryImpl.findAllWithFilter(projectId, status, type, name);
+        List<Issue> allIssueByProjectId = issueRepository.findAllWithFilter(projectId, status, type, name);
 
 
         return allIssueByProjectId.stream().map(issue -> {
@@ -106,9 +123,9 @@ public class IssueService {
 
     public List<IssueDTO> getAllIssuesWithoutexcludeId(Long projectId , Long excludeId) {
 
-        List<Long>  issueParentChildId = issueRepositoryImpl.findExcludeId(projectId,excludeId);
+        List<Long>  issueParentChildId = issueRepository.findExcludeId(projectId,excludeId);
 
-        List<Issue> allIssueByProjectId = issueRepositoryImpl.findWithoutExcludeId(projectId,issueParentChildId);
+        List<Issue> allIssueByProjectId = issueRepository.findWithoutExcludeId(projectId,issueParentChildId);
 
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(allIssueByProjectId);
 
@@ -118,7 +135,7 @@ public class IssueService {
 
     @Transactional
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
-        issueRepositoryImpl.updateIssue(updateIssueForm, issueId);
+        issueRepository.updateIssue(updateIssueForm, issueId);
         }
 
         public List<IssueDTO> getIssueListIncludedInReleaseNote(Long releaseNoteId) {
@@ -158,13 +175,22 @@ public class IssueService {
     }
 
     @Transactional
-    public Long deleteIssue(Long issueId, Long memberId) {
-        Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
+    public Long deleteIssue(Long issueId, Member member) {
+        Optional<Issue> issueByIssueId = issueRepository.findById(issueId);
         if (issueByIssueId.isEmpty()) {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
         }
-
+        Long memberId = member.getId();
         issueRepository.deleteIssue(issueId, memberId);
+
+        Issue issue = issueByIssueId.get();
+        RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
+                .type(NotificationType.ISSUEDELETED)
+                .specificTypeId(issueId)
+                .projectId(issue.getProject().getId())
+                .build();
+
+        notificationService.createNotification(requestMessageDTO);
 
         return issueId;
     }
@@ -172,12 +198,12 @@ public class IssueService {
 
     @Transactional
     public Long deleteChildIssue(Long issueId, Long childIssueId) {
-        Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
+        Optional<Issue> issueByIssueId = issueRepository.findById(issueId);
         if (issueByIssueId.isEmpty()) {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
         }
 
-        issueRepositoryImpl.deleteChild(issueId, childIssueId);
+        issueRepository.deleteChild(issueId, childIssueId);
 
         return issueId;
     }
@@ -193,19 +219,14 @@ public class IssueService {
         }
 
         Long issueId = dragNDropDTO.getIssueId();
-
         Optional<Issue> issueOptional = issueRepository.findById(issueId);
 
         if (issueOptional.isEmpty()) {
             throw new CustomException(404, issueId + "번 이슈가 존재하지 않습니다.");
         }
-        log.info("222");
         Issue issue = issueOptional.get();
-        log.info("222");
 
         if (dragNDropDTO.getDestinationStatus().equals("done")) {
-            log.info("Done 으로 상태 변경");
-
 
             RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
                     .type(NotificationType.ISSUEDONE)
@@ -215,9 +236,6 @@ public class IssueService {
             notificationService.createNotification(requestMessageDTO);
             messageService.requestCreateNotification(requestMessageDTO);
         }
-
-
-//        Notification notification = notificationService.createNotification(dragNDropDTO, memberReport, issue);
     }
 
     public List<GPTQuestionDTO> askImportanceToGPT(Long projectId){
