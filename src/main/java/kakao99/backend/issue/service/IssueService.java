@@ -1,12 +1,9 @@
 package kakao99.backend.issue.service;
 
-
 import com.google.gson.*;
-import kakao99.backend.common.ResponseMessage;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
-import kakao99.backend.entity.Notification;
 import kakao99.backend.entity.Project;
 import kakao99.backend.entity.types.NotificationType;
 import kakao99.backend.issue.controller.IssueForm;
@@ -16,11 +13,8 @@ import kakao99.backend.issue.dto.DragNDropDTO;
 import kakao99.backend.issue.dto.IssueDTO;
 import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 import kakao99.backend.issue.repository.IssueParentChildRepository;
-
 import kakao99.backend.issue.dto.*;
-
 import kakao99.backend.issue.repository.IssueRepository;
-import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
 import kakao99.backend.notification.rabbitmq.service.MessageService;
@@ -28,28 +22,14 @@ import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
-
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import org.apache.tomcat.util.json.JSONParser;
-import org.aspectj.bridge.Message;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -120,9 +100,7 @@ public class IssueService {
     }
 
     public List<IssueDTO> getAllIssues(Long projectId) {
-
         List<Issue> issueList = issueRepository.findAllByProjectId(projectId);
-        System.out.println("allIssueByProjectId.toArray().length = " + issueList.toArray().length);
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(issueList);
         return issueDTOListFromIssueList;
     }
@@ -203,9 +181,7 @@ public class IssueService {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
         }
         Long memberId = member.getId();
-        System.out.println("memberId = " + memberId);
         issueRepository.deleteIssue(issueId, memberId);
-        System.out.println("이슈 삭제 완료");
 
         Issue issue = issueByIssueId.get();
         RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
@@ -214,9 +190,8 @@ public class IssueService {
                 .projectId(issue.getProject().getId())
                 .build();
 
-        System.out.println("Noti 생성 시작");
         notificationService.createNotification(requestMessageDTO);
-        System.out.println("Noti 생성 완료");
+
         return issueId;
     }
 
@@ -244,7 +219,6 @@ public class IssueService {
         }
 
         Long issueId = dragNDropDTO.getIssueId();
-
         Optional<Issue> issueOptional = issueRepository.findById(issueId);
 
         if (issueOptional.isEmpty()) {
@@ -262,9 +236,6 @@ public class IssueService {
             notificationService.createNotification(requestMessageDTO);
             messageService.requestCreateNotification(requestMessageDTO);
         }
-
-
-//        Notification notification = notificationService.createNotification(dragNDropDTO, memberReport, issue);
     }
 
     public List<GPTQuestionDTO> askImportanceToGPT(Long projectId){
