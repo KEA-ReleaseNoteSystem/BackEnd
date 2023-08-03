@@ -32,15 +32,10 @@ public class NotificationService {
         Project project = projectRepository.findProjectById(projectId);
         System.out.println("project.getId() = " + project.getId());
 
-//        if (optionalProject.isEmpty()) {
-//            throw new NoSuchElementException(projectId + "프로젝트가 없습니다.");
-//        }
-//        Project project = optionalProject.get();
-        log.info("noti 저장 시도");
         if (requestMessageDTO.getType().equals(NotificationType.ISSUEDONE)) {
-            log.info("noti 저장 중");
+
             Notification newNotification = new Notification().builder()
-                    .message("이슈가 해결되었습니다.")
+                    .message("번 이슈가 해결되었습니다.")
                     .type(requestMessageDTO.getType().getType())
                     .typeSpecificId(requestMessageDTO.getSpecificTypeId())
                     .project(project).build();
@@ -48,14 +43,13 @@ public class NotificationService {
 
         }
 
-//        notificationRepository.createNotification(requestMessageDTO);
     }
 
     public List<NotificationDTO> getAllNotifications(Long projectId) {
         List<Notification> allNotificationOfProject = notificationRepository.findAllByProjectId(projectId);
 
-        List<NotificationDTO> notificationDTOS = NotificationDTO.AllNotificationOfProject(allNotificationOfProject);
+        List<NotificationDTO> notificationDTOList = NotificationDTO.AllNotificationOfProject(allNotificationOfProject);
 
-        return notificationDTOS;
+        return notificationDTOList;
     }
 }

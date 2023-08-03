@@ -65,7 +65,7 @@ public class IssueService {
     @Value("${chatGptSecretKey}")
     private String chatGptSecretKey;
 
-    private MessageService messageService;
+    private final MessageService messageService;
 
 
     private final IssueParentChildRepository issueParentChildRepository;
@@ -199,13 +199,9 @@ public class IssueService {
         if (issueOptional.isEmpty()) {
             throw new CustomException(404, issueId + "번 이슈가 존재하지 않습니다.");
         }
-        log.info("222");
         Issue issue = issueOptional.get();
-        log.info("222");
 
         if (dragNDropDTO.getDestinationStatus().equals("done")) {
-            log.info("Done 으로 상태 변경");
-
 
             RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
                     .type(NotificationType.ISSUEDONE)

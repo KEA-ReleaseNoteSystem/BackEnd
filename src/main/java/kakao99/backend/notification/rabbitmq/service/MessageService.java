@@ -49,7 +49,7 @@ public class MessageService {
         rabbitTemplate.convertAndSend(exchangeName, routingKey, requestMessageDTO);
     }
 
-    @RabbitListener(queues = "notification")
+    @RabbitListener(queues = "${rabbitmq.queue.name}")
     public void createNotification(RequestMessageDTO requestMessageDto) {
         log.info("Received message: {}", requestMessageDto.toString());
     }
