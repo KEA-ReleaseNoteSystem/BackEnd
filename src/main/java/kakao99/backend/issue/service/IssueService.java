@@ -39,6 +39,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,9 +81,6 @@ public class IssueService {
         List<IssueDTO> issueDTOListFromIssueList = IssueDTO.getIssueDTOListFromIssueList(issueList);
         return issueDTOListFromIssueList;
     }
-
-
-
 
     public List<IssueDTO> getAllIssuesByFilter(Long projectId ,String status, String type, String name) {
 
@@ -241,5 +243,33 @@ public class IssueService {
             GptQuestion.setImportance(importance);
         }
         return questionList;
+    }
+
+    // 각 updatedAt의 날짜를 'yyyy-MM-dd' 형식으로 변환하여 리턴하는 메소드
+    public List<IssueGrassDTO> countDoneIssuesByDate(Long memberId) {
+        List<Issue> doneIssues = issueRepository.findDoneIssuesByMemberId(memberId);
+
+        // 결과를 저장할 맵 생성
+        Map<String, Long> countByDate = new HashMap<>();
+        DateTimeFormatter customFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Issue 리스트를 순회하며 각 updatedAt의 날짜를 변환하여 리스트에 저장
+        for (Issue issue : doneIssues) {
+            Instant instant = issue.getUpdatedAt().toInstant();
+            LocalDate updatedAt = instant.atZone(ZoneOffset.UTC).toLocalDate();
+            String formattedDate = updatedAt.format(customFormat);
+            countByDate.put(formattedDate, countByDate.getOrDefault(formattedDate, 0L) + 1);
+        }
+
+        // 결과를 IssueGrassDTO 리스트에 담아서 반환
+        List<IssueGrassDTO> result = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : countByDate.entrySet()) {
+            String dateStr = entry.getKey();
+            Long count = entry.getValue();
+            IssueGrassDTO dto = new IssueGrassDTO(dateStr, count);
+            result.add(dto);
+        }
+
+        return result;
     }
 }

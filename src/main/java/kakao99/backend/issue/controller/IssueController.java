@@ -288,5 +288,16 @@ public class IssueController {
         ResponseMessage message = new ResponseMessage(200, "GPT 중요도 추천이 완료되었습니다.", gptsaveDTOList);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    @GetMapping("api/mypage/issue")
+    public ResponseEntity<?> getGrassInfo(Authentication authentication) {
+        Member member = (Member) authentication.getPrincipal();
+        log.info("member"+ member);
+
+        log.info("잔디 채우기: 일별 이슈 해결 수 요청");
+        List<IssueGrassDTO> issueGrassDTOList = issueService.countDoneIssuesByDate(member.getId());
+        ResponseMessage message = new ResponseMessage(200, "잔디 데이터 받아오기.", issueGrassDTOList);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 }
 
