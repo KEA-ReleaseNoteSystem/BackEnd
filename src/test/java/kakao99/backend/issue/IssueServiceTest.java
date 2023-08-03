@@ -1,6 +1,5 @@
 package kakao99.backend.issue;
 
-import kakao99.backend.BackendApplication;
 import kakao99.backend.config.TestConfig;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.issue.dto.GPTQuestionDTO;
@@ -19,23 +18,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -150,5 +142,20 @@ public class IssueServiceTest {
 
 
     }
+
+//    @Test
+//    void 잔디밭_데이터_테스트() {
+//        Long memberId = 1L;
+//        List<IssueGrassDTO> numberOfDoneIssues = issueRepository.findNumberOfDoneIssues(memberId);
+//
+//        System.out.println("numberOfDoneIssues.stream().count() = " + numberOfDoneIssues.stream().count());
+//        for (IssueGrassDTO grassData : numberOfDoneIssues) {
+//            System.out.println("grassData.getCount() = " + grassData.getCount());
+//            System.out.println("grassData.getUpdatedAt() = " + grassData.getUpdatedAt());
+//            System.out.println("====");
+//
+//        }
+//        System.out.println("numberOfDoneIssues.get(0) = " + numberOfDoneIssues.get(0).toString());
+//    }
 
 }
