@@ -2,11 +2,14 @@ package kakao99.backend.issue.service;
 
 
 import com.google.gson.*;
+import kakao99.backend.common.ResponseMessage;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Notification;
+import kakao99.backend.entity.Project;
 import kakao99.backend.entity.types.NotificationType;
+import kakao99.backend.issue.controller.IssueForm;
 import kakao99.backend.issue.controller.UpdateIssueForm;
 import kakao99.backend.issue.dto.DragNDropDTO;
 
@@ -22,6 +25,7 @@ import kakao99.backend.member.repository.MemberRepository;
 import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
 import kakao99.backend.notification.rabbitmq.service.MessageService;
 import kakao99.backend.notification.service.NotificationService;
+import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 
@@ -34,10 +38,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -61,6 +68,7 @@ public class IssueService {
     private final NotificationService notificationService;
 
     private final IssueRepositoryImpl issueRepositoryImpl;
+    private final ProjectRepository projectRepository;
 
     @Value("${chatGptSecretKey}")
     private String chatGptSecretKey;
@@ -69,6 +77,39 @@ public class IssueService {
 
 
     private final IssueParentChildRepository issueParentChildRepository;
+
+    @Transactional
+    public Issue createNewIssue(Member member, IssueForm issueForm, Long projectId) {
+        Optional<Project> projectById = projectRepository.findById(projectId);
+        if (projectById.isEmpty()) {
+            throw new NoSuchElementException("해당 projectId 해당하는 프로젝트 데이터 없음.");
+        }
+        Project project = projectById.get();
+
+        Issue newIssue = new Issue().builder()
+                .title(issueForm.getTitle())
+                .issueType(issueForm.getType())
+                .description(issueForm.getDescription())
+                .memberReport(member)
+                .memberInCharge(member)
+                .status("backlog")
+                .project(project)
+                .isActive(true)
+                .build();
+
+        issueRepository.save(newIssue);
+
+        RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
+                .type(NotificationType.ISSUECREATED)
+                .specificTypeId(newIssue.getId())
+                .projectId(newIssue.getProject().getId())
+                .myNickname(member.getNickname())
+                .build();
+
+        notificationService.createNotification(requestMessageDTO);
+
+        return newIssue;
+    }
 
 
     public List<Issue> getIssuesWithMemo(Long projectId) {
@@ -159,7 +200,7 @@ public class IssueService {
 
     @Transactional
     public Long deleteIssue(Long issueId, Long memberId) {
-        Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
+        Optional<Issue> issueByIssueId = issueRepository.findById(issueId);
         if (issueByIssueId.isEmpty()) {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
         }
@@ -172,7 +213,7 @@ public class IssueService {
 
     @Transactional
     public Long deleteChildIssue(Long issueId, Long childIssueId) {
-        Optional<Issue> issueByIssueId = issueRepository.findIssueById(issueId);
+        Optional<Issue> issueByIssueId = issueRepository.findById(issueId);
         if (issueByIssueId.isEmpty()) {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
         }

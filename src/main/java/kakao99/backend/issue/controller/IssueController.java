@@ -6,6 +6,7 @@ import kakao99.backend.common.exception.ErrorCode;
 import kakao99.backend.entity.*;
 
 import kakao99.backend.common.exception.CustomException;
+import kakao99.backend.entity.types.NotificationType;
 import kakao99.backend.issue.dto.*;
 
 
@@ -14,6 +15,8 @@ import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.issue.service.TreeService;
 import kakao99.backend.member.repository.MemberRepository;
+import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
+import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -42,41 +45,17 @@ public class IssueController {
     private final TreeService treeService;
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
-
+    private final NotificationService notificationService;
 
     // 이슈 생성
     @PostMapping("/api/project/{projectId}/issue")
-        public ResponseEntity<?> createIssue(@RequestBody IssueForm issue, @PathVariable("projectId") Long projectId) {
+        public ResponseEntity<?> createIssue(Authentication authentication, @RequestBody IssueForm issueForm, @PathVariable("projectId") Long projectId) {
+        log.info("이슈 생성");
 
-        Optional<Member> memberById = memberRepository.findById(issue.getUserId());
-        
-        if (memberById.isEmpty()) {
-            ResponseMessage message = new ResponseMessage(404, "해당 userId에 해당하는 유저 데이터 없음.");
-            return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
-        }
+        Member member = (Member) authentication.getPrincipal();
 
-        Optional<Project> projectById = projectRepository.findById(projectId);
-        if (projectById.isEmpty()) {
-            ResponseMessage message = new ResponseMessage(404, "해당 projectId 해당하는 프로젝트 데이터 없음.");
-            return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
-        }
+        issueService.createNewIssue(member, issueForm, projectId);
 
-        Member member = memberById.get();
-        Project project = projectById.get();
-
-        Issue newIssue = new Issue().builder()
-                .title(issue.getTitle())
-                .issueType(issue.getType())
-                .description(issue.getDescription())
-                .memberReport(member)
-                .memberInCharge(member)
-                .status("backlog")
-                .project(project)
-                .isActive(true)
-                .build();
-
-
-        issueRepository.save(newIssue);
         ResponseMessage message = new ResponseMessage(200, "이슈 생성 성공");
         return new ResponseEntity(message, HttpStatus.OK);
     }

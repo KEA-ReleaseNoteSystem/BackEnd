@@ -24,7 +24,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
     Issue save(Issue issue);
 
     @Query("select m from Issue m where m.isActive = true and m.id = :issueId")
-    Optional<Issue> findIssueById(@Param("issueId") Long issueId);
+    Issue findIssueById(@Param("issueId") Long issueId);
 
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge join fetch m.memberReport where m.project.id=:projectId and m.isActive = true")
     List<Issue> findAllByProjectId(@Param("projectId") Long projectId);
