@@ -1,14 +1,12 @@
 package kakao99.backend.issue.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.google.gson.*;
-import com.nimbusds.common.contenttype.ContentType;
-import jakarta.persistence.Table;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Issue;
 import kakao99.backend.entity.Member;
 import kakao99.backend.entity.Notification;
+import kakao99.backend.entity.types.NotificationType;
 import kakao99.backend.issue.controller.UpdateIssueForm;
 import kakao99.backend.issue.dto.DragNDropDTO;
 
@@ -21,6 +19,8 @@ import kakao99.backend.issue.dto.*;
 import kakao99.backend.issue.repository.IssueRepository;
 import kakao99.backend.issue.repository.IssueRepositoryImpl;
 import kakao99.backend.member.repository.MemberRepository;
+import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
+import kakao99.backend.notification.rabbitmq.service.MessageService;
 import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.tomcat.util.json.JSONParser;
+import org.aspectj.bridge.Message;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
@@ -59,8 +60,11 @@ public class IssueService {
     @Value("${chatGptSecretKey}")
     private String chatGptSecretKey;
 
+    private MessageService messageService;
+
 
     private final IssueParentChildRepository issueParentChildRepository;
+
 
     public List<Issue> getIssuesWithMemo(Long projectId) {
         return issueRepository.findAllByProjectId(projectId);
@@ -187,13 +191,31 @@ public class IssueService {
         }
 
         Long issueId = dragNDropDTO.getIssueId();
+        System.out.println("issueId = " + issueId);
+        log.info("111");
         Optional<Issue> issueOptional = issueRepository.findIssueById(issueId);
         if (issueOptional.isEmpty()) {
             throw new CustomException(404, issueId + "번 이슈가 존재하지 않습니다.");
         }
+        log.info("222");
         Issue issue = issueOptional.get();
-        Member memberReport = optionalMember.get();
-        Notification notification = notificationService.createNotification(dragNDropDTO, memberReport, issue);
+        log.info("222");
+
+        if (dragNDropDTO.getDestinationStatus().equals("done")) {
+            log.info("Done 으로 상태 변경");
+
+
+            RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
+                    .type(NotificationType.ISSUEDONE)
+                    .specificTypeId(issueId)
+                    .projectId(issue.getProject().getId()).build();
+
+            notificationService.createNotification(requestMessageDTO);
+            messageService.requestCreateNotification(requestMessageDTO);
+        }
+
+
+//        Notification notification = notificationService.createNotification(dragNDropDTO, memberReport, issue);
     }
 
     public List<GPTQuestionDTO> askImportanceToGPT(Long projectId){

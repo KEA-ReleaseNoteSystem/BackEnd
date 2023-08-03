@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import kakao99.backend.entity.types.NotificationType;
 import kakao99.backend.issue.dto.DragNDropDTO;
+import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,22 +44,4 @@ public class Notification {
     @CreationTimestamp
     private Date createdAt; // 생성일
 
-    @Column(name = "is_checked")
-    private Boolean isChecked; // 확인 여부
-
-
-//    public static Notification createdByDragNDrop(DragNDropDTO dragNDropDTO, Member memberReport, Issue issue) {
-//
-//        return Notification.builder()
-//                .memberReport(memberReport)
-//                .type(NotificationType.DRAGNDROP.getType())// 이슈 타입
-//                .updatedIssueStatusBefore(dragNDropDTO.getSourceStatus())
-//                .updatedIssueStatusAfter(dragNDropDTO.getDestinationStatus())
-////                .issue(issue)
-//                .createdAt(new Date())
-//                .updatedAt(null)
-//                .deletedAt(null)
-//                .isActive(true)  // Assuming memos are active when created
-//                .build();
-//    }
 }

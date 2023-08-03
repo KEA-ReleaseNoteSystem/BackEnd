@@ -16,12 +16,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-import kakao99.backend.entity.*;
-
 
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import static com.querydsl.core.group.GroupBy.groupBy;
 
 
 @Repository
@@ -43,7 +43,7 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
 
     private QMember member = QMember.member;
 
-
+//    private QIssueGrassDTO issueGrassDTO = QIssueGrassDTO();
 
 
 
@@ -215,7 +215,6 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     @Transactional
     public void deleteChild(Long issueId, Long childissueId) {
 
-
         long execute = this.query.update(issueParentChild)
                 .set(issueParentChild.isActive, false)
                 .set(issueParentChild.deletedAt, new Date())
@@ -235,4 +234,5 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         }
         return issueList;
     }
+
 }

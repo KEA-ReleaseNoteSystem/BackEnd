@@ -41,7 +41,7 @@ public class RabbitmqConfig {
 
     @Bean
     Queue queue() {
-        return new Queue("hello",false);
+        return new Queue("notification",false);
     }
 
     @Bean

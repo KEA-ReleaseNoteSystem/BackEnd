@@ -22,8 +22,8 @@ import java.util.Optional;
 public interface IssueRepository extends JpaRepository<Issue, Long>, IssueRepositoryCustom {
     Issue save(Issue issue);
 
-    @Query("select m from Issue m where m.isActive = true")
-    Optional<Issue> findIssueById(Long issueId);
+    @Query("select m from Issue m where m.isActive = true and m.id = :issueId")
+    Optional<Issue> findIssueById(@Param("issueId") Long issueId);
 
 
     @Query("select m from Issue m join fetch m.project join fetch m.memberInCharge join fetch m.memberReport where m.project.id=:projectId and m.isActive = true")
@@ -100,4 +100,6 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
 
     @Query("SELECT MAX(i.id) FROM Issue i")
     Long findMaxId();
+
+
 }

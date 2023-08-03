@@ -1,7 +1,8 @@
 package kakao99.backend.notification.rabbitmq.service;
 
-import kakao99.backend.notification.rabbitmq.dto.MessageDTO;
-import lombok.AllArgsConstructor;
+import kakao99.backend.entity.Notification;
+import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
+import kakao99.backend.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -22,23 +23,34 @@ public class MessageService {
 
     private final RabbitTemplate rabbitTemplate;
 
+    private NotificationService notificationService;
+
     /**
      * Queue로 메시지를 발행
      *
-     * @param messageDto 발행할 메시지의 DTO 객체
+     * @param requestMessageDto 발행할 메시지의 DTO 객체
      */
-    public void sendMessage(MessageDTO messageDto) {
-        log.info("message sent: {}", messageDto.toString());
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
+    public void sendMessage(RequestMessageDTO requestMessageDto) {
+        log.info("message sent: {}", requestMessageDto.toString());
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, requestMessageDto);
     }
 
     /**
      * Queue에서 메시지를 구독
      *
-     * @param messageDto 구독한 메시지를 담고 있는 MessageDto 객체
+     * @param requestMessageDto 구독한 메시지를 담고 있는 MessageDto 객체
      */
     @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void receiveMessage(MessageDTO messageDto) {
-        log.info("Received message: {}", messageDto.toString());
+    public void receiveMessage(RequestMessageDTO requestMessageDto) {
+        log.info("Received message: {}", requestMessageDto.toString());
+    }
+
+    public void requestCreateNotification(RequestMessageDTO requestMessageDTO) {
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, requestMessageDTO);
+    }
+
+    @RabbitListener(queues = "notification")
+    public void createNotification(RequestMessageDTO requestMessageDto) {
+        log.info("Received message: {}", requestMessageDto.toString());
     }
 }
