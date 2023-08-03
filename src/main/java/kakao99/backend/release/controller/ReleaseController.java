@@ -10,6 +10,7 @@ import kakao99.backend.release.dto.CreateReleaseDTO;
 import kakao99.backend.release.dto.GetReleaseDTO;
 import kakao99.backend.release.dto.GetReleaseListDTO;
 import kakao99.backend.release.dto.UpdateReleaseDTO;
+import kakao99.backend.release.service.NoteTreeService;
 import kakao99.backend.release.service.ReleaseService;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class ReleaseController {
     private final ReleaseService releaseService;
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
+
+    private final NoteTreeService noteTreeService;
 
     @PostMapping("/api/release/create")
     @ResponseBody
@@ -150,6 +153,14 @@ public class ReleaseController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+
+    @GetMapping("/api/{projectId}/releases/tree")
+    public ResponseEntity<ResponseMessage> getTree(@PathVariable("projectId") Long projectId){
+        noteTreeService.getTreesForProject(projectId);
+
+        ResponseMessage message = new ResponseMessage(200, "트리 생성 완료", noteTreeService.getTreesForProject(projectId));
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 }
 
 
