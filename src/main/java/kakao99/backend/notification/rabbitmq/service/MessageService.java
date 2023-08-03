@@ -40,7 +40,5 @@ public class MessageService {
     @RabbitListener(queues = "${rabbitmq.queue.name}")
     public void receiveMessage(MessageDTO messageDto) {
         log.info("Received message: {}", messageDto.toString());
-        String uuid = rabbitTemplate.getUUID();
-        System.out.println("uuid = " + uuid);
     }
 }

@@ -27,10 +27,4 @@ public class MessageController {
         return ResponseEntity.ok("Message sent to RabbitMQ!");
     }
 
-    @GetMapping("/receive/message")
-    public ResponseEntity<?> receiverMessage(MessageDTO messageDto) {
-        messageService.receiveMessage(messageDto);
-
-        return ResponseEntity.ok("Message received from RabbitMQ!");
-    }
 }
