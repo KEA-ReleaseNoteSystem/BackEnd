@@ -17,6 +17,7 @@ public interface ReleaseParentChildRepository extends JpaRepository<ReleaseNoteP
     ReleaseNoteParentChild save(ReleaseNoteParentChild releaseNoteParentChild);
     List<ReleaseNoteParentChild> findByChildNoteAndIsActive(ReleaseNote childNote, Boolean isActive);
 
+
     ReleaseNoteParentChild findByChildNote(ReleaseNote childNote);
 
 }

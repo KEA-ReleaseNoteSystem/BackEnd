@@ -47,6 +47,7 @@ public class NoteTreeService {
 
 
 
+
     public List<NoteTreeNode> getTreesForProject(Long projectId) {
         // Fetch all root nodes for the given project
         List<ReleaseNote> rootNodes = releaseRepository.findRootNodesByProjectId(projectId);

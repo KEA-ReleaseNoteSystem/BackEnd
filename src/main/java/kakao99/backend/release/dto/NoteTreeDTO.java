@@ -32,6 +32,8 @@ public class NoteTreeDTO {
 
     private String version;
 
+
+
     private boolean isActive;
 
 //    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
