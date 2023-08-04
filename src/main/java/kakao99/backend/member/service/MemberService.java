@@ -2,6 +2,9 @@ package kakao99.backend.member.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Group;
 import kakao99.backend.entity.Member;
@@ -15,13 +18,22 @@ import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -29,13 +41,14 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public class MemberService {
-
+    private final ResourceLoader resourceLoader;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final GroupRepository groupRepository;
     private final MemberProjectRepository memberProjectRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private static final  String absolutePath = "C:\\Users\\USER\\Desktop\\releasy_be\\BackEnd\\src\\main\\resources\\static\\";
     @Transactional
     public Long create(RegisterDTO registerDTO) {
 
@@ -177,6 +190,7 @@ public class MemberService {
         List<Project> projectList = memberProjectRepository.findProjectByMemberId(memberId, "true");
 
         return MemberInfoDTO.builder()
+                .id(member.getId())
                 .name(member.getUsername())
                 .nickname(member.getNickname())
                 .email(member.getEmail())
@@ -209,6 +223,7 @@ public class MemberService {
             memberInfoDTOList.add(
                     MemberInfoDTO.builder()
                             .id(groupMember.getId())
+                            .introduce(groupMember.getIntroduce())
                             .name(groupMember.getUsername())
                             .nickname(groupMember.getNickname())
                             .email(groupMember.getEmail())
@@ -221,6 +236,7 @@ public class MemberService {
 
         System.out.println(memberInfoDTOList);
         return MemberGroupDTO.builder()
+                .id(member.getId())
                 .name(member.getUsername())
                 .nickname(member.getNickname())
                 .email(member.getEmail())
@@ -303,5 +319,22 @@ public class MemberService {
             }
         ResponseMessage message = new ResponseMessage(200, projectId+"번 프로젝트의 회원 정보 조회 완료", memberInfoDTOList);
         return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    public void saveImage(Authentication authentication, MultipartFile profileImg){
+        Member member = (Member) authentication.getPrincipal();
+        String fileName = String.valueOf(member.getId());
+        System.out.println(profileImg.getOriginalFilename());
+        System.out.println("Received image: " + fileName);
+        try {
+             // Replace this with your desired absolute path
+            String filePath = absolutePath + fileName + ".jpg";
+
+            File file = new File(filePath);
+
+            profileImg.transferTo(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

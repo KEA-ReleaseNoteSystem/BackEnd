@@ -5,6 +5,9 @@ import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
 import kakao99.backend.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +54,16 @@ public class MessageService {
 
     @RabbitListener(queues = "${rabbitmq.queue.name}")
     public void createNotification(RequestMessageDTO requestMessageDto) {
+        log.info("Received message: {}", requestMessageDto.toString());
+    }
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue,
+            exchange = @Exchange(value = "releasy"),
+            key="notifications.new"
+    ))
+    public void testConsumer(RequestMessageDTO requestMessageDto) {
+
         log.info("Received message: {}", requestMessageDto.toString());
     }
 }
