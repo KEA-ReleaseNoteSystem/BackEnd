@@ -148,7 +148,8 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
 
         JPAUpdateClause query = this.query.update(issue)
-                .where(issue.id.eq(issueId).and(issue.isActive.eq(true)));
+                .where(issue.id.eq(issueId).and(issue.isActive.eq(true)))
+                .set(issue.updatedAt, new Date());
 
         if(updateIssueForm.getTitle() != null){
             query.set(issue.title, updateIssueForm.getTitle());
@@ -175,7 +176,8 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     @Transactional
     public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO) {
         JPAUpdateClause query = this.query.update(issue)
-                .where(issue.id.eq(dragNDropDTO.getIssueId()).and(issue.isActive.eq(true)));
+                .where(issue.id.eq(dragNDropDTO.getIssueId()).and(issue.isActive.eq(true)))
+                .set(issue.updatedAt, new Date());;
 
         if (dragNDropDTO.getDestinationStatus() != null) {
             query.set(issue.status, dragNDropDTO.getDestinationStatus());

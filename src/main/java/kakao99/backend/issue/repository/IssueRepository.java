@@ -98,11 +98,15 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
     @Query("SELECT MAX(i.id) FROM Issue i")
     Long findMaxId();
 
+    @Query("SELECT MAX(i.issueNum) FROM Issue i WHERE i.project.id=:projectId")
+    Long findMaxIssueNum(@Param("projectId") Long projectId);
+
 
     @Modifying
     @Transactional
     @Query("UPDATE Issue m SET m.importance = :importance where m.id = :issueId")
     int updateImportanceByGPT(@Param("issueId") Long issueId, @Param("importance") Integer importance);
+
 
     void deleteChild(Long issueId, Long childissueId);
 
