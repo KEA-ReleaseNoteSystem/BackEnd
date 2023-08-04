@@ -9,18 +9,27 @@ import kakao99.backend.member.service.MemberService;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import static io.lettuce.core.pubsub.PubSubOutput.Type.message;
 
 @RestController
 @RequiredArgsConstructor
@@ -142,5 +151,15 @@ public class MemberController {
         ResponseMessage message = new ResponseMessage(200, "세션 유지 요청 성공.");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    @PostMapping("/api/member/profileImage")
+    public ResponseEntity<ResponseMessage> uploadImage(Authentication authentication, @RequestPart("profileImg") MultipartFile profileImg) {
+        memberService.saveImage(authentication, profileImg);
+
+        ResponseMessage message = new ResponseMessage(200, "이미지 저장 성공.");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+
 
 }
