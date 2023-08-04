@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ public class NotificationDTO {
     private String type;
 
     private Long typeSpecificId; // 타입에 해당하는 특정id
+    private Date createdAt; // 생성일
 
     public static List<NotificationDTO> AllNotificationOfProject(List<Notification> notificationList) {
 
@@ -24,6 +26,7 @@ public class NotificationDTO {
                 NotificationDTO.builder()
                         .message(notification.getMessage())
                         .type(notification.getType())
+                        .createdAt(notification.getCreatedAt())
                         .typeSpecificId(notification.getTypeSpecificId())
                         .build()
         ).collect(Collectors.toList());
