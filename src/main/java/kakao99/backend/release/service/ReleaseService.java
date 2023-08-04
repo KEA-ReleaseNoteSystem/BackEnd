@@ -8,6 +8,7 @@ import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
 import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.release.dto.CreateReleaseDTO;
 import kakao99.backend.release.dto.UpdateReleaseDTO;
+import kakao99.backend.release.repository.ReleaseParentChildRepository;
 import kakao99.backend.release.repository.ReleaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class ReleaseService {
     private final IssueRepository issueRepository;
     private final NotificationService notificationService;
 
+    private final ReleaseParentChildRepository releaseParentChildRepository;
     @Transactional
     public ReleaseNote createRelease(CreateReleaseDTO createReleaseDTO, Member member, Project project) {
 
@@ -53,7 +55,36 @@ public class ReleaseService {
 
         notificationService.createNotification(requestMessageDTO);
 
+
+
+        // Then retrieve parent note based on versioning rule and create parent-child relationship if parent note exists
+        ReleaseNote parentNote = getParentNoteBasedOnVersion(createReleaseDTO.getVersion(), project);
+        if(parentNote != null) {
+            ReleaseNoteParentChild releaseNoteParentChild = ReleaseNoteParentChild.createReleaseNoteParentChild(parentNote, newReleaseNote, new Date());
+            releaseParentChildRepository.save(releaseNoteParentChild);
+        }
+
         return newReleaseNote;
+    }
+
+    private ReleaseNote getParentNoteBasedOnVersion(String version, Project project) {
+        String[] versions = version.split("\\.");
+        if (versions.length != 3) {
+            throw new IllegalArgumentException("Version should be in the format of x.y.z");
+        }
+
+        int major = Integer.parseInt(versions[0]);
+        int minor = Integer.parseInt(versions[1]);
+        int patch = Integer.parseInt(versions[2]);
+
+        if(patch > 0) {
+            //패치가 생성되면 maior.minor.0을 상위 릴리즈 노트로 설정
+            String parentVersion = major + "." + minor + "." + "0";
+            return releaseRepository.findByVersionAndProject(parentVersion, project);
+        }else{
+            return null;
+        }
+
     }
 
     public List<ReleaseNote> findRelease(Long id) {

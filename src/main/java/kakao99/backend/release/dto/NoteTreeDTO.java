@@ -32,8 +32,7 @@ public class NoteTreeDTO {
 
     private String version;
 
-    private String MinorVersion;
-
+    private boolean isActive;
 
 //    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 //    @JsonIgnore
@@ -45,19 +44,13 @@ public class NoteTreeDTO {
         NoteTreeDTO treeDTO = NoteTreeDTO.builder()
                 .id(releaseNote.getId())
                 .version(releaseNote.getVersion())
+                .isActive(releaseNote.getIsActive())
                 .build();
 
         return treeDTO;
     }
 
-    public boolean isMajorVersion() {
-        String[] versions = version.split("\\.");
-        return versions[1].equals("0") && versions[2].equals("0");
-    }
 
-    public String getMajorVersion() {
-        return version.split("\\.")[0];
-    }
 }
 
 
