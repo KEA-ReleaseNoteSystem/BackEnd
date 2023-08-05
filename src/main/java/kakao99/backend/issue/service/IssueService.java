@@ -63,8 +63,13 @@ public class IssueService {
             throw new NoSuchElementException("해당 projectId 해당하는 프로젝트 데이터 없음.");
         }
         Project project = projectById.get();
-        Long maxIssueNum = issueRepository.findMaxIssueNum(projectId);
-        maxIssueNum += 1L;
+        Optional<Long> optionalMaxIssueNum = issueRepository.findMaxIssueNum(projectId);
+        Long maxIssueNum;
+        if (optionalMaxIssueNum.isEmpty()) {
+            maxIssueNum = 1L;
+        }else{
+            maxIssueNum = optionalMaxIssueNum.get()+ 1L;
+        }
         int newIssueNum = maxIssueNum.intValue();
 
         Issue newIssue = new Issue().builder()
