@@ -99,7 +99,7 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueReposi
     Long findMaxId();
 
     @Query("SELECT MAX(i.issueNum) FROM Issue i WHERE i.project.id=:projectId")
-    Long findMaxIssueNum(@Param("projectId") Long projectId);
+    Optional<Long> findMaxIssueNum(@Param("projectId") Long projectId);
 
 
     @Modifying
