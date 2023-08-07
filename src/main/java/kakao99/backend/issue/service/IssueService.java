@@ -59,6 +59,7 @@ public class IssueService {
     @Transactional
     public Issue createNewIssue(Member member, IssueForm issueForm, Long projectId) {
         Optional<Project> projectById = projectRepository.findById(projectId);
+        Optional<Member> memberByName = memberRepository.findByUsername(issueForm.getMemberInCharge());
         if (projectById.isEmpty()) {
             throw new NoSuchElementException("해당 projectId 해당하는 프로젝트 데이터 없음.");
         }
@@ -77,7 +78,7 @@ public class IssueService {
                 .issueType(issueForm.getType())
                 .description(issueForm.getDescription())
                 .memberReport(member)
-                .memberInCharge(member)
+                .memberInCharge(memberByName.get())
                 .status("backlog")
                 .issueNum(newIssueNum)
                 .project(project)
