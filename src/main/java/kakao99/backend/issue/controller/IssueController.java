@@ -51,7 +51,7 @@ public class IssueController {
     @PostMapping("/api/project/{projectId}/issue")
         public ResponseEntity<?> createIssue(Authentication authentication, @RequestBody IssueForm issueForm, @PathVariable("projectId") Long projectId) {
         log.info("이슈 생성");
-
+        log.info("asdsadasd={}", issueForm.getType());
         Member member = (Member) authentication.getPrincipal();
 
         issueService.createNewIssue(member, issueForm, projectId);

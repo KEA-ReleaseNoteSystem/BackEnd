@@ -268,7 +268,7 @@ public class IssueService {
             QuestionList += "id:"+GptQuestion.getId()+ "- question: "+GptQuestion.getQuestion()+", ";
         }
 
-        QuestionList +=" 너가 이 작업들의 중요도를 임의로 0과 100 사이의 숫자로 정하고, 그 값만 딱 알려줘. 답변은 무조건 다른 말 아무것도 없이 json형식으로 표시해줘. json 형식은 {id값: 중요도값, } 으로 정해서 표시해줘.";
+        QuestionList +=" 주어진 모든 작업들의 중요도를 임의로 10과 100 사이의 숫자로 정하고, 그 값만 딱 알려줘. 답변은 무조건 다른 말 아무것도 없이 json형식으로 표시해줘. json 형식은 {id값: 중요도값, } 으로 정해서 표시해줘.";
 
         String requestBody = "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": \"You are a helpful assistant.\"}, {\"role\": \"user\", \"content\": " +
                 "\"" + QuestionList + "\"}]}";
