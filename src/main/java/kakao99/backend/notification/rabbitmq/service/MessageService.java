@@ -11,6 +11,7 @@ import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -27,6 +28,11 @@ public class MessageService {
     private final RabbitTemplate rabbitTemplate;
 
     private NotificationService notificationService;
+    String testUserId = "990";
+
+    public String getTestUserIdQueue() {
+        return "user." + testUserId;
+    }
 
     /**
      * Queue로 메시지를 발행
@@ -57,13 +63,25 @@ public class MessageService {
         log.info("Received message: {}", requestMessageDto.toString());
     }
 
+//    @RabbitListener(queues = "user."+"#{getTestUserId()}")
+//    public void testConsumer(String text) {
+//
+//        log.info("Test Received message: {}", text);
+//    }
+
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue,
-            exchange = @Exchange(value = "releasy"),
-            key="notifications.new"
+            exchange = @Exchange(value = "notification.exchange"),
+            key = "user.993"    // 이렇게 하면 또 받아와짐.
     ))
-    public void testConsumer(RequestMessageDTO requestMessageDto) {
-
-        log.info("Received message: {}", requestMessageDto.toString());
+    public void testUserQueue(String testMessage) {
+        System.out.println("testMessage = " + testMessage);
+        log.info("유저가 받은 message: {}", testMessage);
     }
+
+//    @RabbitListener(queues = "user_signup_queue")
+//    public void user_signup_queue(String newUserId) {
+//        System.out.println("newUserId = " + newUserId);
+//    }
 }
+

@@ -22,10 +22,10 @@ public class TestController {
 
 
         /*
-        유저 생성 로직
+        유저 생성 로직 부분 생략
          */
 
-        String newUserId = "999";
+        String newUserId = "990";
 
         // 새로운 사용자 가입 이벤트를 "user_signup_queue" 큐로 보냄
         rabbitTemplate.convertAndSend("user_signup_queue", newUserId);
@@ -38,7 +38,7 @@ public class TestController {
 
     @GetMapping("test/new/notification")
     public ResponseEntity<?> newNotification() {
-        String userId = "999";
+        String userId = "990";
 
         rabbitTemplate.convertAndSend(exchangeName, "user." + userId, "새로운 Noti 추가됨");
         ResponseMessage message = new ResponseMessage(200, "New Notification 생성 완료");
