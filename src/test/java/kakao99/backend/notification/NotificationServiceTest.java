@@ -1,6 +1,7 @@
 package kakao99.backend.notification;
 
-import kakao99.backend.config.TestConfig;
+
+import kakao99.backend.config.QuerydslTestConfig;
 import kakao99.backend.entity.Notification;
 import kakao99.backend.entity.Project;
 import kakao99.backend.entity.types.NotificationType;
@@ -24,7 +25,7 @@ import org.springframework.context.annotation.Import;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 //@ContextConfiguration(classes = BackendApplication.class)
-@Import(TestConfig.class)
+@Import(QuerydslTestConfig.class)
 public class NotificationServiceTest {
 
     @InjectMocks

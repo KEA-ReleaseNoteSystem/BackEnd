@@ -56,6 +56,7 @@ public class IssueService {
 
     private final IssueParentChildRepository issueParentChildRepository;
 
+
     @Transactional
     public Issue createNewIssue(Member member, IssueForm issueForm, Long projectId) {
         Optional<Project> projectById = projectRepository.findById(projectId);
