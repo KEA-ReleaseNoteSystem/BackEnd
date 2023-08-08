@@ -63,10 +63,7 @@ public class IssueController {
 
         issueService.createNewIssue(member, issueForm, projectId);
 
-        issueRepository.save(newIssue);
-
         ResponseMessage message = new ResponseMessage(200, "이슈 생성 성공");
-
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
@@ -261,7 +258,7 @@ public class IssueController {
         return new ResponseEntity<>(message, HttpStatus.OK);
         //return issueSearchRepository.findMemberDocumentByProjectId(1L);
     }
-}
+
     @GetMapping("/api/project/{projectId}/importance")
     public ResponseEntity<?> askImportanceToGPT(@PathVariable("projectId") Long projectId) throws Exception {
         log.info("chatGPT에 이슈 중요도 요청");
