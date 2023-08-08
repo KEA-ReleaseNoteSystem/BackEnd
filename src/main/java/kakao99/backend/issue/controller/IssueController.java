@@ -3,15 +3,21 @@ package kakao99.backend.issue.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kakao99.backend.common.exception.ErrorCode;
+import kakao99.backend.document.IssueDocument;
+import kakao99.backend.document.MemberDocument;
 import kakao99.backend.entity.*;
 
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.types.NotificationType;
 import kakao99.backend.issue.dto.*;
 
+import kakao99.backend.issue.dto.IssueSearchDTO;
+import kakao99.backend.issue.dto.ProjectWithIssuesDTO;
 
 import kakao99.backend.issue.repository.IssueParentChildRepository;
 import kakao99.backend.issue.repository.IssueRepository;
+import kakao99.backend.issue.repository.IssueSearchRepository;
+import kakao99.backend.issue.service.IssueSearchService;
 import kakao99.backend.issue.service.IssueService;
 import kakao99.backend.issue.service.TreeService;
 import kakao99.backend.member.repository.MemberRepository;
@@ -45,6 +51,7 @@ public class IssueController {
     private final TreeService treeService;
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
+    private final IssueSearchService issueSearchService;
     private final NotificationService notificationService;
 
     // 이슈 생성
@@ -242,6 +249,15 @@ public class IssueController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+
+    @GetMapping("/api/issues")
+    public ResponseEntity<?> issueSearch(@RequestParam String title) {
+        List<IssueSearchDTO> issueSearchDTOList = issueSearchService.issueSearch(title);
+
+        ResponseMessage message = new ResponseMessage(200, "검색 완료", issueSearchDTOList);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+        //return issueSearchRepository.findMemberDocumentByProjectId(1L);
+    }
 
     @GetMapping("/api/project/{projectId}/importance")
     public ResponseEntity<?> askImportanceToGPT(@PathVariable("projectId") Long projectId) throws Exception {
