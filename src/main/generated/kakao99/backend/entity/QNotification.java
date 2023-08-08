@@ -44,6 +44,7 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final StringPath updatedIssueStatusBefore = createString("updatedIssueStatusBefore");
 
+
     public QNotification(String variable) {
         this(Notification.class, forVariable(variable), INITS);
     }
@@ -65,6 +66,8 @@ public class QNotification extends EntityPathBase<Notification> {
         this.issue = inits.isInitialized("issue") ? new QIssue(forProperty("issue"), inits.get("issue")) : null;
         this.memberInCharge = inits.isInitialized("memberInCharge") ? new QMember(forProperty("memberInCharge"), inits.get("memberInCharge")) : null;
         this.memberReport = inits.isInitialized("memberReport") ? new QMember(forProperty("memberReport"), inits.get("memberReport")) : null;
+        this.project = inits.isInitialized("project") ? new QProject(forProperty("project"), inits.get("project")) : null;
+
     }
 
 }

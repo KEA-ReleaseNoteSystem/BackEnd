@@ -1,5 +1,9 @@
 package kakao99.backend.member.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.*;
 import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Group;
 import kakao99.backend.entity.Member;
@@ -13,25 +17,43 @@ import kakao99.backend.project.repository.MemberProjectRepository;
 import kakao99.backend.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MemberService {
-
+    private final ResourceLoader resourceLoader;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final GroupRepository groupRepository;
     private final MemberProjectRepository memberProjectRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+    private static final  String absolutePath = "C:\\Users\\USER\\Desktop\\releasy_be\\BackEnd\\src\\main\\resources\\static\\";
 
+    @Value("${kakao.i.cloud.access.token}")
+    private String kakaoICloudAccessToken;
+
+    @Value("${kakao.i.cloud.project.id}")
+    private String projectID;
     @Transactional
     public Long create(RegisterDTO registerDTO) {
 
@@ -59,6 +81,7 @@ public class MemberService {
                 .position(registerDTO.getPosition())
                 .group(group)
                 .isActive(true)
+                .exp(0L)
                 .build();
 
         Member savedMember = memberRepository.save(member);
@@ -104,6 +127,7 @@ public class MemberService {
                 .position(registerDTO.getPosition())
                 .group(group)
                 .isActive(true)
+                .exp(0L)
                 .build();
 
         Member savedMember = memberRepository.save(member);
@@ -150,6 +174,9 @@ public class MemberService {
         }
 
         String accessToken = tokenProvider.createAccessToken(member);
+        String key = String.valueOf(member.getId());
+        String value = "Online";
+        redisTemplate.opsForValue().set(key, value, 10, TimeUnit.MINUTES);
         //ResponseMessage message = new ResponseMessage(200, "로그인이 완료 되었습니다.", accessToken);
         return accessToken;
     }
@@ -168,6 +195,7 @@ public class MemberService {
         List<Project> projectList = memberProjectRepository.findProjectByMemberId(memberId, "true");
 
         return MemberInfoDTO.builder()
+                .id(member.getId())
                 .name(member.getUsername())
                 .nickname(member.getNickname())
                 .email(member.getEmail())
@@ -176,6 +204,7 @@ public class MemberService {
                 .introduce(member.getIntroduce())
                 .groupCode(member.getGroup().getCode())
                 .projectList(projectList)
+                .exp(member.getExp())
                 .build();
     }
 
@@ -199,6 +228,7 @@ public class MemberService {
             memberInfoDTOList.add(
                     MemberInfoDTO.builder()
                             .id(groupMember.getId())
+                            .introduce(groupMember.getIntroduce())
                             .name(groupMember.getUsername())
                             .nickname(groupMember.getNickname())
                             .email(groupMember.getEmail())
@@ -211,6 +241,7 @@ public class MemberService {
 
         System.out.println(memberInfoDTOList);
         return MemberGroupDTO.builder()
+                .id(member.getId())
                 .name(member.getUsername())
                 .nickname(member.getNickname())
                 .email(member.getEmail())
@@ -232,7 +263,6 @@ public class MemberService {
         Optional<Member> byId = memberRepository.findById(id);
         Member member = byId.get();
         member.update(memberUpdateDTO.getIntroduce(), memberUpdateDTO.getNickname(), memberUpdateDTO.getPosition());
-
     }
 
     @Transactional
@@ -249,25 +279,99 @@ public class MemberService {
             return new ResponseEntity<>(message,HttpStatus.OK);
         }
 
-
-
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
 
             for (MemberProject memberProject : memberByProjectId) {
-                MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
-                        .id(memberProject.getId())
-                        .name(memberProject.getMember().getUsername())
-                        .nickname(memberProject.getMember().getNickname())
-                        .email(memberProject.getMember().getEmail())
+                String memberIdKey = String.valueOf(memberProject.getMember().getId());
+                System.out.println("key"+memberIdKey);
+                Boolean isOnline = redisTemplate.hasKey(memberIdKey);
+                if(isOnline) {
+                    System.out.println("11111");
+                    MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+                            .id(memberProject.getId())
+                            .status("online")
+                            .name(memberProject.getMember().getUsername())
+                            .nickname(memberProject.getMember().getNickname())
+                            .email(memberProject.getMember().getEmail())
+                            .memberId(memberProject.getMember().getId())
 //                        .groupName(member.getGroup().getName())
-                        .position(memberProject.getMember().getPosition())
-                        .createdAt(memberProject.getMember().getCreatedAt())
-                        .role(memberProject.getRole())
+                            .position(memberProject.getMember().getPosition())
+                            .createdAt(memberProject.getMember().getCreatedAt())
+                            .role(memberProject.getRole())
 //                        .projectList(memberProjectRepository.findProjectByMemberId(memberProject.getId(),"true"))
-                        .build();
-                memberInfoDTOList.add(memberInfoDTO);
+                          .exp(memberProject.getMember().getExp())
+                            .build();
+
+                    memberInfoDTOList.add(memberInfoDTO);
+                }else {
+                    System.out.println("22222");
+                    MemberInfoDTO memberInfoDTO = MemberInfoDTO.builder()
+                            .id(memberProject.getId())
+                            .status("offline")
+                            .name(memberProject.getMember().getUsername())
+                            .nickname(memberProject.getMember().getNickname())
+                            .email(memberProject.getMember().getEmail())
+                            .memberId(memberProject.getMember().getId())
+//                        .groupName(member.getGroup().getName())
+                            .position(memberProject.getMember().getPosition())
+                            .createdAt(memberProject.getMember().getCreatedAt())
+                            .role(memberProject.getRole())
+//                        .projectList(memberProjectRepository.findProjectByMemberId(memberProject.getId(),"true"))
+                         .exp(memberProject.getMember().getExp())
+                            .build();
+
+                    memberInfoDTOList.add(memberInfoDTO);
+                }
+
             }
         ResponseMessage message = new ResponseMessage(200, projectId+"번 프로젝트의 회원 정보 조회 완료", memberInfoDTOList);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    public void saveImage(Authentication authentication, MultipartFile profileImg) {
+        Member member = (Member) authentication.getPrincipal();
+        String fileName = String.valueOf(member.getId());
+        System.out.println(profileImg.getOriginalFilename());
+        System.out.println("Received image: " + fileName);
+        try {
+
+            // Set the endpoint URL for object storage and the HTTP method (PUT)
+            String endpointUrl = "https://objectstorage.kr-gov-central-1.kakaoicloud-kr-gov.com/v1/" + projectID + "/" + "releasy" + "/profile/" + fileName;
+
+            // Set the access token in the request header
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Auth-Token", kakaoICloudAccessToken);
+
+            // Set the Content-Type header based on the file type
+            headers.setContentType(MediaType.IMAGE_JPEG);
+
+            // Get the image data from the MultipartFile without saving it to a file
+            byte[] imageData = profileImg.getBytes();
+
+            // Set the Content-Length header with the image data length
+            headers.setContentLength(imageData.length);
+
+            // Create the HTTP entity with headers and the image data
+            HttpEntity<byte[]> requestEntity = new HttpEntity<>(imageData, headers);
+
+            // Send the HTTP PUT request to upload the image to object storage
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(endpointUrl, HttpMethod.PUT, requestEntity, String.class);
+
+            // Handle the response, e.g., check the status code, etc.
+            if (response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Image uploaded successfully!");
+            } else {
+                System.out.println("Image upload failed! Status code: " + response.getStatusCodeValue());
+            }
+        } catch (HttpServerErrorException e) {
+            // 서버에서 발생한 500 Internal Server Error를 처리
+            System.out.println("Internal Server Error occurred! Status code: " + e.getRawStatusCode());
+            // 오류 메시지를 로깅 또는 사용자에게 알림으로 전달하는 로직 추가
+            System.out.println("Error Response Body: " + e.getResponseBodyAsString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

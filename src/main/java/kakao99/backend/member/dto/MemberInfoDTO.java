@@ -13,8 +13,11 @@ import java.util.List;
 public class MemberInfoDTO {
     private Long id;
     private String name;
+
+    private Long memberId;
     private String nickname;
     private String email;
+    private String status;
     private String groupName;
     private String position;
     private String introduce;
@@ -23,4 +26,5 @@ public class MemberInfoDTO {
     private String groupCode;
     private List<Project> projectList;
     private String role;
+    private Long exp;
 }
