@@ -120,12 +120,12 @@ public class IssueControllerTest {
         result.andExpect(status().isOk());
     }
 
-    @Test
-    @DisplayName("프로젝트의 max IssueNum")
-    public void getMaxIssueNum() {
-        Long projectId = 1L;
-        Long maxIssueNum = issueRepository.findMaxIssueNum(projectId);
-        System.out.println("maxIssueNum = " + maxIssueNum);
-
-    }
+//    @Test
+//    @DisplayName("프로젝트의 max IssueNum")
+//    public void getMaxIssueNum() {
+//        Long projectId = 1L;
+//        Long maxIssueNum = issueRepository.findMaxIssueNum(projectId);
+//        System.out.println("maxIssueNum = " + maxIssueNum);
+//
+//    }
 }

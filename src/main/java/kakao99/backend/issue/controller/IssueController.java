@@ -283,7 +283,6 @@ public class IssueController {
 
         issueService.saveImageAboutIssue(files);
 
-
         ResponseMessage message = new ResponseMessage(200, "이미지 첨부 완료");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
