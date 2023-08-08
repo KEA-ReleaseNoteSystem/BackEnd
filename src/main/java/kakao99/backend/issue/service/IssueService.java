@@ -25,11 +25,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +55,12 @@ public class IssueService {
 
     @Value("${chatGptSecretKey}")
     private String chatGptSecretKey;
+
+    @Value("${kakao.i.cloud.access.token}")
+    private String kakaoICloudAccessToken;
+
+    @Value("${kakao.i.cloud.project.id}")
+    private String projectID;
 
     private final MessageService messageService;
 
@@ -324,5 +335,65 @@ public class IssueService {
         }
 
         return result;
+    }
+
+    public void saveImageAboutIssue(List<MultipartFile> files) throws IOException {
+        // 반환할 파일 리스트
+//        List<Photo> fileList = new ArrayList<>();
+        String endpointUrl = "https://objectstorage.kr-gov-central-1.kakaoicloud-kr-gov.com/v1/" + projectID + "/" + "releasy" + "/issue/";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Auth-Token", kakaoICloudAccessToken);
+        headers.setContentType(MediaType.IMAGE_PNG);
+        RestTemplate restTemplate = new RestTemplate();
+
+        // 전달되어 온 파일이 존재할 경우
+        if(!CollectionUtils.isEmpty(files)) {
+            log.info(String.valueOf(files.size()));
+            // 다중 파일 처리
+            for (MultipartFile file : files) {
+
+                // 파일의 확장자 추출
+                String originalFileExtension;
+                String contentType = file.getContentType();
+
+                // 확장자명이 존재하지 않을 경우 처리 x
+                if (ObjectUtils.isEmpty(contentType)) {
+                    break;
+                } else {  // 확장자가 jpeg, png인 파일들만 받아서 처리
+                    if (contentType.contains("image/jpeg"))
+                        originalFileExtension = "jpg";
+                    else if (contentType.contains("image/png"))
+                        originalFileExtension = "png";
+                    else  // 다른 확장자일 경우 처리 x
+                        break;
+                }
+                String originalFileName = file.getOriginalFilename();
+                System.out.println("originalFileName = " + originalFileName);
+                String uuid = UUID.randomUUID().toString();
+                String newFileName = uuid + "_" + originalFileName;
+                endpointUrl += newFileName;
+                System.out.println("newFileName = " + newFileName);
+
+                byte[] imageData = file.getBytes();
+
+                headers.setContentLength(imageData.length);
+                HttpEntity<byte[]> requestEntity = new HttpEntity<>(imageData, headers);
+
+                // Send the HTTP PUT request to upload the image to object storage
+
+                ResponseEntity<String> response = restTemplate.exchange(endpointUrl, HttpMethod.PUT, requestEntity, String.class);
+
+//                System.out.println("response.getBody() = " + response.getBody());
+
+                // Handle the response, e.g., check the status code, etc.
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    System.out.println("Image uploaded successfully!");
+                } else {
+                    System.out.println("Image upload failed! Status code: " + response.getStatusCodeValue());
+                }
+            }
+
+        }
     }
 }
