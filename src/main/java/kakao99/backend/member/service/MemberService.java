@@ -175,7 +175,7 @@ public class MemberService {
 
         String accessToken = tokenProvider.createAccessToken(member);
         String key = String.valueOf(member.getId());
-        String value = "Online";
+        String value = "On";
         redisTemplate.opsForValue().set(key, value, 10, TimeUnit.MINUTES);
         //ResponseMessage message = new ResponseMessage(200, "로그인이 완료 되었습니다.", accessToken);
         return accessToken;
