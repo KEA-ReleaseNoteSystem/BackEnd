@@ -293,11 +293,13 @@ public class IssueController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    @PostMapping("api/issue/images")
-    public ResponseEntity<?> uploadImageAboutIssue(@RequestPart(value="image", required=false) List<MultipartFile> files ) throws IOException {
+    @PostMapping("api/issue/{issueId}/images")
+    public ResponseEntity<?> uploadImageAboutIssue(@PathVariable("issueId") Long issueId, @RequestPart(value="image", required=false) List<MultipartFile> files ) throws IOException {
         log.info("이슈 관련 이미지 추가");
 
-        issueService.saveImageAboutIssue(files);
+        System.out.println("전송 받은 사진 개수 = " + files.toArray().length);
+
+        issueService.saveImageAboutIssue(issueId, files);
 
         ResponseMessage message = new ResponseMessage(200, "이미지 첨부 완료");
         return new ResponseEntity<>(message, HttpStatus.OK);
