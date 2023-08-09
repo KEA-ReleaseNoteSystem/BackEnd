@@ -76,6 +76,7 @@ public class IssueService {
         }
         Project project = projectById.get();
         Optional<Long> optionalMaxIssueNum = issueRepository.findMaxIssueNum(projectId);
+
         Long maxIssueNum;
         if (optionalMaxIssueNum.isEmpty()) {
             maxIssueNum = 1L;
@@ -338,9 +339,9 @@ public class IssueService {
     }
 
     @Transactional
-    public void saveImageAboutIssue(List<MultipartFile> files) throws IOException {
+    public void saveImageAboutIssue(Long issueId, List<MultipartFile> files) throws IOException {
 
-        Long issueId = 2L;
+//        Long issueId = issueId;
         ArrayList<String> imgUrlList = new ArrayList<>();
         String imgUrlSample ="/releasy" + "/issue/";
         String endpointUrl = "https://objectstorage.kr-gov-central-1.kakaoicloud-kr-gov.com/v1/"+projectID;

@@ -80,7 +80,7 @@ public class IssueControllerTest {
 
         IssueForm issueForm = IssueForm.builder()
                 .title(title)
-                .writerName(writerName)
+                .memberInCharge(writerName)
                 .type(type)
                 .description(description)
                 .userId(userId)
