@@ -146,7 +146,7 @@ public class MemberController {
     public ResponseEntity<ResponseMessage> keepSessionAlive(Authentication authentication) {
         Member member = (Member) authentication.getPrincipal();
         String key = String.valueOf(member.getId());
-        String value = "Online";
+        String value = "On";
         redisTemplate.opsForValue().set(key, value, 10, TimeUnit.MINUTES);
         ResponseMessage message = new ResponseMessage(200, "세션 유지 요청 성공.");
         return new ResponseEntity<>(message, HttpStatus.OK);
