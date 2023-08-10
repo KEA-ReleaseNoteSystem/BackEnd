@@ -60,7 +60,10 @@ public class IssueService {
     private String kakaoICloudAccessToken;
 
     @Value("${kakao.i.cloud.project.id}")
-    private String projectID;
+    private String KicProjectID;
+
+    @Value("${kakao.i.cloud.object.storage.url}")
+    private String kicObjectStorageUrl;
 
     private final MessageService messageService;
 
@@ -344,7 +347,7 @@ public class IssueService {
 //        Long issueId = issueId;
         ArrayList<String> imgUrlList = new ArrayList<>();
         String imgUrlSample ="/releasy" + "/issue/";
-        String endpointUrl = "https://objectstorage.kr-gov-central-1.kakaoicloud-kr-gov.com/v1/"+projectID;
+        String endpointUrl = kicObjectStorageUrl+KicProjectID;
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Auth-Token", kakaoICloudAccessToken);
