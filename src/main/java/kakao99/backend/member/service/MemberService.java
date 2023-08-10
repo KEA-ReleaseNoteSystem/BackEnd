@@ -245,6 +245,7 @@ public class MemberService {
                 .name(member.getUsername())
                 .nickname(member.getNickname())
                 .email(member.getEmail())
+                .authority(member.getAuthority())
                 .groupCode(member.getGroup().getCode())
                 .groupName(member.getGroup().getName())
                 .position(member.getPosition())
