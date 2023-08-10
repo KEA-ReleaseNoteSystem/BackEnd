@@ -111,16 +111,9 @@ public class MemberController {
     @GetMapping("/api/group/members")
     public ResponseEntity<?> getMemberOfGroup(Authentication authentication) {
         Member member = (Member) authentication.getPrincipal();
-        String authority = member.getAuthority();
-        if(authority.equals("GM")) {
-            MemberGroupDTO memberInfoWithGroupMember = memberService.getMemberInfoWithGroupMember(member.getId());
-            ResponseMessage message = new ResponseMessage(200, "회원 정보 및 그룹원 조회 완료 되었습니다.", memberInfoWithGroupMember);
-            return new ResponseEntity<>(message, HttpStatus.OK);
-        }else {
-            MemberInfoDTO memberInfo = memberService.getMemberInfo(member.getId());
-            ResponseMessage message = new ResponseMessage(200, "회원 정보 조회 완료 되었습니다.", memberInfo);
-            return new ResponseEntity<>(message, HttpStatus.OK);
-        }
+        MemberGroupDTO memberInfoWithGroupMember = memberService.getMemberInfoWithGroupMember(member.getId());
+        ResponseMessage message = new ResponseMessage(200, "회원 정보 및 그룹원 조회 완료 되었습니다.", memberInfoWithGroupMember);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PatchMapping("/api/member")
