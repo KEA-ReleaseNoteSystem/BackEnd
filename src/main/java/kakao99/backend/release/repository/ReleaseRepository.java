@@ -2,6 +2,8 @@ package kakao99.backend.release.repository;
 
 import kakao99.backend.entity.Project;
 import kakao99.backend.entity.ReleaseNote;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
