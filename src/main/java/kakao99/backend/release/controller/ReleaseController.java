@@ -186,6 +186,21 @@ public class ReleaseController {
         ResponseMessage message = new ResponseMessage(200, "트리 생성 완료", noteTreeService.getTreesForProject(projectId));
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    @PostMapping("api/releaseNote/{releaseNoteId}/images")
+    public ResponseEntity<?> updateImageAboutReleaseNote(@PathVariable("releaseNoteId") Long releaseNoteId, @RequestPart(value="image", required=false) List<MultipartFile> files ) throws IOException {
+        log.info("이슈 관련 이미지 수정");
+
+        if (files == null)
+            log.info("전송 받은 사진 개수 = 0");
+        else
+            log.info("전송 받은 사진 개수 = " + files.toArray().length);
+
+        releaseService.saveImageAboutReleaseNote(releaseNoteId, files);
+
+        ResponseMessage message = new ResponseMessage(200, "이미지 수정 완료");
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
 }
 
 

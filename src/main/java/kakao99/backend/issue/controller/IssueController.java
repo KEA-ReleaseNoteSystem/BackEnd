@@ -297,8 +297,10 @@ public class IssueController {
     @PostMapping("api/issue/{issueId}/images")
     public ResponseEntity<?> uploadImageAboutIssue(@PathVariable("issueId") Long issueId, @RequestPart(value="image", required=false) List<MultipartFile> files ) throws IOException {
         log.info("이슈 관련 이미지 추가");
-
-        System.out.println("전송 받은 사진 개수 = " + files.toArray().length);
+        if (files == null)
+            log.info("전송 받은 사진 개수 = 0");
+        else
+            log.info("전송 받은 사진 개수 = " + files.toArray().length);
 
         issueService.saveImageAboutIssue(issueId, files);
 
