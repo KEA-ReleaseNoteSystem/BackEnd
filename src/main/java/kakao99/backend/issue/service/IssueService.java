@@ -73,7 +73,7 @@ public class IssueService {
     @Transactional
     public Issue createNewIssue(Member member, IssueForm issueForm, Long projectId) {
         Optional<Project> projectById = projectRepository.findById(projectId);
-        Optional<Member> memberByName = memberRepository.findByUsername(issueForm.getMemberInCharge());
+        Optional<Member> memberById = memberRepository.findById(issueForm.getMemberInChargeId());
         if (projectById.isEmpty()) {
             throw new NoSuchElementException("해당 projectId 해당하는 프로젝트 데이터 없음.");
         }
@@ -93,7 +93,7 @@ public class IssueService {
                 .issueType(issueForm.getType())
                 .description(issueForm.getDescription())
                 .memberReport(member)
-                .memberInCharge(memberByName.get())
+                .memberInCharge(memberById.get())
                 .status("backlog")
                 .issueNum(newIssueNum)
                 .project(project)
@@ -200,7 +200,7 @@ public class IssueService {
     }
 
     @Transactional
-    public Long deleteIssue(Long issueId, Member member) {
+    public Long deleteIssue(Long issueId, Member member)  {
         Optional<Issue> issueByIssueId = issueRepository.findById(issueId);
         if (issueByIssueId.isEmpty()) {
             throw new CustomException(404, issueByIssueId + "번 이슈가 존재하지 않습니다.");
@@ -236,7 +236,7 @@ public class IssueService {
 
 
     @Transactional
-    public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO, Long userId) {
+    public void updateIssueByDragNDrop(DragNDropDTO dragNDropDTO, Long userId)  {
         issueRepository.updateIssueByDragNDrop(dragNDropDTO);
         Optional<Member> optionalMember = memberRepository.findById(userId);
         if (optionalMember.isEmpty()) {
