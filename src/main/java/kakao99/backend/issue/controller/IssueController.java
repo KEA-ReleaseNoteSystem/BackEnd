@@ -253,9 +253,9 @@ public class IssueController {
     }
 
 
-    @GetMapping("/api/issues")
-    public ResponseEntity<?> issueSearch(@RequestParam String title) {
-        List<IssueSearchDTO> issueSearchDTOList = issueSearchService.issueSearch(title);
+    @GetMapping("/api/project/{projectId}/issue")
+    public ResponseEntity<?> issueSearch(@PathVariable Long projectId,@RequestParam String title) {
+        List<IssueSearchDTO> issueSearchDTOList = issueSearchService.issueSearch(projectId,title);
 
         ResponseMessage message = new ResponseMessage(200, "검색 완료", issueSearchDTOList);
         return new ResponseEntity<>(message, HttpStatus.OK);
@@ -305,4 +305,5 @@ public class IssueController {
         ResponseMessage message = new ResponseMessage(200, "이미지 첨부 완료");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
 }
