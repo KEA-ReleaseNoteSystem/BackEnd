@@ -346,11 +346,12 @@ public class IssueService {
 
 //        Long issueId = issueId;
         ArrayList<String> imgUrlList = new ArrayList<>();
-        String imgUrlSample ="/releasy" + "/issue/";
-        String endpointUrl = kicObjectStorageUrl+KicProjectID;
+
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Auth-Token", kakaoICloudAccessToken);
+        headers.setContentType(MediaType.IMAGE_JPEG);
         RestTemplate restTemplate = new RestTemplate();
 
         // 전달되어 온 파일이 존재할 경우
@@ -358,6 +359,8 @@ public class IssueService {
             log.info(String.valueOf(files.size()));
             // 다중 파일 처리
             for (MultipartFile file : files) {
+                String endpointUrl = kicObjectStorageUrl+KicProjectID;
+                String imgUrlSample ="/releasy" + "/issue/";
 
 //                // 파일의 확장자 추출
 //                String originalFileExtension;
@@ -374,7 +377,7 @@ public class IssueService {
 //                    else  // 다른 확장자일 경우 처리 x
 //                        break;
 //                }
-                String originalFileName = file.getOriginalFilename();
+//                String originalFileName = file.getOriginalFilename();
 
 //                // 나노초를 문자열로 변환하여 출력
 //                long nanoTime = System.nanoTime();
@@ -383,7 +386,7 @@ public class IssueService {
 //                System.out.println("Nano Time as String: " + nanoTimeString);
 
                 String uuid = UUID.randomUUID().toString();
-                String newFileName = uuid + "_" + originalFileName;
+                String newFileName = uuid + "_" + "index.jpeg";
 //                String newFileName = nanoTimeString + "_" + originalFileName;
 
                 imgUrlSample += newFileName;
