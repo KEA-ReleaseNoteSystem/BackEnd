@@ -143,6 +143,7 @@ public class ReleaseController {
         }
 
         ReleaseNote releaseNote = releaseNoteInfo.get();
+
         GetReleaseDTO releaseDTO = new GetReleaseDTO();
         releaseDTO.setVersion(releaseNote.getVersion());
         releaseDTO.setStatus(releaseNote.getStatus());
@@ -151,6 +152,9 @@ public class ReleaseController {
         releaseDTO.setCreatedAt(releaseNote.getCreatedAt());
         releaseDTO.setBrief(releaseNote.getBrief());
         releaseDTO.setDescription(releaseNote.getDescription());
+        releaseDTO.setImgUrl_1(releaseNote.getImgUrl_1());
+        releaseDTO.setImgUrl_2(releaseNote.getImgUrl_2());
+        releaseDTO.setImgUrl_3(releaseNote.getImgUrl_3());
         releaseDTO.setMember(memberRepository.findById(releaseNote.getMember().getId()).get());
 
         message = new ResponseMessage(200, "해당 릴리즈노트 조회 완료", releaseDTO);
