@@ -14,6 +14,7 @@ import kakao99.backend.release.repository.ReleaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -92,21 +93,21 @@ public class ReleaseService {
 
 
         ArrayList<String> imgUrlList = new ArrayList<>();
-        String imgUrlSample ="/releasy" + "/releaseNote/";
-        String endpointUrl = kicObjectStorageUrl+ KicProjectID;
 
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
         headers.set("X-Auth-Token", kakaoICloudAccessToken);
         RestTemplate restTemplate = new RestTemplate();
 
             // 다중 파일 처리
             for (MultipartFile file : files) {
-
-                String originalFileName = file.getOriginalFilename();
+                String endpointUrl = kicObjectStorageUrl+ KicProjectID;
+                String imgUrlSample ="/releasy" + "/releaseNote/";
+//                String originalFileName = file.getOriginalFilename();
 
                 String uuid = UUID.randomUUID().toString();
-                String newFileName = uuid + "_" + originalFileName;
-
+//                String newFileName = uuid + "_" + originalFileName;
+                String newFileName = uuid + "_" + "index.jpeg";
                 imgUrlSample += newFileName;
                 endpointUrl += imgUrlSample;
 
