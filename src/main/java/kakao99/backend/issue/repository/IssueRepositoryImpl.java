@@ -237,7 +237,13 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     }
 
     public void saveIssueImage(Long issueId, ArrayList<String> imgUrlList) {
-        if (imgUrlList.size() == 1) {
+        if (imgUrlList.size() == 0) {
+            this.query.update(issue)
+                    .set(issue.imgUrl_1, "")
+                    .set(issue.imgUrl_2, "")
+                    .set(issue.imgUrl_3, "")
+                    .where(issue.id.eq(issueId)).execute();
+        } else if (imgUrlList.size() == 1) {
             this.query.update(issue)
                     .set(issue.imgUrl_1, imgUrlList.get(0))
                     .set(issue.imgUrl_2, "")

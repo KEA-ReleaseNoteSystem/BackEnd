@@ -347,12 +347,14 @@ public class IssueService {
 //        Long issueId = issueId;
         ArrayList<String> imgUrlList = new ArrayList<>();
 
-
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Auth-Token", kakaoICloudAccessToken);
         headers.setContentType(MediaType.IMAGE_JPEG);
         RestTemplate restTemplate = new RestTemplate();
+
+        if (files == null) {
+            issueRepository.saveIssueImage(issueId, imgUrlList);
+        }
 
         // 전달되어 온 파일이 존재할 경우
         if(!CollectionUtils.isEmpty(files)) {
