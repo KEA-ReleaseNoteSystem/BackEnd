@@ -25,6 +25,7 @@ import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
 import kakao99.backend.notification.service.NotificationService;
 import kakao99.backend.project.repository.ProjectRepository;
 import kakao99.backend.common.ResponseMessage;
+import kakao99.backend.release.dto.CreateReleaseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
@@ -56,15 +57,28 @@ public class IssueController {
     private final IssueSearchService issueSearchService;
     private final NotificationService notificationService;
 
+
+
+    // @RequestBody IssueForm issueForm
     // 이슈 생성
     @PostMapping("/api/project/{projectId}/issue")
-        public ResponseEntity<?> createIssue(Authentication authentication, @RequestBody IssueForm issueForm, @PathVariable("projectId") Long projectId) {
+        public ResponseEntity<?> createIssue(Authentication authentication,  @PathVariable("projectId") Long projectId, @RequestPart(value = "jsonData") IssueForm issueForm,
+                                             @RequestPart(value="image", required=false) List<MultipartFile> files) throws IOException {
         log.info("이슈 생성");
-        System.out.println(" + issueForm + "+ issueForm.getMemberInChargeId());
+        if (files == null) {
+            log.info("전송받은 사진 개수: 0개");
+
+        }else{
+            log.info("전송 받은 사진 개수 = " + files.toArray().length);
+            if (files.toArray().length > 3) {
+                log.warn("전송 받은 사진 개수가 3개 이상. Exception! ");
+                throw new CustomException(999, "사진 데이터는 최대 3개까지만 가능합니다.");
+            }
+        }
         log.info("asdsadasd={}", issueForm.getType());
         Member member = (Member) authentication.getPrincipal();
 
-        issueService.createNewIssue(member, issueForm, projectId);
+        issueService.createNewIssue(member, issueForm, projectId, files);
 
         ResponseMessage message = new ResponseMessage(200, "이슈 생성 성공");
         return new ResponseEntity(message, HttpStatus.OK);
