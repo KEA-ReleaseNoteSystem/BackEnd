@@ -71,7 +71,7 @@ public class IssueService {
     private final IssueParentChildRepository issueParentChildRepository;
 
     @Transactional
-    public Issue createNewIssue(Member member, IssueForm issueForm, Long projectId) {
+    public Issue createNewIssue(Member member, IssueForm issueForm, Long projectId, List<MultipartFile> files) throws IOException {
         Optional<Project> projectById = projectRepository.findById(projectId);
         Optional<Member> memberByName = memberRepository.findByUsername(issueForm.getMemberInCharge());
         if (projectById.isEmpty()) {
@@ -100,7 +100,9 @@ public class IssueService {
                 .isActive(true)
                 .build();
 
-        issueRepository.save(newIssue);
+        Issue savedIssue = issueRepository.save(newIssue);
+        //
+        this.saveImageAboutIssue(savedIssue.getId(), files);
 
         RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
                 .type(NotificationType.ISSUECREATED)
