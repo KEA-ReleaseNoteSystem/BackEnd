@@ -80,7 +80,11 @@ public class IssueControllerTest {
 
         IssueForm issueForm = IssueForm.builder()
                 .title(title)
+<<<<<<< Updated upstream
                 .memberInCharge(writerName)
+=======
+//                .writerName(writerName)
+>>>>>>> Stashed changes
                 .type(type)
                 .description(description)
                 .userId(userId)
