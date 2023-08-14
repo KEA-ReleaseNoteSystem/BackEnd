@@ -50,7 +50,7 @@ public class MemberController {
     @PostMapping("/api/member/signup/group/join")
     public ResponseEntity<?> groupJoin(@Validated @RequestBody RegisterDTO registerDTO) {
         memberService.join(registerDTO);
-        ResponseMessage message = new ResponseMessage(200, "회원 가입이 완료 되었습니다.");
+        ResponseMessage message = new ResponseMessage(200, "그룹 참여가 완료 되었습니다.");
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
