@@ -73,7 +73,12 @@ public class IssueService {
     @Transactional
     public Issue createNewIssue(Member member, IssueForm issueForm, Long projectId, List<MultipartFile> files) throws IOException {
         Optional<Project> projectById = projectRepository.findById(projectId);
+        System.out.println("projectById.get() = " + projectById.get());
+
         Optional<Member> memberById = memberRepository.findById(issueForm.getMemberInChargeId());
+        System.out.println("memberById = " + memberById.get());
+
+
         if (projectById.isEmpty()) {
             throw new NoSuchElementException("해당 projectId 해당하는 프로젝트 데이터 없음.");
         }
