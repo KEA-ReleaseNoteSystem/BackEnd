@@ -65,6 +65,9 @@ public class IssueController {
         public ResponseEntity<?> createIssue(Authentication authentication,  @PathVariable("projectId") Long projectId, @RequestPart(value = "jsonData") IssueForm issueForm,
                                              @RequestPart(value="image", required=false) List<MultipartFile> files) throws IOException {
         log.info("이슈 생성");
+
+        System.out.println("프로젝트 id: "+ projectId);
+
         if (files == null) {
             log.info("전송받은 사진 개수: 0개");
 
@@ -75,7 +78,7 @@ public class IssueController {
                 throw new CustomException(999, "사진 데이터는 최대 3개까지만 가능합니다.");
             }
         }
-        log.info("asdsadasd={}", issueForm.getType());
+
         Member member = (Member) authentication.getPrincipal();
 
         issueService.createNewIssue(member, issueForm, projectId, files);
