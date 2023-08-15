@@ -54,16 +54,15 @@ public class ReleaseController {
 
 
 
-        boolean isNameDuplicate = releaseService.isVersionExists(createReleaseDTO.getVersion());
+        boolean isNameDuplicate = releaseService.isVersionExists(createReleaseDTO.getVersion(),createReleaseDTO.getProjectId());
 
         if (isNameDuplicate) {
             throw new CustomException(443, "해당 버전의 릴리즈 노트가 이미 존재합니다.");
         }
 
-        if (!isValidVersion(createReleaseDTO.getVersion())) {
+        if (!releaseService.isValidVersion(createReleaseDTO.getVersion(), createReleaseDTO.getProjectId())) {
             throw new CustomException(445, "유효하지 않은 버전입니다. 적절한 상 버전이 존재하는지 확인하세요.");
         }
-
 
 
         if (project.isEmpty()) {
@@ -99,35 +98,7 @@ public class ReleaseController {
     }
 
 
-    private boolean isValidVersion(String version) {
-        String[] parts = version.split("\\.");
-        if (parts.length != 3) {
-            return false;
-        }
 
-        try {
-            int major = Integer.parseInt(parts[0]);
-            int minor = Integer.parseInt(parts[1]);
-            int patch = Integer.parseInt(parts[2]);
-
-
-            if (patch > 0) {
-                String lowerVersion = major + "." + minor + "." + (patch - 1);
-                if (!releaseService.isVersionExists(lowerVersion)) {
-                    return false;
-                }
-            } else if (minor > 0) {
-                String lowerVersion = major + "." + (minor - 1) + ".X";
-                if (!releaseService.isAnyVersionExistsWithPattern(lowerVersion)) {
-                    return false;
-                }
-            }
-
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
 
     @PutMapping("/api/release/update")
     @ResponseBody
