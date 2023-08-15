@@ -54,13 +54,19 @@ public class ReleaseService {
 
 
 
+
     public boolean isVersionExists(String version) {
         return releaseRepository.existsByVersion(version);
     }
 
+
+
+
     public boolean isAnyVersionExistsWithPattern(String versionPattern) {
         return releaseRepository.existsByVersionLike(versionPattern.replace("X", "%"));
     }
+
+
     @Transactional
     public ReleaseNote createReleaseWithoutImages(CreateReleaseDTO createReleaseDTO, Member member, Project project) {
 

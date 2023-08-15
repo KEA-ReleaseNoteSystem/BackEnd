@@ -24,7 +24,12 @@ public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long>, Rel
 
     boolean existsByVersion(String version);
 
-    boolean existsByVersionLike(String x);
+
+
+    boolean existsByVersionLike(String versionPattern);
+
+
+
     ReleaseNote findByVersionAndProject(String parentVersion, Project project);
     @Query("SELECT rn FROM ReleaseNote rn WHERE rn.project.id = :projectId AND rn.id NOT IN (SELECT rpc.childNote.id FROM ReleaseNoteParentChild rpc)")
     List<ReleaseNote> findRootNodesByProjectId(@Param("projectId") Long projectId);
