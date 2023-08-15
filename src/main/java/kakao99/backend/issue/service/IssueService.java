@@ -94,6 +94,7 @@ public class IssueService {
         int newIssueNum = maxIssueNum.intValue();
 
         Issue newIssue = new Issue().builder()
+                .importance(issueForm.getImportance())
                 .title(issueForm.getTitle())
                 .issueType(issueForm.getType())
                 .description(issueForm.getDescription())
