@@ -101,8 +101,8 @@ public class ProjectController {
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
-    @GetMapping("api/project/{projectId}/members/{memberId}")
-    public ResponseEntity<?> getMembersProject(@PathVariable("projectId") Long projectId,@PathVariable("memberId") Long memberId) {
+    @GetMapping("api/project/members/{memberId}")
+    public ResponseEntity<?> getMembersProject(@PathVariable("memberId") Long memberId) {
 
 
         List<ProjectMemberDTO> projectDTOS = projectService.findMemberProject(memberId);
