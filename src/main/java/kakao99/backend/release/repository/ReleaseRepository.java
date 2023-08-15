@@ -22,11 +22,13 @@ public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long>, Rel
     ReleaseNote save(ReleaseNote releaseNote);
     // 생성, 수정
 
-    boolean existsByVersion(String version);
+    boolean existsByVersionAndProjectId(String version, Long projectId);
+
+
+    boolean existsByVersionLikeAndProjectId(String versionPattern, Long projectId);
 
 
 
-    boolean existsByVersionLike(String versionPattern);
 
 
 
