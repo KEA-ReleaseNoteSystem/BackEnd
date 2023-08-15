@@ -54,14 +54,14 @@ public class ReleaseController {
 
 
 
+        boolean isNameDuplicate = releaseService.isVersionExists(createReleaseDTO.getVersion());
 
-        boolean isVersionExists = releaseService.isVersionExists(createReleaseDTO.getVersion());
-        if (isVersionExists) {
-            throw new CustomException(443, "해당 이름의 릴리즈 노트가 이미 존재합니다.");
+        if (isNameDuplicate) {
+            throw new CustomException(443, "해당 버전의 릴리즈 노트가 이미 존재합니다.");
         }
 
         if (!isValidVersion(createReleaseDTO.getVersion())) {
-            throw new CustomException(445, "유효하지 않은 버전입니다. 적절한 하위 버전이 존재하는지 확인하세요.");
+            throw new CustomException(445, "유효하지 않은 버전입니다. 적절한 상 버전이 존재하는지 확인하세요.");
         }
 
 

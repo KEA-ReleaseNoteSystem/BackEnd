@@ -317,7 +317,8 @@ public class IssueController {
             log.info("전송 받은 사진 개수 = " + files.toArray().length);
 
 
-        ArrayList<String> imgUrl = issueService.saveImageAboutIssue(issueId, files);
+        ArrayList<String> imgUrl= issueService.saveImageAboutIssue(issueId, files);
+
 
         ResponseMessage message = new ResponseMessage(200, "이미지 첨부 완료",imgUrl);
         return new ResponseEntity<>(message, HttpStatus.OK);
