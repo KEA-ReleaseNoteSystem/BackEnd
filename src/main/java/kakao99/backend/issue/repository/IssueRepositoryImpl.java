@@ -10,6 +10,7 @@ import kakao99.backend.common.exception.ErrorCode;
 import kakao99.backend.entity.*;
 import kakao99.backend.issue.controller.UpdateIssueForm;
 import kakao99.backend.issue.dto.DragNDropDTO;
+import kakao99.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,7 @@ import java.util.*;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 
@@ -30,6 +32,8 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
     private final EntityManager em;
 
     private final IssueParentChildRepository issueParentChildRepository;
+
+    private final MemberRepository memberRepository;
 
     private final JPAQueryFactory query;
 
@@ -48,65 +52,55 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
 
 // 제외할 id(excludeId)를 받아오면 childIssue와 issueParentChild와 같은 excludeId가 있는지 확인.
 // 확인 후 List로 저장
+
+
     public List<Long> findExcludeId(Long projectId, Long excludeId) {
-        JPAQuery<IssueParentChild> query = this.query.selectFrom(issueParentChild)
+        // Query to get all active issue relations for the specified projectId.
+        List<IssueParentChild> issues = this.query.selectFrom(issueParentChild)
                 .where(issueParentChild.isActive.eq(true)
-                        .and(issueParentChild.parentIssue.project.id.eq(projectId)
-                                .and(issueParentChild.childIssue.project.id.eq(projectId)
-                                        .and(issueParentChild.parentIssue.id.eq(excludeId))
-                                        )));
+                        .and(issueParentChild.parentIssue.project.id.eq(projectId))
+                        .and(issueParentChild.childIssue.project.id.eq(projectId)))
+                .fetch();
 
-        List<IssueParentChild> issues = query.fetch();
-
-        List<Long> results = new ArrayList<>();
+        Set<Long> excludedIds = new HashSet<>();
+        excludedIds.add(excludeId);
 
         for (IssueParentChild issue : issues) {
-
-            if (issue.getParentIssue().getId().equals(excludeId)){
+            if (issue.getParentIssue().getId().equals(excludeId)) {
+                excludedIds.add(issue.getChildIssue().getId());  // Add direct child to the exclusion list.
                 List<IssueParentChild> otherChildIssues = issueParentChildRepository.findByparentIssue(issue.getChildIssue());
-
                 for (IssueParentChild childIssue : otherChildIssues) {
-
-                    if(!results.contains(issue.getChildIssue().getId())){
-                        results.add(childIssue.getChildIssue().getId());
-                    }
+                    excludedIds.add(childIssue.getChildIssue().getId());  // Add other children of the child to the exclusion list.
                 }
             }
-
-            if (issue.getChildIssue().getId().equals(excludeId)) {
-                List<IssueParentChild> otherChildIssues = issueParentChildRepository.findByparentIssue(issue.getParentIssue());
-                for (IssueParentChild childIssue : otherChildIssues) {
-
-                    if(!results.contains(issue.getChildIssue().getId())){
-                    results.add(childIssue.getChildIssue().getId());
-                    }
-                }
-
-                List<IssueParentChild> otherParentIssues = issueParentChildRepository.findBychildIssue(issue.getParentIssue());
-                for (IssueParentChild parentIssue : otherParentIssues) {
-
-                    if(!results.contains(issue.getParentIssue().getId())){
-                        results.add(parentIssue.getParentIssue().getId());
-                    }
+            else if (issue.getChildIssue().getId().equals(excludeId)) {
+                excludedIds.add(issue.getParentIssue().getId());  // Add parent to the exclusion list.
+                List<IssueParentChild> otherChildIssuesOfParent = issueParentChildRepository.findByparentIssue(issue.getParentIssue());
+                for (IssueParentChild childIssueOfParent : otherChildIssuesOfParent) {
+                    excludedIds.add(childIssueOfParent.getChildIssue().getId());  // Add children of the parent to the exclusion list.
                 }
             }
-
-        if(!results.contains(issue.getChildIssue().getId())){
-            results.add(issue.getChildIssue().getId());
         }
 
-        if (!results.contains(issue.getParentIssue().getId())) {
-            results.add(issue.getParentIssue().getId());
-        }
+        // Now let's fetch all the issues related to the project.
+        List<Long> allIssues = issues.stream()
+                .map(issue -> Arrays.asList(issue.getParentIssue().getId(), issue.getChildIssue().getId()))
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Finally, remove the excluded ones.
 
 
+        // If there are no issues left, return the original excludeId.
+
+            allIssues.add(excludeId);
+
+
+
+        return allIssues;
     }
-    if (results.isEmpty()) {
-        results.add(excludeId);
-    }
-    return results;
 
-}
 
     public List<Issue> findWithoutExcludeId(Long projectId,  List<Long> excludeIdList) {
         JPAQuery<Issue> query = this.query.selectFrom(issue)
@@ -167,8 +161,18 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
         if (updateIssueForm.getStatus() != null) {
             query.set(issue.status, updateIssueForm.getStatus());
         }
+
+        if (updateIssueForm.getUserName() != null) {
+
+            Member member = memberRepository.findByUsername(updateIssueForm.getUserName())
+                    .orElseThrow(() -> new NoSuchElementException("해당하는 사용자가 없습니다."));
+
+            query.set(issue.memberInCharge, member);
+        }
+
+
         if (updateIssueForm.getTitle()==null && updateIssueForm.getDescription()==null &&
-                updateIssueForm.getIssueType()==null && updateIssueForm.getStatus()==null) {
+                updateIssueForm.getIssueType()==null && updateIssueForm.getStatus()==null &&updateIssueForm.getUserName()==null ) {
             throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
         query.execute();
