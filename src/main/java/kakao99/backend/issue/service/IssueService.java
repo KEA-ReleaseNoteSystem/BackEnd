@@ -349,7 +349,7 @@ public class IssueService {
     }
 
     @Transactional
-    public void saveImageAboutIssue(Long issueId, List<MultipartFile> files) throws IOException {
+    public ArrayList<String> saveImageAboutIssue(Long issueId, List<MultipartFile> files) throws IOException {
 
 //        Long issueId = issueId;
         ArrayList<String> imgUrlList = new ArrayList<>();
@@ -416,6 +416,7 @@ public class IssueService {
             }
             issueRepository.saveIssueImage(issueId, imgUrlList);
         }
+        return imgUrlList;
     }
 }
 
