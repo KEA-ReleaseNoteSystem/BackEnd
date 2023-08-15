@@ -154,6 +154,7 @@ public class IssueController {
     // 이슈 정보 업데이트
     @PutMapping("/api/project/{projectId}/issues/{issueId}")
     public ResponseEntity<?> updateIssue(@PathVariable("projectId") Long projectId, @PathVariable("issueId") Long issueId, @RequestBody UpdateIssueForm updateIssueForm) {
+
         issueService.updateIssue(updateIssueForm, issueId);
 
         ResponseMessage message = new ResponseMessage(200, projectId + "번 프로젝트의 모든 이슈 수정 성공");

@@ -168,6 +168,7 @@ public class IssueService {
 
     @Transactional
     public void updateIssue(UpdateIssueForm updateIssueForm, Long issueId) {
+
         issueRepository.updateIssue(updateIssueForm, issueId);
         }
 
