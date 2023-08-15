@@ -52,6 +52,51 @@ public class ReleaseService {
     @Value("${kakao.i.cloud.object.storage.url}")
     private String kicObjectStorageUrl;
 
+
+
+
+
+    public boolean isVersionExists(String version,Long projectId) {
+        return releaseRepository.existsByVersionAndProjectId(version,projectId);
+    }
+
+
+
+
+    public boolean isAnyVersionExistsWithPattern(String versionPattern, Long projectId) {
+        return releaseRepository.existsByVersionLikeAndProjectId(versionPattern.replace("X", "%"), projectId);
+    }
+
+
+    public boolean isValidVersion(String version, Long projectId) {
+        String[] parts = version.split("\\.");
+        if (parts.length != 3) {
+            return false;
+        }
+
+        try {
+            int major = Integer.parseInt(parts[0]);
+            int minor = Integer.parseInt(parts[1]);
+            int patch = Integer.parseInt(parts[2]);
+
+            if (patch > 0) {
+                String lowerVersion = major + "." + minor + "." + (patch - 1);
+                if (!isVersionExists(lowerVersion, projectId)) {
+                    return false;
+                }
+            } else if (minor > 0) {
+                String lowerVersion = major + "." + (minor - 1) + ".X";
+                if (!isAnyVersionExistsWithPattern(lowerVersion, projectId)) {
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     @Transactional
     public ReleaseNote createReleaseWithoutImages(CreateReleaseDTO createReleaseDTO, Member member, Project project) {
 

@@ -62,33 +62,34 @@ public class IssueRepositoryImpl implements IssueRepositoryCustom {
 
         for (IssueParentChild issue : issues) {
 
-    //        if (issue.getParentIssue().getId().equals(excludeId)){
-    //            List<IssueParentChild> otherChildIssues = issueParentChildRepositiory.findByparentIssue(issue.getChildIssue());
-    //            for (IssueParentChild childIssue : otherChildIssues) {
-    //
-    //                if(!results.contains(issue.getChildIssue().getId())){
-    //                    results.add(childIssue.getChildIssue().getId());
-    //                }
-    //            }
-    //        }
-    //
-    //        if (issue.getChildIssue().getId().equals(excludeId)) {
-    //            List<IssueParentChild> otherChildIssues = issueParentChildRepositiory.findByparentIssue(issue.getParentIssue());
-    //            for (IssueParentChild childIssue : otherChildIssues) {
-    //
-    //                if(!results.contains(issue.getChildIssue().getId())){
-    //                results.add(childIssue.getChildIssue().getId());
-    //                }
-    //            }
+            if (issue.getParentIssue().getId().equals(excludeId)){
+                List<IssueParentChild> otherChildIssues = issueParentChildRepository.findByparentIssue(issue.getChildIssue());
 
-    //            List<IssueParentChild> otherParentIssues = issueParentChildRepositiory.findBychildIssue(issue.getParentIssue());
-    //            for (IssueParentChild parentIssue : otherParentIssues) {
-    //
-    //                if(!results.contains(issue.getParentIssue().getId())){
-    //                    results.add(parentIssue.getParentIssue().getId());
-    //                }
-    //            }
-    //        }
+                for (IssueParentChild childIssue : otherChildIssues) {
+
+                    if(!results.contains(issue.getChildIssue().getId())){
+                        results.add(childIssue.getChildIssue().getId());
+                    }
+                }
+            }
+
+            if (issue.getChildIssue().getId().equals(excludeId)) {
+                List<IssueParentChild> otherChildIssues = issueParentChildRepository.findByparentIssue(issue.getParentIssue());
+                for (IssueParentChild childIssue : otherChildIssues) {
+
+                    if(!results.contains(issue.getChildIssue().getId())){
+                    results.add(childIssue.getChildIssue().getId());
+                    }
+                }
+
+                List<IssueParentChild> otherParentIssues = issueParentChildRepository.findBychildIssue(issue.getParentIssue());
+                for (IssueParentChild parentIssue : otherParentIssues) {
+
+                    if(!results.contains(issue.getParentIssue().getId())){
+                        results.add(parentIssue.getParentIssue().getId());
+                    }
+                }
+            }
 
         if(!results.contains(issue.getChildIssue().getId())){
             results.add(issue.getChildIssue().getId());

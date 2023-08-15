@@ -22,6 +22,16 @@ public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long>, Rel
     ReleaseNote save(ReleaseNote releaseNote);
     // 생성, 수정
 
+    boolean existsByVersionAndProjectId(String version, Long projectId);
+
+
+    boolean existsByVersionLikeAndProjectId(String versionPattern, Long projectId);
+
+
+
+
+
+
     ReleaseNote findByVersionAndProject(String parentVersion, Project project);
     @Query("SELECT rn FROM ReleaseNote rn WHERE rn.project.id = :projectId AND rn.id NOT IN (SELECT rpc.childNote.id FROM ReleaseNoteParentChild rpc)")
     List<ReleaseNote> findRootNodesByProjectId(@Param("projectId") Long projectId);
@@ -44,6 +54,8 @@ public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long>, Rel
     @Modifying
     @Query("UPDATE ReleaseNote e SET e.isActive = false, e.deletedAt = :deletedAt WHERE e.id = :id")
     void updateIsActiveById(@Param("id") Long id, @Param("deletedAt") Date deletedAt);
+
+
     // 릴리즈노트 삭제: isActive 상태를 변경하고 삭제한 시간을 입력
 
 }

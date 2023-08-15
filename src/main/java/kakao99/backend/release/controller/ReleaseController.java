@@ -51,6 +51,20 @@ public class ReleaseController {
         ReleaseNote releaseNote = null;
         Member member = (Member) authentication.getPrincipal();
         Optional<Project> project = projectRepository.findById(createReleaseDTO.getProjectId());
+
+
+
+        boolean isNameDuplicate = releaseService.isVersionExists(createReleaseDTO.getVersion(),createReleaseDTO.getProjectId());
+
+        if (isNameDuplicate) {
+            throw new CustomException(443, "해당 버전의 릴리즈 노트가 이미 존재합니다.");
+        }
+
+        if (!releaseService.isValidVersion(createReleaseDTO.getVersion(), createReleaseDTO.getProjectId())) {
+            throw new CustomException(445, "유효하지 않은 버전입니다. 적절한 상 버전이 존재하는지 확인하세요.");
+        }
+
+
         if (project.isEmpty()) {
             ResponseMessage message = new ResponseMessage(204, "멤버 또는 프로젝트를 찾을 수 없습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
@@ -82,6 +96,9 @@ public class ReleaseController {
         return new ResponseEntity<>(message, HttpStatus.OK);
 
     }
+
+
+
 
     @PutMapping("/api/release/update")
     @ResponseBody

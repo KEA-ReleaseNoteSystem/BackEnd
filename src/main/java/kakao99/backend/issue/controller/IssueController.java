@@ -37,10 +37,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -319,9 +316,11 @@ public class IssueController {
         else
             log.info("전송 받은 사진 개수 = " + files.toArray().length);
 
-        issueService.saveImageAboutIssue(issueId, files);
 
-        ResponseMessage message = new ResponseMessage(200, "이미지 첨부 완료");
+        ArrayList<String> imgUrl= issueService.saveImageAboutIssue(issueId, files);
+
+
+        ResponseMessage message = new ResponseMessage(200, "이미지 첨부 완료",imgUrl);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
