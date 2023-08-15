@@ -106,6 +106,18 @@ public class ReleaseController {
             @RequestBody UpdateReleaseDTO updateReleaseDTO) {
         Optional<ReleaseNote> findReleaseNote = releaseService.getReleaseInfo(updateReleaseDTO.getReleaseId());
 
+        boolean isNameDuplicate = releaseService.isVersionExistsModify(updateReleaseDTO.getVersion(),updateReleaseDTO.getProjectId(),updateReleaseDTO.getReleaseId());
+
+        if (isNameDuplicate) {
+            throw new CustomException(443, "해당 버전의 릴리즈 노트가 이미 존재합니다.");
+        }
+
+        if (!releaseService.isValidVersion(updateReleaseDTO.getVersion(), updateReleaseDTO.getProjectId())) {
+            throw new CustomException(445, "유효하지 않은 버전입니다. 적절한 상 버전이 존재하는지 확인하세요.");
+        }
+
+
+
         if (findReleaseNote.isEmpty()) {
             ResponseMessage message = new ResponseMessage(204, "릴리즈 노트를 찾을 수 없습니다.", null);
             return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
