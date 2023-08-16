@@ -116,7 +116,8 @@ public class MemberProjectRepository{
                 .select(memberProject.role)
                 .from(memberProject)
                 .where(memberProject.member.id.eq(memberId)
-                        .and(memberProject.project.id.eq(projectId)))
+                        .and(memberProject.project.id.eq(projectId))
+                        .and(memberProject.isActive.eq(String.valueOf(true))))
                 .fetchOne());
     }
 
