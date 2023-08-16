@@ -6,14 +6,13 @@ import lombok.*;
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class MemberInfoDTO {
     private Long id;
     private String name;
-
     private Long memberId;
     private String nickname;
     private String email;
