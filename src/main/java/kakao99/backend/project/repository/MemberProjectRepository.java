@@ -63,7 +63,8 @@ public class MemberProjectRepository{
                 .select(project)
                 .from(memberProject)
                 .where(memberProject.member.id.eq(memberId)
-                        .and(project.isActive.eq(isActive))) // and 조건을 올바른 위치로 이동
+                        .and(memberProject.isActive.eq(isActive)
+                                .and(project.isActive.eq(isActive)))) // and 조건을 올바른 위치로 이동
                 .fetch();
     }
 
