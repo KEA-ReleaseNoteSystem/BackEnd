@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import kakao99.backend.common.exception.CustomException;
 import kakao99.backend.entity.Member;
 import kakao99.backend.jwt.TokenProvider;
 import kakao99.backend.member.dto.Auth2UserInfoDTO;
@@ -82,7 +83,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (findMemberByEmail.isEmpty()) {
             //Member member = saveOrUpdate(oAuthEmail,oAuthUserName, provider);
             //String token = tokenProvider.createAccessToken(member);
-
             response.setStatus(200);
             log.info("로그인 이름={}", oAuthUserName);
             log.info("로그인 이메일={}", oAuthEmail);
@@ -95,13 +95,18 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             redirectUrl += "&username=" + URLEncoder.encode(oAuthUserName, StandardCharsets.UTF_8);
 
             response.sendRedirect(redirectUrl);
-        } else {
+        }else {
             Member member = saveOrUpdate(oAuthEmail,oAuthUserName, provider);
-            String token = tokenProvider.createAccessToken(member);
-            String key = String.valueOf(member.getId());
-            String value = "On";
-            redisTemplate.opsForValue().set(key, value, 10, TimeUnit.MINUTES);
-            response.sendRedirect("http://localhost:3000/social-login?token=" + token);
+            if (member.getGroup() == null) {
+                response.setStatus(401);
+                response.sendRedirect("http://localhost:3000/authentication/rejoin?email=" + member.getEmail());
+            }else {
+                String token = tokenProvider.createAccessToken(member);
+                String key = String.valueOf(member.getId());
+                String value = "On";
+                redisTemplate.opsForValue().set(key, value, 10, TimeUnit.MINUTES);
+                response.sendRedirect("http://localhost:3000/social-login?token=" + token);
+            }
         }
 
 
