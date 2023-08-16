@@ -1,6 +1,7 @@
 package kakao99.backend.project.repository;
 
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import kakao99.backend.entity.MemberProject;
 import kakao99.backend.entity.Project;
@@ -73,10 +74,21 @@ public class MemberProjectRepository{
         return query
                 .select(project)
                 .from(project)
-                .leftJoin(memberProject).on(project.id.eq(memberProject.project.id).and(memberProject.member.id.eq(memberId)))
-                .where(memberProject.id.isNull() // This ensures that the project is not associated with the member
-                        .and(project.isActive.eq(isActive)
-                                .and(project.group.id.eq(groupId))))
+                .where(
+                        project.isActive.eq("true")
+                                .and(project.group.id.eq(groupId))
+                                .and(
+                                        project.id.notIn(
+                                                JPAExpressions
+                                                        .select(memberProject.project.id)
+                                                        .from(memberProject)
+                                                        .where(
+                                                                memberProject.member.id.eq(memberId)
+                                                                        .and(memberProject.isActive.eq("true"))
+                                                        )
+                                        )
+                                )
+                )
                 .fetch();
     }
 
