@@ -2,6 +2,10 @@ package kakao99.backend.member.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import kakao99.backend.entity.types.NotificationType;
+import kakao99.backend.notification.rabbitmq.dto.RequestMessageDTO;
+import kakao99.backend.notification.service.NotificationService;
+import kakao99.backend.project.dto.MemberProjectDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.*;
 import kakao99.backend.common.exception.CustomException;
@@ -47,6 +51,7 @@ public class MemberService {
     private final GroupRepository groupRepository;
     private final MemberProjectRepository memberProjectRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private final NotificationService notificationService;
     private static final  String absolutePath = "C:\\Users\\USER\\Desktop\\releasy_be\\BackEnd\\src\\main\\resources\\static\\";
 
     @Value("${kakao.i.cloud.access.token}")
@@ -270,6 +275,25 @@ public class MemberService {
     public void removeMemberGroup(MemberInfoDTO memberInfoDTO){
         Optional<Member> byId = memberRepository.findById(memberInfoDTO.getId());
         Member member = byId.get();
+        List<Project> projectList = memberProjectRepository.findProjectByMemberId(member.getId(), "true");
+
+        for (Project project : projectList) {
+
+            Optional<MemberProject> optionalMemberProject = memberProjectRepository.findAllByProjectIdAndMemberId(project.getId(), member.getId());
+            MemberProject memberProject = (MemberProject) optionalMemberProject.get();
+            memberProject.deleteMember();
+
+            Member outMember = memberRepository.findById(member.getId()).get();
+
+            RequestMessageDTO requestMessageDTO = new RequestMessageDTO().builder()
+                    .type(NotificationType.OUTMEMBER)
+                    .specificTypeId(member.getId())
+                    .myNickname(outMember.getNickname())
+                    .projectId(project.getId())
+                    .build();
+
+            notificationService.createNotification(requestMessageDTO);
+        }
         member.deleteGroupMember();
     }
 
