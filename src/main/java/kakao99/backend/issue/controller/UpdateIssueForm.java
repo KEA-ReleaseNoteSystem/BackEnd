@@ -9,7 +9,7 @@ public class UpdateIssueForm {
     private String title;
     private String description;
     private String status;
-
+    private String userName;
     private String issueType;
 
 }

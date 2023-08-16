@@ -26,6 +26,7 @@ public interface ReleaseRepository extends JpaRepository<ReleaseNote, Long>, Rel
 
     boolean existsByVersionLikeAndProjectIdAndIsActiveTrue(String versionPattern, Long projectId);
 
+    boolean existsByVersionAndProjectIdAndIdNotAndIsActiveTrue(String version, Long projectId, Long releaseId);
 
 
 

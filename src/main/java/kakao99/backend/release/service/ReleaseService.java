@@ -61,6 +61,10 @@ public class ReleaseService {
     }
 
 
+    public boolean  isVersionExistsModify(String version,Long projectId,Long releaseId) {
+        return releaseRepository.existsByVersionAndProjectIdAndIdNotAndIsActiveTrue(version,projectId,releaseId);
+    }
+
 
 
     public boolean isAnyVersionExistsWithPattern(String versionPattern, Long projectId) {
