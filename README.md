@@ -19,8 +19,14 @@
 - 릴리즈 노트의 버전을 "메이저(Major)", "마이너(Minor)", "패치(Patch)"의 세 가지 요소로 구성합니다.
 - 트리 구조를 통해 이를 시각화하며, 사용자의 편의성을 증진합니다.
 
-### 5. Monolithic Architecture
-![image](https://github.com/Jedo0224/KEA_ReleaseNote_Releasy_BE/assets/90050514/348821d9-de4a-4dc4-99f5-c4f2b50ba778)
+## 5. ERD
+
+<img width="702" alt="image" src="https://github.com/KEA-ReleaseNoteSystem/.github/assets/77061558/f4066f95-864a-4992-abcc-ec61b52c9612">
+
+## 6. System Architecture
+
+<img width="836" alt="image" src="https://github.com/KEA-BrainForm/BackEnd/assets/77061558/c9986222-d373-42fb-aa43-7c37e109b8fe">
+
 
 ### 6. 시연 영상
 https://www.youtube.com/watch?v=Qzu5EQ1IBpI&ab_channel=%EC%95%88%ED%95%B4%EB%B9%88
